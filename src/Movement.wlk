@@ -52,8 +52,6 @@ class SimpleJumpManager inherits JumpManager {
 	}
 
 	override method jump() {
-		console.println("saltó = " + not isJumping)
-		console.println("colisiona con abajo = " + self.entity().isCollidingFrom(abajo))
 		if (not isJumping and self.entity().isCollidingFrom(abajo)) {
 			isJumping = true
 			jumpCallback.apply()
