@@ -154,6 +154,11 @@ class GravityEntity inherits MovableEntity {
 			self.move(0, -velocityY.limitBetween(-1, 1))
 			self.checkForCollision()
 		}
+		if (self.isCollidingFrom(arriba)) {
+			velocityY = 0
+		}
+		lastLastY = lastY
+		lastY = self.originPosition().y()
 	}
 
 	method maxJumpHeight() = maxJumpHeight
@@ -178,11 +183,7 @@ class CollapsableEntity inherits Entity {
 	}
 
 	method isCollidingFrom(direction) {
-		console.println(self.originPosition())
-		return self.any{ img , x , y => self.collisionsFrom(direction, x, y).any{ collider =>
-			console.println(img.position())
-			collider.isCollidable()
-		} }
+		return self.any{ img , x , y => self.collisionsFrom(direction, x, y).any{ collider => collider.isCollidable()} }
 	}
 
 	method collisionsFrom(direction, x, y) {

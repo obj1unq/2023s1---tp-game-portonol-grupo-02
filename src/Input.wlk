@@ -17,12 +17,12 @@ object inputManager {
 	}
 
 	method init() {
-		keyboard.left()	.onPressDo(	{ self.dispatchInput("left")	} )
-		keyboard.right().onPressDo(	{ self.dispatchInput("right")	} )
-		keyboard.down()	.onPressDo(	{ self.dispatchInput("down")	} )
-		keyboard.up()	.onPressDo(	{ self.dispatchInput("up")		} )
-		keyboard.space().onPressDo(	{ self.dispatchInput("space")	} )
-		keyboard.c()	.onPressDo(	{ self.dispatchInput("c")		} )
+		keyboard.left().onPressDo({ self.dispatchInput("left")})
+		keyboard.right().onPressDo({ self.dispatchInput("right")})
+		keyboard.down().onPressDo({ self.dispatchInput("down")})
+		keyboard.up().onPressDo({ self.dispatchInput("up")})
+		keyboard.space().onPressDo({ self.dispatchInput("space")})
+		keyboard.c().onPressDo({ self.dispatchInput("c")})
 	}
 
 }
