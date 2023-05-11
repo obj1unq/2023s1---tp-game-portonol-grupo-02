@@ -142,7 +142,7 @@ class GravityEntity inherits MovableEntity {
 		if(self.collisions().any({ collider => collider.hadCollidedWithBlock()})){
 			
 			if(lastY < self.originPosition().y()) {
-				self.move(0, -velocityY.limitBetween(-1, 1))
+				self.move(0, velocityY.limitBetween(-1, 1))
 				velocityY = 0
 			} else {
 				self.move(0, velocityY.limitBetween(-1, 1))
@@ -153,9 +153,7 @@ class GravityEntity inherits MovableEntity {
 	}
 
 	method update(time) {
-			
-//		self.checkForCollision()
-		
+					
 		velocityY += gravityY
 		self.move(0, -velocityY.limitBetween(-1, 1))
 		
@@ -310,7 +308,8 @@ class PlayerDamageEntity inherits DamageEntity {
 		console.println("sufrió daño")
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
-			self.game().stop()
+//			self.game().stop()
+			self.say("me morí")
 		}
 	}
 
