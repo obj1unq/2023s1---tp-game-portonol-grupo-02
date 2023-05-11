@@ -1,0 +1,28 @@
+import wollok.game.*
+import Movement.GravityController
+import Entities.PlayerDamageEntity
+import Entities.EnemyDamageEntity
+import Sprite.Image
+
+describe "Tests de lógica de daño" {
+	/*
+	Aclaración: la vida se mide en porcentajes, por eso en los assert.equals() pongo 100 a pesar de que la vida que tiene el enemigo es 50.
+	*/
+	var gravity = new GravityController(name = "mainGravity", tickTime = 20, gameInstance = game)
+	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 100, damage = 30, cooldown = 2000)
+	var enemy = new EnemyDamageEntity(gravity = gravity, hp = 50, maxHp = 50, damage = 25, cooldown = 2000)
+	
+	test "el player hace 30 de daño a un enemigo" {
+		player.initialPositions(4,8)
+		player.onAttach()
+		enemy.initialPositions(6,8)
+		enemy.onAttach()
+		gravity.init()
+		assert.equals(100, player.hp())
+		assert.equals(100, enemy.hp())
+		player.goRight(2)
+		player.goLeft(2)
+		assert.equals(75, player.hp())
+		assert.equals(60, enemy.hp())
+	}
+}

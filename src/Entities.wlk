@@ -218,8 +218,16 @@ class DamageEntity inherits GravityEntity {
 	var damage
 	var hp
 	var maxHp
+	var cooldown
+	var property onCooldown = false
 
 	method damage() = damage
+
+	method hp() = hp * 100 / maxHp
+
+	method cooldown() = cooldown
+
+	method isEnemy() = null
 
 	method takeDmg(dmg) {
 		hp -= dmg
@@ -240,6 +248,19 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	var damageManager = new DamageManager()
 
+	override method onCollision(colliders) {
+		if (colliders.any({ collider => not collider.isEnemy() })) {
+			const aPlayer = colliders.find({ collider => not collider.isEnemy() })
+			damageManager.dealDmg(self, aPlayer)
+			onCooldown = true
+			game.onTick(self.cooldown(), "Enemy Damage Cooldown", { onCooldown = false
+				game.removeTickEvent("Enemy Damage Cooldown")
+			})
+		}
+	}
+
+	override method isEnemy() = true
+
 	override method takeDmg(damage) {
 		super(damage)
 		if (self.isDead()) {
@@ -251,6 +272,21 @@ class EnemyDamageEntity inherits DamageEntity {
 
 class PlayerDamageEntity inherits DamageEntity {
 
+	var damageManager = new DamageManager()
+
+	override method onCollision(colliders) {
+		if (colliders.any({ collider => collider.isEnemy() }) && not onCooldown) {
+			const anEnemy = colliders.find({ collider => collider.isEnemy() })
+			damageManager.dealDmg(self, anEnemy)
+			onCooldown = true
+			game.onTick(self.cooldown(), "Player Damage Cooldown", { onCooldown = false
+				game.removeTickEvent("Player Damage Cooldown")
+			})
+		}
+	}
+
+	override method isEnemy() = false
+
 	override method takeDmg(damage) {
 		super(damage)
 		if (self.isDead()) {
@@ -258,12 +294,6 @@ class PlayerDamageEntity inherits DamageEntity {
 			self.game().stop()
 		}
 	}
-
-}
-
-class FightEntity inherits Entity {
-
-	var isEnemy
 
 }
 
