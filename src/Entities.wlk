@@ -5,30 +5,34 @@ import Sprite.Renderable
 import Movement.StaticMovementManager
 
 class Entity inherits Renderable {
-
+	
 	var initialY = 0
 	var initialX = 0
-
+		
 	method game() = game
-
-	method initialPositions(x, y) {
+		
+	method initialPositions(x, y){
 		initialX = x
 		initialY = y
 	}
-
-	method onAttach() {
+	
+	method onAttach(){
 		self.render(initialX, initialY)
 	}
-
-	method onRemove() {
+	
+	method onRemove(){
 		self.unrender()
 	}
-
-	method isCollidable() {
+	
+	method isCollidable(){
 		return false
 	}
-
+	
+	method isEnemy() {
+		return false
+	}
 }
+
 
 class MovableEntity inherits CollapsableEntity {
 
@@ -108,13 +112,10 @@ class GravityEntity inherits MovableEntity {
 
 	var property gravity
 	var property maxJumpHeight = 3
-	var velocityY = 0
-	const gravityY = 1
-	var lastLastY = null
+	var velocityY = 10
+	const gravityY = 0.5
 	var lastY = null
-
-	method isFalling() = lastLastY != null and lastLastY > lastY and lastY != null and lastY >= self.originPosition().y()
-
+	
 	method gravity() = gravity
 
 	method gravity(_gravity) {
@@ -124,48 +125,51 @@ class GravityEntity inherits MovableEntity {
 	override method onAttach() {
 		super()
 		self.gravity().suscribe(self)
-		self.onJump({ velocityY = -maxJumpHeight;})
+		self.onJump({ velocityY = -maxJumpHeight; })
 		lastY = self.originPosition().y()
-		lastLastY = lastY
 	}
 
 	override method onRemove() {
+		super()
 		self.gravity().unsuscribe(self)
 	}
 
 	override method onCollision(colliders) {
-		if (colliders.any({ collider => collider.hadCollidedWithBlock() })) {
-			if (lastY < self.originPosition().y()) {
-				self.move(0, -1)
-			} else if (lastY > self.originPosition().y()) {
-				self.move(0, lastY - self.originPosition().y())
+		// No hace nada
+	}
+
+	method validateMovement() {
+		if(self.collisions().any({ collider => collider.hadCollidedWithBlock()})){
+			
+			if(lastY < self.originPosition().y()) {
+				self.move(0, velocityY.limitBetween(-1, 1))
+				velocityY = 0
+			} else {
+				self.move(0, velocityY.limitBetween(-1, 1))
+				velocityY = 0
 				self.touchFloor()
 			}
 		}
 	}
 
 	method update(time) {
-		if (self.isFalling() and self.isCollidingFrom(abajo)) {
-			velocityY = 0
-			self.move(0, (lastY - self.originPosition().y()).truncate(0))
-			self.touchFloor()
-		} else if (not self.isFalling()) {
-			velocityY += gravityY
-			self.move(0, -velocityY.limitBetween(-1, 1))
-			self.checkForCollision()
-		}
-		if (self.isCollidingFrom(arriba)) {
-			velocityY = 0
-		}
-		lastLastY = lastY
+					
+		velocityY += gravityY
+		self.move(0, -velocityY.limitBetween(-1, 1))
+		
+		self.validateMovement()
+				
+		self.checkForCollision()
+			
 		lastY = self.originPosition().y()
+	
 	}
 
 	method maxJumpHeight() = maxJumpHeight
 
 	method maxJumpHeight(_maxJumpHeight) {
 		maxJumpHeight = _maxJumpHeight
-		self.onJump({ velocityY = -_maxJumpHeight;})
+		self.onJump({ velocityY = -_maxJumpHeight; })
 	}
 
 }
@@ -178,12 +182,25 @@ class CollapsableEntity inherits Entity {
 
 	method collisions() {
 		const collisions = []
-		self.forEach({ img , x , y => collisions.addAll(self.game().colliders(img).filter{ collider => collider.isCollidable()})})
+
+		self.forEach({img, x, y => 
+			collisions.addAll(
+				self.game().colliders(img).filter{
+					coll => not coll.isPartOfEntity(self)
+				}
+			)
+		})
+		
 		return collisions
 	}
 
 	method isCollidingFrom(direction) {
-		return self.any{ img , x , y => self.collisionsFrom(direction, x, y).any{ collider => collider.isCollidable()} }
+		return self.any{ img , x , y => 
+			self.collisionsFrom(direction, x, y).any{ 
+				collider => 
+				not self.isPartOfThisEntity(collider) and collider.isCollidable()
+			}
+		}
 	}
 
 	method collisionsFrom(direction, x, y) {
@@ -213,13 +230,20 @@ class CollapsableEntity inherits Entity {
 
 }
 
+
 class DamageEntity inherits GravityEntity {
 
 	var damage
 	var hp
 	var maxHp
+	var cooldown
+	var property onCooldown = false
 
 	method damage() = damage
+
+	method hp() = hp * 100 / maxHp
+
+	method cooldown() = cooldown
 
 	method takeDmg(dmg) {
 		hp -= dmg
@@ -227,18 +251,30 @@ class DamageEntity inherits GravityEntity {
 
 	method isDead() = hp <= 0
 
-/* 
- *     override method update(time){
- *         super(time)
- *         
- *     }
- * 
- */
 }
 
 class EnemyDamageEntity inherits DamageEntity {
 
 	var damageManager = new DamageManager()
+
+	override method onCollision(colliders) {
+
+		super(colliders)
+		
+		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isPlayer() && not onCooldown })) {
+			console.println("enemigo: collision entre player y enemigo")
+			const aPlayer = colliders.find({ collider => collider.entity().isPlayer() }).entity()
+			console.println(aPlayer)
+			damageManager.dealDmg(self, aPlayer)
+		}
+	}
+	
+	override method onRemove() {
+		super()
+		console.println("murió")
+	}
+
+	override method isEnemy() = true
 
 	override method takeDmg(damage) {
 		super(damage)
@@ -251,19 +287,31 @@ class EnemyDamageEntity inherits DamageEntity {
 
 class PlayerDamageEntity inherits DamageEntity {
 
+	var damageManager = new DamageManager()
+
+//	override method onCollision(colliders) {
+//		super(colliders)
+//		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isEnemy() }) && not onCooldown) {
+//			const anEnemy = colliders.find({ collider => collider.entity().isEnemy() }).entity()
+//			damageManager.dealDmg(self, anEnemy)
+//			/*onCooldown = true
+//			game.onTick(self.cooldown(), "Player Damage Cooldown", { onCooldown = false
+//				game.removeTickEvent("Player Damage Cooldown")
+//			})*/
+//		}
+//	}
+	
+	override method isPlayer() = true
+
 	override method takeDmg(damage) {
 		super(damage)
+		console.println("sufrió daño")
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
-			self.game().stop()
+//			self.game().stop()
+			self.say("me morí")
 		}
 	}
-
-}
-
-class FightEntity inherits Entity {
-
-	var isEnemy
 
 }
 

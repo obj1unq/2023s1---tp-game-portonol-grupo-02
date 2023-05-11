@@ -221,7 +221,7 @@ class StaticMovementManager inherits MovementController {
 
 class GravityController {
 
-	const bodies = []
+	const property bodies = []
 	var tickTime
 	var name
 	var gameInstance
