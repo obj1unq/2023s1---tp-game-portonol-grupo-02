@@ -55,6 +55,11 @@ class Renderable {
 		}
 	}
 
+	method say(message) {
+		const firstImage = imageMap.get(0).get(0)
+		game.say(firstImage, message)
+	}
+
 	method render(initialX, initialY) {
 		self.forEach({ image, _x, _y =>			
 			image.renderAt(new MutablePosition(x = initialX + _x, y = initialY - _y))
