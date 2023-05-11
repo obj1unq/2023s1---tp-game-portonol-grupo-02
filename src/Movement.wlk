@@ -1,5 +1,5 @@
 import wollok.game.*
-import Input.inputManager
+import Input.*
 import Position.*
 
 class JumpManager {

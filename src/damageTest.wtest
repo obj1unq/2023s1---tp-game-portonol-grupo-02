@@ -1,8 +1,8 @@
 import wollok.game.*
-import Movement.GravityController
-import Entities.PlayerDamageEntity
-import Entities.EnemyDamageEntity
-import Sprite.Image
+import Movement.*
+import Entities.*
+import Entities.*
+import Sprite.*
 import Blocks.*
 
 describe "Tests de lógica de daño" {

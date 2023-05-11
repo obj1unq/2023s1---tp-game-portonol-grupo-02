@@ -1,4 +1,4 @@
-import Sprite.Image
+import Sprite.*
 
 class Block inherits Image {
 

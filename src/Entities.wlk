@@ -1,8 +1,8 @@
 import Position.*
-import Damage.DamageManager
+import Damage.*
 import wollok.game.*
-import Sprite.Renderable
-import Movement.StaticMovementManager
+import Sprite.*
+import Movement.*
 
 class Entity inherits Renderable {
 	

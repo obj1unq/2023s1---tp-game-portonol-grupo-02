@@ -1,5 +1,5 @@
 import wollok.game.*
-import Position.MutablePosition
+import Position.*
 
 class Image {
 

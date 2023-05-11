@@ -25,7 +25,7 @@ program GamePrueba {
 	controlManager.jumpManager(new DoubleJumpManager())
 	player.setMovementController(controlManager)
 	player.initialPositions(3, 2)
-	player.maxJumpHeight(4)
+	player.maxJumpHeight(2)
 	player.imageMap([ [new Image(imageName = "row-1-column-1.png"), new Image(imageName = "row-2-column-1.png")], [new Image(imageName = "row-1-column-2.png"), new Image(imageName = "row-2-column-2.png")] ])
 	player.onAttach()
 	
