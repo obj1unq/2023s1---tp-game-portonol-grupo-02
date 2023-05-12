@@ -26,7 +26,7 @@ describe "Tests de lógica de daño" {
 		player.initialPositions(4,8)
 		player.onAttach()
 		enemy.initialPositions(4,8)
-		enemy.onAttach()		
+		enemy.onAttach()
 		console.println(gravity.bodies())
 		assert.equals(100, player.hp())
 		assert.equals(100, enemy.hp())

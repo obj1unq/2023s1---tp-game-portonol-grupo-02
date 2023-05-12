@@ -230,14 +230,13 @@ class CollapsableEntity inherits Entity {
 
 }
 
-
 class DamageEntity inherits GravityEntity {
 
 	var damage
 	var hp
 	var maxHp
 	var cooldown
-	var property onCooldown = false
+	var property cooldownState = notOnCooldown
 
 	method damage() = damage
 
@@ -250,18 +249,41 @@ class DamageEntity inherits GravityEntity {
 	}
 
 	method isDead() = hp <= 0
+	
+	method toogleCooldown(){
+		cooldownState = cooldownState.nextState()
+	}
+	
+	method setOnCooldown(){
+		const identifier = 0.randomUpTo(1)	//Esto vamos a tener que cambiarlo por un id del objeto (intenté usando identity() pero crashea)
+		self.toogleCooldown()
+		game.onTick(cooldown, "Damage Cooldown of " + identifier.toString(), {
+			game.removeTickEvent("Damage Cooldown of " + identifier.toString())
+			self.toogleCooldown()
+			console.println("cooldown reestablecido de " + identifier.toString())
+		})
+	}
+	
+	method notOnCooldown(){
+		return cooldownState == notOnCooldown
+	}
+	
+	method onCooldown(){
+		return cooldownState == onCooldown
+	}
 
 }
 
 class EnemyDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
+	const damageManager = new DamageManager()
 
 	override method onCollision(colliders) {
 
 		super(colliders)
 		
-		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isPlayer() && not onCooldown })) {
+		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isPlayer() and self.notOnCooldown() })) {
+			self.setOnCooldown()
 			console.println("enemigo: collision entre player y enemigo")
 			const aPlayer = colliders.find({ collider => collider.entity().isPlayer() }).entity()
 			console.println(aPlayer)
@@ -287,7 +309,7 @@ class EnemyDamageEntity inherits DamageEntity {
 
 class PlayerDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
+	const damageManager = new DamageManager()
 
 //	override method onCollision(colliders) {
 //		super(colliders)
@@ -313,5 +335,13 @@ class PlayerDamageEntity inherits DamageEntity {
 		}
 	}
 
+}
+
+object onCooldown {
+	const property nextState = notOnCooldown
+}
+
+object notOnCooldown {
+	const property nextState = onCooldown
 }
 
