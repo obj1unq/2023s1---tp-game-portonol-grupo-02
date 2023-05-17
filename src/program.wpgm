@@ -15,10 +15,6 @@ program GamePrueba {
 	game.boardGround("fondo.jpg")
 //	VISUALES
 	var gravity = new GravityController(name = "mainGravity", tickTime = 50, gameInstance = game)
-	var enemy = new EnemyDamageEntity(gravity = gravity, hp = 50, maxHp = 50, damage = 25, cooldown = 2000)
-	enemy.initialPositions(5, 10)
-	enemy.imageMap([ [new Image(imageName = "pepona.png")] ])
-	enemy.onAttach()
 	inputManager.init()
 	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000)
 	var controlManager = new CharacterMovementController(movableEntity = player)
@@ -28,6 +24,14 @@ program GamePrueba {
 	player.maxJumpHeight(4)
 	player.imageMap([ [new Image(imageName = "row-1-column-1.png"), new Image(imageName = "row-2-column-1.png")], [new Image(imageName = "row-1-column-2.png"), new Image(imageName = "row-2-column-2.png")] ])
 	player.onAttach()
+	
+	var enemy = new WalkToPlayerEnemy(gravity = gravity, hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = player)
+	var collidableMovementManager = new EnemyMovementController(movableEntity = enemy)
+	enemy.initialPositions(5, 10)
+	enemy.changeMovementController(collidableMovementManager)
+	enemy.movementController().jumpManager(new SimpleJumpManager())
+	enemy.imageMap([ [new Image(imageName = "pepona.png")] ])
+	enemy.onAttach()
 	
 	var jumpBlock2 = new Block(imageName = "suelo.png")
 	jumpBlock2.renderAt(game.at(6, 4))

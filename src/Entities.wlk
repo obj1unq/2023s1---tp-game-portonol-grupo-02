@@ -315,3 +315,46 @@ class PlayerDamageEntity inherits DamageEntity {
 
 }
 
+class WalkToPlayerEnemy inherits EnemyDamageEntity {
+	const player
+	const velocityX = 5
+	
+	override method update(time){
+		super(time)
+		self.moverHaciaJugador(time)
+	}
+	
+	method moverHaciaJugador(time) {
+		self.move(self.movimientoHaciaJugador(time), 0)
+		self.saltarSiEstaDebajoJugador()
+	}
+	
+	method saltarSiEstaDebajoJugador() {
+		if(self.jugadorEstaArriba() and self.estaAlLadoDeJugador()) {
+			self.jump()
+		}
+	}
+	
+	method jugadorEstaArriba() {
+		return player.originPosition().y() > self.originPosition().y()
+	}
+	
+	method estaAlLadoDeJugador() {
+		return player.originPosition().x().truncate(0) == self.originPosition().x().truncate(0)
+	}
+	
+	method movimientoHaciaJugador(time){
+		const relativePositionPlayer = player.originPosition().x() - self.originPosition().x()
+		return if(relativePositionPlayer < 0) {
+			- self.movimientoPorTiempo(time)
+		} else {
+			self.movimientoPorTiempo(time)
+		}
+	}
+	
+	method movimientoPorTiempo(time) {
+		return (time * velocityX) / 1000
+	}
+	
+}
+
