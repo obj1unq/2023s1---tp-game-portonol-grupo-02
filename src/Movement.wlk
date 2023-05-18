@@ -1,6 +1,7 @@
 import wollok.game.*
 import Input.inputManager
 import Position.*
+import SoundEffect.*
 
 class JumpManager {
 
@@ -46,6 +47,7 @@ class StaticJumpManager inherits JumpManager {
 
 class SimpleJumpManager inherits JumpManager {
 
+	const jumpEffect = silenceJumpEffect
 	var entity = null
 	var isJumping = false
 	var jumpCallback = {
@@ -55,6 +57,7 @@ class SimpleJumpManager inherits JumpManager {
 		if (not isJumping and self.entity().isCollidingFrom(abajo)) {
 			isJumping = true
 			jumpCallback.apply()
+			jumpEffect.play()
 		}
 	}
 

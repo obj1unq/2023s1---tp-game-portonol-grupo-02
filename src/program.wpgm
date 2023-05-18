@@ -6,6 +6,7 @@ import Input.*
 import Movement.*
 import Position.*
 import Sprite.*
+import SoundEffect.*
 
 program GamePrueba {
 //	CONFIG	
@@ -18,7 +19,7 @@ program GamePrueba {
 	inputManager.init()
 	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000)
 	var controlManager = new CharacterMovementController(movableEntity = player)
-	controlManager.jumpManager(new DoubleJumpManager())
+	controlManager.jumpManager(new DoubleJumpManager(jumpEffect = characterJumpEffect))
 	player.setMovementController(controlManager)
 	player.initialPositions(3, 2)
 	player.maxJumpHeight(4)
@@ -29,7 +30,7 @@ program GamePrueba {
 	var collidableMovementManager = new EnemyMovementController(movableEntity = enemy)
 	enemy.initialPositions(5, 10)
 	enemy.changeMovementController(collidableMovementManager)
-	enemy.movementController().jumpManager(new SimpleJumpManager())
+	enemy.movementController().jumpManager(new SimpleJumpManager(jumpEffect = slimeJumpEffect))
 	enemy.imageMap([ [new Image(imageName = "slime.png")] ])
 	enemy.velocityX(10)
 	enemy.onAttach()

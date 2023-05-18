@@ -356,7 +356,6 @@ class Slime inherits WalkToPlayerEnemy {
 	
 	override method moverHaciaJugador(time) {
 		if(self.isJumping()) {
-			console.println("moviendose hacia el player")
 			super(time)
 		}
 	}

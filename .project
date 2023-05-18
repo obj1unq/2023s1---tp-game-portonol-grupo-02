@@ -32,4 +32,11 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.uqbar.project.wollok.wollokNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>assets/slimejump.wav</name>
+			<type>1</type>
+			<location>C:/Users/ian-c/Downloads/slimejump.wav</location>
+		</link>
+	</linkedResources>
 </projectDescription>
