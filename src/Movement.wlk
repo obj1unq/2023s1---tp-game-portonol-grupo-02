@@ -280,14 +280,24 @@ class CollidableMovementController inherits MovementController {
 	method moveRightIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(derecha)) {
 			self.movableEntity().move(distance, 0)
+		} else {
+			self.moveToFixPositionInX()
 		}
 	}
 
 	method moveLeftIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(izquierda)) {
 			self.movableEntity().move(-distance, 0)
+		} else {
+			self.moveToFixPositionInX()
 		}
 	}
+	
+	method moveToFixPositionInX() {
+		const positionX = self.movableEntity().originPosition().x()
+		const movementToFixPosition = positionX.truncate(0) - positionX
+		self.movableEntity().move(movementToFixPosition, 0)
+	} 
 
 	override method goLeft() {
 		self.moveLeftIfCan(1)
@@ -298,11 +308,11 @@ class CollidableMovementController inherits MovementController {
 	}
 
 	override method goLeft(n) {
-		self.movableEntity().move(-n, 0)
+		self.moveLeftIfCan(n)
 	}
 
 	override method goRight(n) {
-		self.movableEntity().move(n, 0)
+		self.moveRightIfCan(n)
 	}
 
 }

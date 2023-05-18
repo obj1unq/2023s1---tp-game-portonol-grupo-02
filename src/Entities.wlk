@@ -205,13 +205,13 @@ class CollapsableEntity inherits Entity {
 
 	method collisionsFrom(direction, x, y) {
 		return if (direction == arriba) {
-			self.game().getObjectsIn(self.game().at(x, y + 1))
+			self.game().getObjectsIn(self.game().at(x, y.truncate(0) + 1))
 		} else if (direction == abajo) {
-			self.game().getObjectsIn(self.game().at(x, y - 1))
+			self.game().getObjectsIn(self.game().at(x, y.truncate(0) - 1))
 		} else if (direction == izquierda) {
-			self.game().getObjectsIn(self.game().at(x - 1, y))
+			self.game().getObjectsIn(self.game().at(x.truncate(0) - 1, y))
 		} else if (direction == derecha) {
-			self.game().getObjectsIn(self.game().at(x + 1, y))
+			self.game().getObjectsIn(self.game().at(x.truncate(0) + 1, y))
 		}
 	}
 
@@ -262,9 +262,9 @@ class EnemyDamageEntity inherits DamageEntity {
 		super(colliders)
 		
 		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isPlayer() && not onCooldown })) {
-			console.println("enemigo: collision entre player y enemigo")
+//			console.println("enemigo: collision entre player y enemigo")
 			const aPlayer = colliders.find({ collider => collider.entity().isPlayer() }).entity()
-			console.println(aPlayer)
+//			console.println(aPlayer)
 			damageManager.dealDmg(self, aPlayer)
 		}
 	}
@@ -305,7 +305,7 @@ class PlayerDamageEntity inherits DamageEntity {
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("sufrió daño")
+//		console.println("sufrió daño")
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
 //			self.game().stop()
@@ -322,11 +322,16 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	override method update(time){
 		super(time)
 		self.moverHaciaJugador(time)
+		self.saltarSiEstaDebajoJugador()
 	}
 	
 	method moverHaciaJugador(time) {
-		self.move(self.movimientoHaciaJugador(time), 0)
-		self.saltarSiEstaDebajoJugador()
+		const relativeDistanceFromPlayer = self.movimientoHaciaJugador(time)
+		if(relativeDistanceFromPlayer < 0) {
+			self.goLeft(- relativeDistanceFromPlayer)
+		} else {
+			self.goRight(relativeDistanceFromPlayer)
+		}
 	}
 	
 	method saltarSiEstaDebajoJugador() {
