@@ -154,15 +154,15 @@ class GravityEntity inherits MovableEntity {
 
 	method update(time) {
 					
+		lastY = self.originPosition().y()
+					
 		velocityY += gravityY
 		self.move(0, -velocityY.limitBetween(-1, 1))
 		
 		self.validateMovement()
 				
 		self.checkForCollision()
-			
-		lastY = self.originPosition().y()
-	
+							
 	}
 
 	method maxJumpHeight() = maxJumpHeight
@@ -171,6 +171,8 @@ class GravityEntity inherits MovableEntity {
 		maxJumpHeight = _maxJumpHeight
 		self.onJump({ velocityY = -_maxJumpHeight; })
 	}
+
+	method isJumping() = lastY != self.originPosition().y()
 
 }
 
@@ -289,23 +291,10 @@ class PlayerDamageEntity inherits DamageEntity {
 
 	var damageManager = new DamageManager()
 
-//	override method onCollision(colliders) {
-//		super(colliders)
-//		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isEnemy() }) && not onCooldown) {
-//			const anEnemy = colliders.find({ collider => collider.entity().isEnemy() }).entity()
-//			damageManager.dealDmg(self, anEnemy)
-//			/*onCooldown = true
-//			game.onTick(self.cooldown(), "Player Damage Cooldown", { onCooldown = false
-//				game.removeTickEvent("Player Damage Cooldown")
-//			})*/
-//		}
-//	}
-	
 	override method isPlayer() = true
 
 	override method takeDmg(damage) {
 		super(damage)
-//		console.println("sufrió daño")
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
 //			self.game().stop()
@@ -317,7 +306,7 @@ class PlayerDamageEntity inherits DamageEntity {
 
 class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	const player
-	const velocityX = 5
+	var property velocityX = 1
 	
 	override method update(time){
 		super(time)
@@ -341,7 +330,7 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 	
 	method jugadorEstaArriba() {
-		return player.originPosition().y() > self.originPosition().y()
+		return player.originPosition().y() - player.height() > self.originPosition().y()
 	}
 	
 	method estaAlLadoDeJugador() {
@@ -363,3 +352,17 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	
 }
 
+class Slime inherits WalkToPlayerEnemy {
+	
+	override method moverHaciaJugador(time) {
+		if(self.isJumping()) {
+			console.println("moviendose hacia el player")
+			super(time)
+		}
+	}
+	
+	override method saltarSiEstaDebajoJugador() {
+		self.jump()
+	}
+	
+}
