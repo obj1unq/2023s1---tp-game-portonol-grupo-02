@@ -255,12 +255,10 @@ class DamageEntity inherits GravityEntity {
 	}
 	
 	method setOnCooldown(){
-		const identifier = 0.randomUpTo(1)	//Esto vamos a tener que cambiarlo por un id del objeto (intenté usando identity() pero crashea)
 		self.toogleCooldown()
-		game.onTick(cooldown, "Damage Cooldown of " + identifier.toString(), {
-			game.removeTickEvent("Damage Cooldown of " + identifier.toString())
+		game.schedule(cooldown, {
 			self.toogleCooldown()
-			console.println("cooldown reestablecido de " + identifier.toString())
+			console.println("cooldown reestablecido")
 		})
 	}
 	
