@@ -1,9 +1,26 @@
 import wollok.game.*
 
+object dummiePosition {
+	var property x = 0
+	var property y = 0
+
+	method inPosition(_x, _y) {
+		x = _x
+		y = _y
+		return self
+	}
+}
+
 class MutablePosition {
 
 	var property x
 	var property y
+
+	method inPosition(_x, _y) {
+		x = _x
+		y = _y
+		return self
+	}
 
 	method right(n) {
 		x += n
