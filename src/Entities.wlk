@@ -113,7 +113,7 @@ class GravityEntity inherits MovableEntity {
 	var property gravity
 	var property maxJumpHeight = 3
 	var velocityY = 10
-	const gravityY = 0.5
+	var property gravityY = 0.5
 	var lastY = null
 	
 	method gravity() = gravity
@@ -154,15 +154,15 @@ class GravityEntity inherits MovableEntity {
 
 	method update(time) {
 					
+		lastY = self.originPosition().y()
+					
 		velocityY += gravityY
 		self.move(0, -velocityY.limitBetween(-1, 1))
 		
 		self.validateMovement()
 				
 		self.checkForCollision()
-			
-		lastY = self.originPosition().y()
-	
+							
 	}
 
 	method maxJumpHeight() = maxJumpHeight
@@ -171,6 +171,8 @@ class GravityEntity inherits MovableEntity {
 		maxJumpHeight = _maxJumpHeight
 		self.onJump({ velocityY = -_maxJumpHeight; })
 	}
+
+	method isJumping() = lastY != self.originPosition().y()
 
 }
 
@@ -203,15 +205,17 @@ class CollapsableEntity inherits Entity {
 		}
 	}
 
+
+	// Aplicar polimorfismo
 	method collisionsFrom(direction, x, y) {
 		return if (direction == arriba) {
-			self.game().getObjectsIn(self.game().at(x, y + 1))
+			self.game().getObjectsIn(dummiePosition.inPosition(x, y.truncate(0) + 1))
 		} else if (direction == abajo) {
-			self.game().getObjectsIn(self.game().at(x, y - 1))
+			self.game().getObjectsIn(dummiePosition.inPosition(x, y.truncate(0) - 1))
 		} else if (direction == izquierda) {
-			self.game().getObjectsIn(self.game().at(x - 1, y))
+			self.game().getObjectsIn(dummiePosition.inPosition(x.truncate(0) - 1, y))
 		} else if (direction == derecha) {
-			self.game().getObjectsIn(self.game().at(x + 1, y))
+			self.game().getObjectsIn(dummiePosition.inPosition(x.truncate(0) + 1, y))
 		}
 	}
 
@@ -261,17 +265,12 @@ class EnemyDamageEntity inherits DamageEntity {
 
 		super(colliders)
 		
-		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isPlayer() && not onCooldown })) {
-			console.println("enemigo: collision entre player y enemigo")
-			const aPlayer = colliders.find({ collider => collider.entity().isPlayer() }).entity()
-			console.println(aPlayer)
-			damageManager.dealDmg(self, aPlayer)
+		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and collider.entity().isPlayer() }, null)
+		
+		if (enemy != null and not onCooldown) {
+			damageManager.dealDmg(self, enemy.entity())
 		}
-	}
-	
-	override method onRemove() {
-		super()
-		console.println("murió")
+		
 	}
 
 	override method isEnemy() = true
@@ -289,23 +288,10 @@ class PlayerDamageEntity inherits DamageEntity {
 
 	var damageManager = new DamageManager()
 
-//	override method onCollision(colliders) {
-//		super(colliders)
-//		if (colliders.any({ collider => collider.hasEntity() and collider.entity().isEnemy() }) && not onCooldown) {
-//			const anEnemy = colliders.find({ collider => collider.entity().isEnemy() }).entity()
-//			damageManager.dealDmg(self, anEnemy)
-//			/*onCooldown = true
-//			game.onTick(self.cooldown(), "Player Damage Cooldown", { onCooldown = false
-//				game.removeTickEvent("Player Damage Cooldown")
-//			})*/
-//		}
-//	}
-	
 	override method isPlayer() = true
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("sufrió daño")
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
 //			self.game().stop()
@@ -315,3 +301,73 @@ class PlayerDamageEntity inherits DamageEntity {
 
 }
 
+class WalkToPlayerEnemy inherits EnemyDamageEntity {
+	const player
+	var property velocityX = 1
+	
+	override method update(time){
+		super(time)
+		self.moveTowardsPlayer(time)
+		self.jumpIfShould(time)
+	}
+	
+	method moveTowardsPlayer(time) {
+		const relativeDistanceFromPlayer = self.movementTowardsPlayer(time)
+		if(not self.isByPlayerSide()) {
+			if(relativeDistanceFromPlayer < 0) {
+				self.goLeft(- relativeDistanceFromPlayer)
+			} else if(relativeDistanceFromPlayer > 0) {
+				self.goRight(relativeDistanceFromPlayer)
+			}
+		}
+	}
+	
+	method jumpIfShould(time) {
+		if(self.shouldJump()) {
+			self.jump()
+		}
+	}
+	
+	method isByPlayerSide() {
+		return player.originPosition().x().truncate(0) == self.originPosition().x().truncate(0)
+	}
+	
+	method shouldJump()
+	
+	method movementTowardsPlayer(time){
+		const relativePositionPlayer = player.originPosition().x() - self.originPosition().x()
+		return if(relativePositionPlayer < 0) {
+			- self.movementByTime(time)
+		} else {
+			self.movementByTime(time)
+		}
+	}
+	
+	method movementByTime(time) {
+		return (time * velocityX) / 1000
+	}
+	
+}
+
+class Zombie inherits WalkToPlayerEnemy {
+	
+	override method shouldJump() = self.isPlayerAbove() and self.isByPlayerSide() 
+	
+	method isPlayerAbove() {
+		return false}
+//		return player.originPosition().y() - player.height() > self.originPosition().y()
+//	}
+	
+}
+
+class Slime inherits WalkToPlayerEnemy {
+	
+	override method moveTowardsPlayer(time) {
+		if(self.isJumping()) {
+			super(time)
+		}
+	}
+	
+	override method shouldJump() = true
+	
+}

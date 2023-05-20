@@ -1,6 +1,7 @@
 import wollok.game.*
 import Input.inputManager
 import Position.*
+import SoundEffect.*
 
 class JumpManager {
 
@@ -46,6 +47,7 @@ class StaticJumpManager inherits JumpManager {
 
 class SimpleJumpManager inherits JumpManager {
 
+	const jumpEffect = silenceJumpEffect
 	var entity = null
 	var isJumping = false
 	var jumpCallback = {
@@ -55,6 +57,7 @@ class SimpleJumpManager inherits JumpManager {
 		if (not isJumping and self.entity().isCollidingFrom(abajo)) {
 			isJumping = true
 			jumpCallback.apply()
+			jumpEffect.play()
 		}
 	}
 
@@ -221,7 +224,7 @@ class StaticMovementManager inherits MovementController {
 
 class GravityController {
 
-	const property bodies = []
+	const property bodies = #{}
 	var tickTime
 	var name
 	var gameInstance
@@ -233,6 +236,8 @@ class GravityController {
 
 	method unsuscribe(body) {
 		bodies.remove(body)
+		console.println(bodies)
+		console.println(body)
 	}
 
 	method init() {
@@ -280,14 +285,24 @@ class CollidableMovementController inherits MovementController {
 	method moveRightIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(derecha)) {
 			self.movableEntity().move(distance, 0)
+		} else {
+			self.moveToFixPositionInX()
 		}
 	}
 
 	method moveLeftIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(izquierda)) {
 			self.movableEntity().move(-distance, 0)
+		} else {
+			self.moveToFixPositionInX()
 		}
 	}
+	
+	method moveToFixPositionInX() {
+		const positionX = self.movableEntity().originPosition().x()
+		const movementToFixPosition = positionX.truncate(0) - positionX
+		self.movableEntity().move(movementToFixPosition, 0)
+	} 
 
 	override method goLeft() {
 		self.moveLeftIfCan(1)
@@ -298,11 +313,11 @@ class CollidableMovementController inherits MovementController {
 	}
 
 	override method goLeft(n) {
-		self.movableEntity().move(-n, 0)
+		self.moveLeftIfCan(n)
 	}
 
 	override method goRight(n) {
-		self.movableEntity().move(n, 0)
+		self.moveRightIfCan(n)
 	}
 
 }
@@ -319,5 +334,13 @@ class CharacterMovementController inherits CollidableMovementController {
 		}
 	}
 
+}
+
+class EnemyMovementController inherits CollidableMovementController {
+	
+	override method init() {}
+	override method remove() {}
+	override method onDispatchInput(input) {}
+	
 }
 
