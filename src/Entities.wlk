@@ -3,6 +3,7 @@ import Damage.DamageManager
 import wollok.game.*
 import Sprite.Renderable
 import Movement.StaticMovementManager
+import Global.global
 
 class Entity inherits Renderable {
 	
@@ -259,13 +260,13 @@ class DamageEntity inherits GravityEntity {
 
 class EnemyDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
+	const damageManager = new DamageManager()
 
 	override method onCollision(colliders) {
 
 		super(colliders)
 		
-		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and collider.entity().isPlayer() }, null)
+		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and global.isPlayer(collider.entity()) }, null)
 		
 		if (enemy != null and not onCooldown) {
 			damageManager.dealDmg(self, enemy.entity())
@@ -286,7 +287,9 @@ class EnemyDamageEntity inherits DamageEntity {
 
 class PlayerDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
+	const damageManager = new DamageManager()
+	const damageSfx
+	const deathSfx
 
 	override method isPlayer() = true
 
@@ -294,8 +297,12 @@ class PlayerDamageEntity inherits DamageEntity {
 		super(damage)
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
-//			self.game().stop()
+			// self.game().stop()
+			deathSfx.play()
 			self.say("me morí")
+			self.onRemove()
+		} else {
+			damageSfx.play()
 		}
 	}
 

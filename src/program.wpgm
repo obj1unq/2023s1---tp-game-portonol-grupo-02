@@ -7,6 +7,7 @@ import Movement.*
 import Position.*
 import Sprite.*
 import SoundEffect.*
+import Global.global
 
 program GamePrueba {
 //	CONFIG	
@@ -17,7 +18,8 @@ program GamePrueba {
 //	VISUALES
 	var gravity = new GravityController(name = "mainGravity", tickTime = 20, gameInstance = game)
 	inputManager.init()
-	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000)
+	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
+	global.player(player)
 	var controlManager = new CharacterMovementController(movableEntity = player)
 	controlManager.jumpManager(new DoubleJumpManager(jumpEffect = characterJumpEffect))
 	player.setMovementController(controlManager)
@@ -27,6 +29,7 @@ program GamePrueba {
 	player.onAttach()
 	
 	var enemy = new Slime(gravity = gravity, hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = player)
+	global.addEnemy(enemy)
 	var collidableMovementManager = new EnemyMovementController(movableEntity = enemy)
 	enemy.initialPositions(5, 10)
 	enemy.changeMovementController(collidableMovementManager)
@@ -40,6 +43,7 @@ program GamePrueba {
 	enemy.maxJumpHeight(3)
 	
 	var enemy2 = new Slime(gravity = gravity, hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = player)
+	global.addEnemy(enemy2)
 	var collidableMovementManager2 = new EnemyMovementController(movableEntity = enemy2)
 	enemy2.initialPositions(10, 10)
 	enemy2.changeMovementController(collidableMovementManager2)
