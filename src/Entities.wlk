@@ -160,7 +160,7 @@ class GravityEntity inherits MovableEntity {
 		self.validateMovement()
 				
 		self.checkForCollision()
-							
+		
 	}
 
 	method maxJumpHeight() = maxJumpHeight

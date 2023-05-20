@@ -44,3 +44,11 @@ object deathPlayerEffect inherits SoundEffect {
 	}
 
 }
+
+//object titleScreenBGM inherits SoundEffect {
+//	
+//	override method play() {
+//		game.sound("titlescreenBGM.mp3").play()
+//	}
+//	
+//}
