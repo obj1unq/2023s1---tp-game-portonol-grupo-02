@@ -28,10 +28,7 @@ class Entity inherits Renderable {
 	method isCollidable(){
 		return false
 	}
-	
-	method isEnemy() {
-		return false
-	}
+
 }
 
 
@@ -242,7 +239,6 @@ class DamageEntity inherits GravityEntity {
 	var hp
 	var maxHp
 	var cooldown
-	var property onCooldown = false
 
 	method damage() = damage
 
@@ -260,21 +256,18 @@ class DamageEntity inherits GravityEntity {
 
 class EnemyDamageEntity inherits DamageEntity {
 
-	const damageManager = new DamageManager()
+	const damageManager = new DamageManager(entity = self)
 
 	override method onCollision(colliders) {
 
 		super(colliders)
 		
 		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and global.isPlayer(collider.entity()) }, null)
-		
-		if (enemy != null and not onCooldown) {
-			damageManager.dealDmg(self, enemy.entity())
+		if (enemy != null){
+			damageManager.dealDmg(enemy.entity())
 		}
 		
 	}
-
-	override method isEnemy() = true
 
 	override method takeDmg(damage) {
 		super(damage)
@@ -282,16 +275,26 @@ class EnemyDamageEntity inherits DamageEntity {
 			self.onRemove()
 		}
 	}
+	
+	override method update(time){
+		super(time)
+		
+		if (damageManager.onCooldown()){
+			damageManager.cooldownLeft(damageManager.cooldownLeft() - 1)
+		}
+		
+		if (damageManager.notCooldownLeft()){
+			damageManager.resetCooldown()
+		}
+	}
 
 }
 
 class PlayerDamageEntity inherits DamageEntity {
 
-	const damageManager = new DamageManager()
+	const damageManager = new DamageManager(entity = self)
 	const damageSfx
 	const deathSfx
-
-	override method isPlayer() = true
 
 	override method takeDmg(damage) {
 		super(damage)

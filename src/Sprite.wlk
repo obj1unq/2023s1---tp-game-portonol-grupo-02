@@ -128,10 +128,6 @@ class Renderable {
 	method length() = imageMap.size()
 	
 	method height() = imageMap.get(0).size()
-	
-	method isEnemy() = false
-	
-	method isPlayer() = false
 
 }
 
