@@ -15,7 +15,7 @@ object silenceJumpEffect inherits SoundEffect {
 object slimeJumpEffect inherits SoundEffect {
 	
 	override method play() {
-		game.sound("slimejump.wav").play()
+		game.sound("slimejump.mp3").play()
 	}
 	
 }
