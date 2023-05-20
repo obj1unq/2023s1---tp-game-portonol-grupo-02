@@ -6,9 +6,6 @@ class Block inherits Image {
 
 	override method isCollidable() = true
 
-	method isEnemy() = false
-
-	method isPlayer() = false
 }
 
 class CollisionableBlock inherits Block {
