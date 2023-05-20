@@ -301,6 +301,7 @@ class PlayerDamageEntity inherits DamageEntity {
 			deathSfx.play()
 			self.say("me morí")
 			self.onRemove()
+			global.deathScreen()
 		} else {
 			damageSfx.play()
 		}
