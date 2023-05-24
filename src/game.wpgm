@@ -1,0 +1,70 @@
+import wollok.game.*
+import example.*
+
+program myGame {
+		
+	game.title("Jump trying")
+	game.height(20)
+	game.width(20)
+	game.boardGround("invisible.png")
+	
+	const level = new Level(maxRooms = 10)
+	
+	level.generate()
+	
+	const dungeonRooms = []
+	const doorAssets = []
+	
+	level.dungeonRooms().forEach {
+		room =>
+			console.println("crea todo")
+			const x = room.position().x()
+			const y = room.position().y()
+			var element = new Image(image = room.piso(), position = game.at(x + 10, y + 10))
+			dungeonRooms.add(element)
+			game.addVisual(element)
+			room.doorAssets().forEach {
+				img =>
+					img.position(game.at(element.position().x(), element.position().y()))
+					doorAssets.add(img)
+					game.addVisual(img)
+			}
+	}
+	
+	keyboard.c().onPressDo {
+		
+		doorAssets.forEach {
+			door => game.removeVisual(door)
+		}
+		
+		dungeonRooms.forEach {
+			room => game.removeVisual(room)
+		}
+		
+		doorAssets.clear()
+		
+		dungeonRooms.clear()
+		
+		const levelCopy = new Level(maxRooms = 10)
+		levelCopy.generate()
+		
+		levelCopy.dungeonRooms().forEach {
+			room =>
+				console.println("crea todo")
+				const x = room.position().x()
+				const y = room.position().y()
+				var element = new Image(image = room.piso(), position = game.at(x + 10, y + 10))
+				dungeonRooms.add(element)
+				game.addVisual(element)
+				room.doorAssets().forEach {
+					img =>
+						img.position(game.at(element.position().x(), element.position().y()))
+						doorAssets.add(img)
+						game.addVisual(img)
+				}
+		}
+	}
+	
+	game.start()
+	
+}
