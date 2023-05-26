@@ -57,7 +57,7 @@ class DungeonRoom inherits Node {
 	method render() {
 		structures.forEach {
 			structure => 
-				structure.render()
+				structure.onAttach()
 		}
 		self.generateDoors()
 	}
@@ -95,7 +95,7 @@ class DungeonRoom inherits Node {
 	method unrender() {
 		structures.forEach {
 			structure => 
-				structure.unrender()
+				structure.onRemove()
 		}
 	}
 	
@@ -110,12 +110,12 @@ class PlayerDungeonRoom inherits DungeonRoom {
 	
 	override method render() {
 		super()
-		player.render()
+		player.onAttach()
 	}
 
 	override method unrender() {
 		super()
-		player.unrender()
+		player.onRemove()
 	}
 	
 	method player(_player) {
@@ -186,6 +186,11 @@ class Level {
 		self.setBossRoom()
 		self.setLeftoversAsRooms()
 		self.connectRooms()
+		self.spawnPlayer()
+	}
+	
+	method spawnPlayer() {
+		spawnRoom.render()
 	}
 	
 	method connectRooms() {

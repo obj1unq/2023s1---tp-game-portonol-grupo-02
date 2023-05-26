@@ -1,0 +1,16 @@
+import pools.*
+import wollok.game.* 
+
+program abc {
+
+		
+	game.title("Jump trying")
+	game.height(20)
+	game.width(20)
+	game.boardGround("invisible.png")
+	
+	level1StructureFactory.paredIzquierda().onAttach()
+	
+	game.start()
+
+}
