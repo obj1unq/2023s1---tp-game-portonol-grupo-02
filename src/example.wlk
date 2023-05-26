@@ -1,101 +1,71 @@
 import wollok.game.*
+import gameConfig.*
 
-class Image {
-	const property image
-	var property position
-}
-
-class Level {
+class Graph {
 	
-	const property dungeonRooms = []
-	const maxRooms
-	const pendingRooms = new Queue()
-	var roomQuantity = 0
-	const startRoom = new DungeonRoom(position = game.at(0, 0))
+	const property nodes = []
+	const maxQuantity
+	const pendingNodes = new Queue()
+	var nodesQuantity = 0
+	const property startingNode = new Node(position = game.at(0, 0))
 		
 	method generate() {
-		pendingRooms.enqueue(startRoom)
-		dungeonRooms.add(startRoom)
-		roomQuantity++
-		self.generateRoomsUntilFinish()
-		self.logRoomStructure()
-		self.createBossRoom()
+		pendingNodes.enqueue(startingNode)
+		nodes.add(startingNode)
+		nodesQuantity++
+		self.generateGraphsUntilFinish()
 	}
 	
-	method roomsWithNNeighbours(n) {
-		return dungeonRooms.filter { room => room.neighboursQuantity() == n}
+	method nodesWithNNeighbours(n) {
+		return nodes.filter { room => room.neighboursQuantity() == n}
 	}
 	
-	method createBossRoom() {
-		var roomsWithOneNeighbour = self.roomsWithNNeighbours(1)
-		
-		if(roomsWithOneNeighbour == []) {
-			roomsWithOneNeighbour = self.roomsWithNNeighbours(2)
-		}
-		
-		const bossRoom = roomsWithOneNeighbour.last()
-		
-		bossRoom.isBossRoom(true)
-		
-	}
-	
-	method logRoomStructure() {
-		dungeonRooms.forEach {
-			room =>
-				console.println("ROOM =")
-				console.println(room)
-				console.println("NEIGHBOURS =")
-				room.logNeighbours()
-				console.println("============")
+	method generateGraphsUntilFinish() {
+		if(nodesQuantity < maxQuantity && not pendingNodes.isEmpty()) {
+			self.generateNeighboursFor(pendingNodes.dequeue())
+			self.generateGraphsUntilFinish()
+		} else if(nodesQuantity < maxQuantity) {
+			pendingNodes.enqueue(nodes.anyOne())
+			self.generateGraphsUntilFinish()
 		}
 	}
 	
-	method generateRoomsUntilFinish() {
-		if(roomQuantity < maxRooms && not pendingRooms.isEmpty()) {
-			self.generateNeighboursFor(pendingRooms.dequeue())
-			self.generateRoomsUntilFinish()
-		} else if(roomQuantity < maxRooms) {
-			pendingRooms.enqueue(dungeonRooms.anyOne())
-			self.generateRoomsUntilFinish()
-		}
-	}
-	
-	method generateNeighboursFor(dungeonRoom) {
+	method generateNeighboursFor(node) {
 		directionManager.directions().forEach { dir =>
-				const newNeighbourDirection = dungeonRoom.getRandomNeighbourDirection()
-				const newNeighbourPosition = newNeighbourDirection.getFromPosition(dungeonRoom.position())
+				const newNeighbourDirection = node.getRandomNeighbourDirection()
+				const newNeighbourPosition = newNeighbourDirection.getFromPosition(node.position())
 				
 				if(self.canVisitNeighbour(newNeighbourPosition)) {
-					const neighbour = self.neighbourFor(dungeonRoom, newNeighbourDirection)
-					dungeonRoom.addNeighbourInDirection(neighbour, newNeighbourDirection)
-					neighbour.addNeighbourInDirection(dungeonRoom, newNeighbourDirection.oposite())
-					pendingRooms.enqueue(neighbour)
+					const neighbour = self.neighbourFor(node, newNeighbourDirection)
+					node.addNeighbourInDirection(neighbour, newNeighbourDirection)
+					neighbour.addNeighbourInDirection(node, newNeighbourDirection.oposite())
+					pendingNodes.enqueue(neighbour)
 				}
 		}
 	}
 	
 	method isNeighbourInPosition(position) {
-		return dungeonRooms.any {
-			room => room.position() == position
+		return nodes.any {
+			node => node.position() == position
 		}
 	}
 	
 	method canVisitNeighbour(neighbourPosition) {
-		return randomizer.fiftyBool() and not self.isNeighbourInPosition(neighbourPosition) and roomQuantity < maxRooms
+		return randomizer.fiftyBool() and not self.isNeighbourInPosition(neighbourPosition) and nodesQuantity < maxQuantity
 	}
 	
 	method neighbourFor(dungeonRoom, direction) {
 		
 		const neighbourPosition = direction.getFromPosition(dungeonRoom.position())
 		
-		const neighbour = dungeonRooms.findOrDefault({
+		const neighbour = nodes.findOrDefault({
 						room => room.position() == neighbourPosition and room.position().y() == neighbourPosition.y()
 			   		}, null)
 		
 		return if(neighbour == null) {
-			const newNeighbour = new DungeonRoom(position = neighbourPosition)
-			dungeonRooms.add(newNeighbour)
-			roomQuantity++
+			const newNeighbour = new Node(position = neighbourPosition)
+			nodes.add(newNeighbour)
+			nodesQuantity++
 			return newNeighbour
 		} else {
 			neighbour
@@ -126,10 +96,9 @@ object do {
 }
 
 
-class DungeonRoom {
+class Node {
 	const property position
 	const neighbours = new Dictionary()
-	var property isBossRoom = false
 	
 	method addNeighbourInDirection(neighbour, direction) {
 		neighbours.put(direction, neighbour)
@@ -139,33 +108,15 @@ class DungeonRoom {
 		return directionManager.getRandomDirection()
 	}
 	
-	method logNeighbours() {
-		neighbours.keys().forEach {
-			key => 
-				console.println(key)
-				console.println(neighbours.get(key))
-		}
+	method neighbourIn(direction) {
+		return neighbours.get(direction)
+	}
+	
+	method neighboursDirections() {
+		return neighbours.keys()
 	}
 	
 	method neighboursQuantity() = neighbours.size()
-	
-	method piso(){
-		return if(isBossRoom) {
-			console.println("cant vecinos =")
-			console.println(self.neighboursQuantity())
-			"rojo.png"
-		} else if(position.x() == 0 and position.y() == 0){
-			"celeste.png"
-		} else { "muro.png" }
-	}
-	
-	method doorAssets() {
-		return neighbours.keys().map{ 
-			neighbourDirection =>
-				new Image(image = neighbourDirection.doorAsset(), position = position)
-		}
-	}
-	
 }
 
 object directionManager {
@@ -183,6 +134,11 @@ object top {
 	}
 	
 	method doorAsset() = "topDoor.png"
+	
+	method positionInMiddle() {
+		return game.at(gameConfig.xMiddle(), gameConfig.height() - gameConfig.doorYOffset())
+	}
+	
 }
 
 object bottom {
@@ -193,6 +149,10 @@ object bottom {
 	}
 	
 	method doorAsset() = "bottomDoor.png"
+	
+	method positionInMiddle() {
+		return game.at(gameConfig.xMiddle(), gameConfig.doorYOffset())
+	}
 	
 }
 
@@ -205,6 +165,10 @@ object left {
 	
 	method doorAsset() = "leftDoor.png"
 	
+	method positionInMiddle() {
+		return game.at(gameConfig.doorXOffset(), gameConfig.yMiddle())
+	}
+	
 }
 
 object right {
@@ -216,6 +180,10 @@ object right {
 	
 	method doorAsset() = "rightDoor.png"
 	
+	method positionInMiddle() {
+		return game.at(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.yMiddle())
+	}
+	
 }
 
 class Stack {
@@ -224,6 +192,7 @@ class Stack {
 	method pop() {
 		const element = elements.last()
 		elements = elements.subList(0, elements.size() - 1)
+		return element
 	}
 	
 	method push(element) {

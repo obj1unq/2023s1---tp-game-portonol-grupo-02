@@ -1,5 +1,8 @@
 import wollok.game.*
 import example.*
+import dungeonRooms.*
+import pools.*
+import gameConfig.*
 
 program myGame {
 		
@@ -8,24 +11,23 @@ program myGame {
 	game.width(20)
 	game.boardGround("invisible.png")
 	
-	const level = new Level(maxRooms = 10)
+	const level = new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 10)
 	
-	level.generate()
+	level.initializeLevel()
 	
 	const dungeonRooms = []
 	const doorAssets = []
 	
 	level.dungeonRooms().forEach {
 		room =>
-			console.println("crea todo")
 			const x = room.position().x()
 			const y = room.position().y()
-			var element = new Image(image = room.piso(), position = game.at(x + 10, y + 10))
+			var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
 			dungeonRooms.add(element)
 			game.addVisual(element)
-			room.doorAssets().forEach {
-				img =>
-					img.position(game.at(element.position().x(), element.position().y()))
+			room.neighboursDirections().forEach {
+				direction =>
+					const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
 					doorAssets.add(img)
 					game.addVisual(img)
 			}
@@ -45,20 +47,20 @@ program myGame {
 		
 		dungeonRooms.clear()
 		
-		const levelCopy = new Level(maxRooms = 10)
-		levelCopy.generate()
+		const levelCopy = new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 10, structureFactory = level1StructureFactory)
+
+		levelCopy.initializeLevel()
 		
 		levelCopy.dungeonRooms().forEach {
 			room =>
-				console.println("crea todo")
 				const x = room.position().x()
 				const y = room.position().y()
-				var element = new Image(image = room.piso(), position = game.at(x + 10, y + 10))
+				var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
 				dungeonRooms.add(element)
 				game.addVisual(element)
-				room.doorAssets().forEach {
-					img =>
-						img.position(game.at(element.position().x(), element.position().y()))
+				room.neighboursDirections().forEach {
+					direction =>
+						const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
 						doorAssets.add(img)
 						game.addVisual(img)
 				}
