@@ -3,6 +3,14 @@ import example.*
 import dungeonRooms.*
 import pools.*
 import gameConfig.*
+import Blocks.*
+import Damage.*
+import Entities.*
+import Input.*
+import Movement.*
+import Position.*
+import Sprite.*
+import SoundEffect.* 
 
 program myGame {
 		
@@ -11,6 +19,19 @@ program myGame {
 	game.width(20)
 	game.boardGround("invisible.png")
 	
+	var gravity = new GravityController(name = "mainGravity", tickTime = 50, gameInstance = game)
+	inputManager.init()
+	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000)
+	var controlManager = new CharacterMovementController(movableEntity = player)
+	controlManager.jumpManager(new DoubleJumpManager(jumpEffect = characterJumpEffect))
+	player.setMovementController(controlManager)
+	player.initialPositions(10, 10)
+	player.imageMap([[new Image(imageName = "pepita.png")]])
+	
+	gameConfig.gravity(gravity)
+	gameConfig.player(player)
+	
+	
 	const level = new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 10)
 	
 	level.initializeLevel()
@@ -18,54 +39,54 @@ program myGame {
 	const dungeonRooms = []
 	const doorAssets = []
 	
-	level.dungeonRooms().forEach {
-		room =>
-			const x = room.position().x()
-			const y = room.position().y()
-			var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
-			dungeonRooms.add(element)
-			game.addVisual(element)
-			room.neighboursDirections().forEach {
-				direction =>
-					const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
-					doorAssets.add(img)
-					game.addVisual(img)
-			}
-	}
-	
-	keyboard.c().onPressDo {
-		
-		doorAssets.forEach {
-			door => game.removeVisual(door)
-		}
-		
-		dungeonRooms.forEach {
-			room => game.removeVisual(room)
-		}
-		
-		doorAssets.clear()
-		
-		dungeonRooms.clear()
-		
-		const levelCopy = new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 10, structureFactory = level1StructureFactory)
-
-		levelCopy.initializeLevel()
-		
-		levelCopy.dungeonRooms().forEach {
-			room =>
-				const x = room.position().x()
-				const y = room.position().y()
-				var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
-				dungeonRooms.add(element)
-				game.addVisual(element)
-				room.neighboursDirections().forEach {
-					direction =>
-						const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
-						doorAssets.add(img)
-						game.addVisual(img)
-				}
-		}
-	}
+//	level.dungeonRooms().forEach {
+//		room =>
+//			const x = room.position().x()
+//			const y = room.position().y()
+//			var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
+//			dungeonRooms.add(element)
+//			game.addVisual(element)
+//			room.neighboursDirections().forEach {
+//				direction =>
+//					const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
+//					doorAssets.add(img)
+//					game.addVisual(img)
+//			}
+//	}
+//	
+//	keyboard.c().onPressDo {
+//		
+//		doorAssets.forEach {
+//			door => game.removeVisual(door)
+//		}
+//		
+//		dungeonRooms.forEach {
+//			room => game.removeVisual(room)
+//		}
+//		
+//		doorAssets.clear()
+//		
+//		dungeonRooms.clear()
+//		
+//		const levelCopy = new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 10, structureFactory = level1StructureFactory)
+//
+//		levelCopy.initializeLevel()
+//		
+//		levelCopy.dungeonRooms().forEach {
+//			room =>
+//				const x = room.position().x()
+//				const y = room.position().y()
+//				var element = new ImageCopy(image = room.piso(), position = game.at(x + 10, y + 10))
+//				dungeonRooms.add(element)
+//				game.addVisual(element)
+//				room.neighboursDirections().forEach {
+//					direction =>
+//						const img = new ImageCopy(image = direction.doorAsset(), position = game.at(element.position().x(), element.position().y()))
+//						doorAssets.add(img)
+//						game.addVisual(img)
+//				}
+//		}
+//	}
 	
 	game.start()
 	

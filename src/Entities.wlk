@@ -3,6 +3,7 @@ import Damage.DamageManager
 import wollok.game.*
 import Sprite.Renderable
 import Movement.StaticMovementManager
+import gameConfig.*
 import Global.global
 
 class Entity inherits Renderable {
@@ -109,10 +110,6 @@ class MovableEntity inherits CollapsableEntity {
 class GravityEntity inherits MovableEntity {
 
 	var property gravity
-	var property maxJumpHeight = 3
-	var velocityY = 10
-	var property gravityY = 0.5
-	var lastY = null
 	
 	method gravity() = gravity
 
@@ -123,8 +120,6 @@ class GravityEntity inherits MovableEntity {
 	override method onAttach() {
 		super()
 		self.gravity().suscribe(self)
-		self.onJump({ velocityY = -maxJumpHeight; })
-		lastY = self.originPosition().y()
 	}
 
 	override method onRemove() {
@@ -136,41 +131,11 @@ class GravityEntity inherits MovableEntity {
 		// No hace nada
 	}
 
-	method validateMovement() {
-		if(self.collisions().any({ collider => collider.hadCollidedWithBlock()})){
-			
-			if(lastY < self.originPosition().y()) {
-				self.move(0, velocityY.limitBetween(-1, 1))
-				velocityY = 0
-			} else {
-				self.move(0, velocityY.limitBetween(-1, 1))
-				velocityY = 0
-				self.touchFloor()
-			}
+	method update(time){
+		if(isRendered) {
+			self.checkForCollision()			
 		}
 	}
-
-	method update(time) {
-					
-		lastY = self.originPosition().y()
-					
-		velocityY += gravityY
-		self.move(0, -velocityY.limitBetween(-1, 1))
-		
-		self.validateMovement()
-				
-		self.checkForCollision()
-							
-	}
-
-	method maxJumpHeight() = maxJumpHeight
-
-	method maxJumpHeight(_maxJumpHeight) {
-		maxJumpHeight = _maxJumpHeight
-		self.onJump({ velocityY = -_maxJumpHeight; })
-	}
-
-	method isJumping() = lastY != self.originPosition().y()
 
 }
 
@@ -309,6 +274,13 @@ class PlayerDamageEntity inherits DamageEntity {
 			damageSfx.play()
 		}
 	}
+	
+	override method onRemove() {
+		super()
+		console.println("Se removió el personaje")
+	}
+	
+	override method update(time) {}
 
 }
 

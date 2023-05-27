@@ -15,12 +15,12 @@ object level1StructureFactory inherits StructureFactory {
 		const structure = []
 		(2.. gameConfig.width() - 2).forEach {
 			x =>
-				const columna = []
+				const column = []
 				(2 .. gameConfig.height() - 2).forEach {
 					y =>
-						columna.add(new Image(imageName = "piso.png"))
+						column.add(new Image(imageName = "piso.png"))
 				}
-				structure.add(columna)
+				structure.add(column)
 		}
 		const piso = new Entity()
 		piso.initialPositions(2, gameConfig.height() - 2)
@@ -30,12 +30,12 @@ object level1StructureFactory inherits StructureFactory {
 	
 	override method paredIzquierda() {
 		const structure = []
+		const column = []
 		(2.. gameConfig.height() - 2).forEach {
 			y =>
-				const columna = []
-				columna.add(new Image(imageName = "paredIzquierda.png"))
-				structure.add(columna)
+				column.add(new Image(imageName = "paredIzquierda.png"))
 		}
+		structure.add(column)
 		const pared = new Entity()
 		pared.initialPositions(2, gameConfig.height() - 2)
 		pared.imageMap(structure)
@@ -44,12 +44,12 @@ object level1StructureFactory inherits StructureFactory {
 	
 	override method paredDerecha() {
 		const structure = []
+		const column = []
 		(2.. gameConfig.height() - 2).forEach {
 			y =>
-				const columna = []
-				columna.add(new Image(imageName = "paredDerecha.png"))
-				structure.add(columna)
+				column.add(new Image(imageName = "paredDerecha.png"))
 		}
+		structure.add(column)
 		const pared = new Entity()
 		pared.initialPositions(gameConfig.width() - 2, gameConfig.height() - 2)
 		pared.imageMap(structure)
@@ -76,7 +76,7 @@ object level1StructureFactory inherits StructureFactory {
 		}
 		const pared = new Entity()
 		pared.imageMap(structure)
-		pared.initialPositions(gameConfig.height() - 2, 2)
+		pared.initialPositions(2, gameConfig.height() - 2)
 		return pared
 	}
 	
