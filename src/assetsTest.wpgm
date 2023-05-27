@@ -9,7 +9,11 @@ program abc {
 	game.width(20)
 	game.boardGround("invisible.png")
 	
+	level1StructureFactory.piso().onAttach()
 	level1StructureFactory.paredIzquierda().onAttach()
+	level1StructureFactory.paredDerecha().onAttach()
+	level1StructureFactory.paredAbajo().onAttach()
+	level1StructureFactory.paredArriba().onAttach()
 	
 	game.start()
 

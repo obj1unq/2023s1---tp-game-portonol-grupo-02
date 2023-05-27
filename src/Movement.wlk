@@ -236,8 +236,6 @@ class GravityController {
 
 	method unsuscribe(body) {
 		bodies.remove(body)
-		console.println(bodies)
-		console.println(body)
 	}
 
 	method init() {
@@ -256,7 +254,9 @@ class GravityController {
 	}
 
 	method applyGravity(time) {
-		bodies.forEach{ element => element.update(time)}
+		bodies.forEach{ element => 
+			element.update(time)
+		}
 	}
 
 }
@@ -331,6 +331,10 @@ class CharacterMovementController inherits CollidableMovementController {
 			self.goRight()
 		} else if (input == "space") {
 			self.jump()
+		} else if(input == "up") {
+			self.goUp()
+		} else if(input == "down") {
+			self.goDown()
 		}
 	}
 

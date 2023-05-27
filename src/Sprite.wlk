@@ -7,6 +7,7 @@ class Image {
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
 
+
 	method image() = imageName
 
 	method entity(_entity) {
@@ -46,6 +47,9 @@ class Image {
 class Renderable {
 
 	var imageMap = [[new Image(imageName = "default.png")]]
+	var isRendered = false
+	
+	method isRendered() = isRendered
 
 	method imageMap(_imageMap) {
 		imageMap = _imageMap
@@ -61,6 +65,7 @@ class Renderable {
 	}
 
 	method render(initialX, initialY) {
+		isRendered = true
 		self.forEach({ image, _x, _y =>			
 			image.renderAt(new MutablePosition(x = initialX + _x, y = initialY - _y))
 		})
@@ -74,6 +79,7 @@ class Renderable {
 	
 
 	method unrender() {
+		isRendered = false
 		self.forEach({ image, x, y => image.unrender()})
 	}
 	

@@ -13,15 +13,15 @@ class StructureFactory {
 object level1StructureFactory inherits StructureFactory {
 	override method piso() {
 		const structure = []
-		
 		(2.. gameConfig.width() - 2).forEach {
 			x =>
+				const column = []
 				(2 .. gameConfig.height() - 2).forEach {
 					y =>
 						column.add(new Image(imageName = "piso.png"))
 				}
+				structure.add(column)
 		}
-		structure.add(column)
 		const piso = new Entity()
 		piso.initialPositions(2, gameConfig.height() - 2)
 		piso.imageMap(structure)
@@ -76,7 +76,7 @@ object level1StructureFactory inherits StructureFactory {
 		}
 		const pared = new Entity()
 		pared.imageMap(structure)
-		pared.initialPositions(gameConfig.height() - 2, 2)
+		pared.initialPositions(2, gameConfig.height() - 2)
 		return pared
 	}
 	

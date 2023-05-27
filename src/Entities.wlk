@@ -3,6 +3,7 @@ import Damage.DamageManager
 import wollok.game.*
 import Sprite.Renderable
 import Movement.StaticMovementManager
+import gameConfig.*
 
 class Entity inherits Renderable {
 	
@@ -132,7 +133,11 @@ class GravityEntity inherits MovableEntity {
 		// No hace nada
 	}
 
-	method update(time){}
+	method update(time){
+		if(isRendered) {
+			self.checkForCollision()			
+		}
+	}
 
 }
 
@@ -258,6 +263,13 @@ class PlayerDamageEntity inherits DamageEntity {
 			self.say("me morí")
 		}
 	}
+	
+	override method onRemove() {
+		super()
+		console.println("Se removió el personaje")
+	}
+	
+	override method update(time) {}
 
 }
 

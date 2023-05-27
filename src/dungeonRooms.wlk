@@ -8,15 +8,16 @@ class ImageCopy {
 	const property position
 }
 
-class Door inherits CollapsableEntity {
+class Door inherits GravityEntity {
 	const from
 	const to
 	const direction
-	const property position = direction.positionInMiddle()
-	const property image = direction.doorAsset()
+	const property getPosition = direction.positionInMiddle()
+	const property getImage = direction.doorAsset()
 	var isOpen = true
 	
 	override method onCollision(colliders) {
+		super(colliders)
 		if(isOpen and self.collidedWithPlayer(colliders)) {
 			from.unrender()
 			to.render()
@@ -40,33 +41,26 @@ class Door inherits CollapsableEntity {
 	
 }
  
-class DungeonRoom inherits Node {
-	const structureFactory
-	const structures = #{
-		structureFactory.piso(),
-		structureFactory.paredIzquierda(),
-		structureFactory.paredDerecha(),
-		structureFactory.paredAbajo(),
-		structureFactory.paredArriba()
-	}
-	
+class DungeonRoom inherits Node {	
 	const property doors = #{}
 	
 	method piso()
 	
 	method render() {
-		structures.forEach {
-			structure => 
-				structure.onAttach()
+		self.renderDoors()
+	}
+	
+	method renderDoors() {
+		doors.forEach {
+			door => door.onAttach()
 		}
-		self.generateDoors()
 	}
 	
 	method generateDoors() {
 		neighbours.keys().forEach {
 			direction =>
 				self.generateDoorIn(direction)
-		}
+		}		
 	}
 	
 	method openDoors() {
@@ -85,24 +79,18 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, direction = direction)
-		door.initialPositions(door.position().x(), door.position().y())
-		door.imageMap([[new Image(imageName = door.image())]])
-		structures.add(door)
+		console.println(neighbour.position())
+		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity())
+		door.initialPositions(door.getPosition().x(), door.getPosition().y())
+		door.imageMap([[new Image(imageName = door.getImage())]])
 		doors.add(door)
 	}
 	
 	method unrender() {
-		structures.forEach {
-			structure => 
-				structure.onRemove()
+		doors.forEach {
+			door => door.onRemove()
 		}
 	}
-	
-	method addStructure(structure) {
-		structures.add(structure)
-	}
-	
 }
 
 class PlayerDungeonRoom inherits DungeonRoom {
@@ -133,7 +121,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 	override method render() {
 		super()
-		self.closeDoors()
+		self.openDoors()
 		enemies.forEach {
 			enemy => 
 				enemy.setDeathCallback{
@@ -173,6 +161,7 @@ class Level {
 	const player
 	var graph = null
 	var structure = null
+	var levelRoomAssets = null
 	var bossNode = null
 	var spawnNode = null
 	var spawnRoom = null
@@ -186,25 +175,49 @@ class Level {
 		self.setBossRoom()
 		self.setLeftoversAsRooms()
 		self.connectRooms()
-		self.spawnPlayer()
+		self.generateRoomAsset()
+		self.renderSpawnPoint()
+		self.initGravity()
 	}
 	
-	method spawnPlayer() {
+	method initGravity() {
+		gameConfig.gravity().init()
+	}
+	
+	method renderSpawnPoint() {
 		spawnRoom.render()
+	}
+	
+	method generateRoomAsset() {
+		levelRoomAssets = [
+			structureFactory.piso(),
+			structureFactory.paredIzquierda(),
+			structureFactory.paredDerecha(),
+			structureFactory.paredAbajo(),
+			structureFactory.paredArriba()	
+		]
+		
+		levelRoomAssets.forEach {
+			roomAsset => 
+				roomAsset.onAttach()
+		}
 	}
 	
 	method connectRooms() {
 		nodeRoomRelation.keys().forEach {
 			node =>
-				self.copyNeighboursFrom(node, nodeRoomRelation.get(node))
+				const room = nodeRoomRelation.get(node)
+				self.copyNeighboursFrom(node, room)
+				room.generateDoors()
 		}
 	}
 	
 	method copyNeighboursFrom(node, room) {
 		node.neighboursDirections().forEach {
 			neighbourDirection => 
-				const neighbour = nodeRoomRelation.get(node)
-				room.addNeighbourInDirection(neighbour, neighbourDirection)
+				const neighbour = node.neighbourIn(neighbourDirection)
+				const neighbourRoom = nodeRoomRelation.get(neighbour)
+				room.addNeighbourInDirection(neighbourRoom, neighbourDirection)
 		}
 	}
 	
@@ -216,7 +229,7 @@ class Level {
 	
 	method setSpawnPointRoom() {
 		spawnNode = graph.startingNode()
-		spawnRoom = new PlayerDungeonRoom(player = player, position = spawnNode.position(), structureFactory = structureFactory)
+		spawnRoom = new PlayerDungeonRoom(player = player, position = spawnNode.position())
 		nodeRoomRelation.put(spawnNode, spawnRoom)
 		dungeonRooms.add(spawnRoom)
 	}
@@ -229,7 +242,7 @@ class Level {
 		}
 		
 		bossNode = nodesWithOneNeighbour.last()
-		bossRoom = new BossDungeonRoom(player = gameConfig.player(), position = bossNode.position(), structureFactory = structureFactory)
+		bossRoom = new BossDungeonRoom(player = gameConfig.player(), position = bossNode.position())
 		nodeRoomRelation.put(bossNode, bossRoom)
 		dungeonRooms.add(bossRoom)
 	}
@@ -238,7 +251,7 @@ class Level {
 		structure.forEach {
 			node => 
 				if(node != bossNode and node != spawnNode) {
-					const dungeonRoom = new EnemiesDungeonRoom(player = gameConfig.player(), position = node.position(), structureFactory = structureFactory)
+					const dungeonRoom = new EnemiesDungeonRoom(player = gameConfig.player(), position = node.position())
 					dungeonRooms.add(dungeonRoom)
 					nodeRoomRelation.put(node, dungeonRoom)
 				}
