@@ -4,6 +4,7 @@ import wollok.game.*
 import Sprite.Renderable
 import Movement.StaticMovementManager
 import gameConfig.*
+import Global.global
 
 class Entity inherits Renderable {
 	
@@ -28,10 +29,7 @@ class Entity inherits Renderable {
 	method isCollidable(){
 		return false
 	}
-	
-	method isEnemy() {
-		return false
-	}
+
 }
 
 
@@ -206,7 +204,6 @@ class DamageEntity inherits GravityEntity {
 	var hp
 	var maxHp
 	var cooldown
-	var property onCooldown = false
 
 	method damage() = damage
 
@@ -224,21 +221,18 @@ class DamageEntity inherits GravityEntity {
 
 class EnemyDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
+	const damageManager = new DamageManager(entity = self)
 
 	override method onCollision(colliders) {
 
 		super(colliders)
 		
-		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and collider.entity().isPlayer() }, null)
-		
-		if (enemy != null and not onCooldown) {
-			damageManager.dealDmg(self, enemy.entity())
+		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and global.isPlayer(collider.entity()) }, null)
+		if (enemy != null){
+			damageManager.dealDmg(enemy.entity())
 		}
 		
 	}
-
-	override method isEnemy() = true
 
 	override method takeDmg(damage) {
 		super(damage)
@@ -246,21 +240,38 @@ class EnemyDamageEntity inherits DamageEntity {
 			self.onRemove()
 		}
 	}
+	
+	override method update(time){
+		super(time)
+		
+		if (damageManager.onCooldown()){
+			damageManager.cooldownLeft(damageManager.cooldownLeft() - 1)
+		}
+		
+		if (damageManager.notCooldownLeft()){
+			damageManager.resetCooldown()
+		}
+	}
 
 }
 
 class PlayerDamageEntity inherits DamageEntity {
 
-	var damageManager = new DamageManager()
-
-	override method isPlayer() = true
+	const damageManager = new DamageManager(entity = self)
+	const damageSfx
+	const deathSfx
 
 	override method takeDmg(damage) {
 		super(damage)
 		if (self.isDead()) {
 			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
-//			self.game().stop()
+			// self.game().stop()
+			deathSfx.play()
 			self.say("me morí")
+			self.onRemove()
+			global.deathScreen()
+		} else {
+			damageSfx.play()
 		}
 	}
 	
