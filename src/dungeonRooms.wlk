@@ -19,9 +19,15 @@ class Door inherits GravityEntity {
 	override method onCollision(colliders) {
 		super(colliders)
 		if(isOpen and self.collidedWithPlayer(colliders)) {
+			self.movePlayerToOpositeDoor()
 			from.unrender()
 			to.render()
 		}
+	}
+	
+	method movePlayerToOpositeDoor() {
+		const nextPosition = direction.oposite().positionNStepsInto(1)
+		gameConfig.player().initialPositions(nextPosition.x(), nextPosition.y())
 	}
 	
 	method close() {
@@ -79,7 +85,6 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		console.println(neighbour.position())
 		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity())
 		door.initialPositions(door.getPosition().x(), door.getPosition().y())
 		door.imageMap([[new Image(imageName = door.getImage())]])

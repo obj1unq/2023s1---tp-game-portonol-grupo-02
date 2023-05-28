@@ -139,6 +139,10 @@ object top {
 		return game.at(gameConfig.xMiddle(), gameConfig.height() - gameConfig.doorYOffset())
 	}
 	
+	method positionNStepsInto(n) {
+		return self.positionInMiddle().down(n)
+	}
+	
 }
 
 object bottom {
@@ -152,6 +156,10 @@ object bottom {
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.xMiddle(), gameConfig.doorYOffset())
+	}
+	
+	method positionNStepsInto(n) {
+		return self.positionInMiddle().up(n)
 	}
 	
 }
@@ -169,6 +177,10 @@ object left {
 		return game.at(gameConfig.doorXOffset(), gameConfig.yMiddle())
 	}
 	
+	method positionNStepsInto(n) {
+		return self.positionInMiddle().right(n)
+	}
+	
 }
 
 object right {
@@ -182,6 +194,10 @@ object right {
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.yMiddle())
+	}
+	
+	method positionNStepsInto(n) {
+		return self.positionInMiddle().left(n)
 	}
 	
 }
