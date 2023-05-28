@@ -35,7 +35,7 @@ class Door inherits GravityEntity {
 	method collidedWithPlayer(colliders) {
 		return colliders.any {
 			collider =>
-				collider.hasEntity() and collider.entity().isPlayer()
+				collider.hasEntity() and collider.entity() == gameConfig.player()
 		}
 	}
 	
