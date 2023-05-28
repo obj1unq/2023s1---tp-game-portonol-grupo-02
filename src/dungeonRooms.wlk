@@ -2,10 +2,56 @@ import example.*
 import Entities.*
 import gameConfig.*
 import Sprite.*
+import pools.*
+import Global.*
 
 class ImageCopy {
 	const property image
 	const property position
+}
+
+object levelManager {
+	
+	var actualLevel = 0
+	
+	const levels = [
+		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 4),
+		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 6),
+		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 8)
+	]
+	
+	method loadNextLevel() {
+		if(actualLevel > 0) {
+			levels.get(actualLevel - 1).clearLevel()
+		}
+		if(actualLevel < levels.size()){
+			gameConfig.player().initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
+			levels.get(actualLevel).initializeLevel()
+		} else {
+			global.deathScreen()
+		}
+		actualLevel++
+	}
+}
+
+class Trapdoor inherits GravityEntity {
+	const fromRoom
+	
+	override method onCollision(colliders) {
+		super(colliders)
+		if(colliders.any {
+			collider => collider.hasEntity() and collider.entity() == gameConfig.player()
+		}) {
+			self.goToNextLevel()			
+		}
+	}
+	
+	method goToNextLevel() {
+		self.onRemove()
+		fromRoom.unrender()
+		levelManager.loadNextLevel()
+	}
+	
 }
 
 class Door inherits GravityEntity {
@@ -126,7 +172,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 	override method render() {
 		super()
-		self.openDoors()
+		self.closeDoors()
 		enemies.forEach {
 			enemy => 
 				enemy.setDeathCallback{
@@ -135,12 +181,17 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 				}
 				enemy.onAttach()
 		}
+		self.checkIfOpenDoors()
 	}
 	
 	method checkIfOpenDoors() {
 		if(self.thereAreNoEnemies()) {
-			self.openDoors()
+			self.onDoorOpening()
 		}
+	}
+	
+	method onDoorOpening() {
+		self.openDoors()
 	}
 	
 	override method unrender() {
@@ -151,12 +202,25 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	}
 	
 	method thereAreNoEnemies() {
-		return enemies.length() == 0
+		return enemies.size() == 0
 	}
 }
 
 class BossDungeonRoom inherits EnemiesDungeonRoom {
 	override method piso() = "rojo.png"
+	
+	override method onDoorOpening() {
+		super()
+		self.spawnTrapdoor()
+	}
+	
+	method spawnTrapdoor() {
+		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity())
+		trapdoor.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
+		trapdoor.imageMap([[new Image(imageName = "trapdoor.jpg")]])
+		trapdoor.onAttach()
+	}
+	
 }
 
 class Level {
@@ -183,6 +247,12 @@ class Level {
 		self.generateRoomAsset()
 		self.renderSpawnPoint()
 		self.initGravity()
+	}
+	
+	method clearLevel() {
+		levelRoomAssets.forEach {
+			asset => asset.onRemove()
+		}
 	}
 	
 	method initGravity() {

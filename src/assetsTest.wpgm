@@ -5,7 +5,7 @@ program abc {
 
 		
 	game.title("Jump trying")
-	game.height(20)
+	game.height(12)
 	game.width(20)
 	game.boardGround("invisible.png")
 	
