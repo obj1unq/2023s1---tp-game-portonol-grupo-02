@@ -13,17 +13,17 @@ class StructureFactory {
 object level1StructureFactory inherits StructureFactory {
 	override method piso() {
 		const structure = []
-		(2.. gameConfig.width() - 2).forEach {
+		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
 			x =>
 				const column = []
-				(2 .. gameConfig.height() - 2).forEach {
+				(gameConfig.doorYOffset() .. gameConfig.height() - gameConfig.doorYOffset()).forEach {
 					y =>
 						column.add(new Image(imageName = "piso.png"))
 				}
 				structure.add(column)
 		}
 		const piso = new Entity()
-		piso.initialPositions(2, gameConfig.height() - 2)
+		piso.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		piso.imageMap(structure)
 		return piso
 	}
@@ -31,13 +31,13 @@ object level1StructureFactory inherits StructureFactory {
 	override method paredIzquierda() {
 		const structure = []
 		const column = []
-		(2.. gameConfig.height() - 2).forEach {
+		(gameConfig.doorYOffset().. gameConfig.height() - gameConfig.doorYOffset()).forEach {
 			y =>
 				column.add(new Image(imageName = "paredIzquierda.png"))
 		}
 		structure.add(column)
 		const pared = new Entity()
-		pared.initialPositions(2, gameConfig.height() - 2)
+		pared.initialPositions(gameConfig.doorYOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		pared.imageMap(structure)
 		return pared
 	}
@@ -45,38 +45,38 @@ object level1StructureFactory inherits StructureFactory {
 	override method paredDerecha() {
 		const structure = []
 		const column = []
-		(2.. gameConfig.height() - 2).forEach {
+		(gameConfig.doorYOffset().. gameConfig.height() - gameConfig.doorYOffset()).forEach {
 			y =>
 				column.add(new Image(imageName = "paredDerecha.png"))
 		}
 		structure.add(column)
 		const pared = new Entity()
-		pared.initialPositions(gameConfig.width() - 2, gameConfig.height() - 2)
+		pared.initialPositions(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		pared.imageMap(structure)
 		return pared
 	}
 	
 	override method paredAbajo() {
 		const structure = []
-		(2.. gameConfig.width() - 2).forEach {
+		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
 			x =>
 				structure.add([new Image(imageName = "paredAbajo.png")])
 		}
 		const pared = new Entity()
 		pared.imageMap(structure)
-		pared.initialPositions(2, 2)
+		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.doorYOffset())
 		return pared
 	}
 	
 	override method paredArriba() {
 		const structure = []
-		(2.. gameConfig.height() - 2).forEach {
+		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
 			x =>
 				structure.add([new Image(imageName = "paredArriba.png")])
 		}
 		const pared = new Entity()
 		pared.imageMap(structure)
-		pared.initialPositions(2, gameConfig.height() - 2)
+		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		return pared
 	}
 	

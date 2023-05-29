@@ -37,14 +37,6 @@ class MovableEntity inherits CollapsableEntity {
 
 	var movementController = new StaticMovementManager(movableEntity = null)
 
-	method jump() {
-		movementController.jump()
-	}
-
-	method onJump(cb) {
-		movementController.onJump(cb)
-	}
-
 	method goUp() {
 		movementController.goUp(1)
 	}
@@ -306,9 +298,6 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 	
 	method jumpIfShould(time) {
-		if(self.shouldJump()) {
-			self.jump()
-		}
 	}
 	
 	method isByPlayerSide() {

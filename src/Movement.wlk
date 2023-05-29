@@ -3,107 +3,12 @@ import Input.inputManager
 import Position.*
 import SoundEffect.*
 
-class JumpManager {
-
-	method entity()
-
-	method entity(entity)
-
-	method jump()
-
-	method resetJump()
-
-	method isJumping()
-
-	method onJump(callback)
-
-}
-
-class StaticJumpManager inherits JumpManager {
-
-	var entity
-
-	override method entity() {
-	}
-
-	override method entity(_entity) {
-		return entity
-	}
-
-	override method jump() {
-	}
-
-	override method resetJump() {
-	}
-
-	override method isJumping() {
-		return false
-	}
-
-	override method onJump(callback) {
-	}
-
-}
-
-class SimpleJumpManager inherits JumpManager {
-
-	const jumpEffect = silenceJumpEffect
-	var entity = null
-	var isJumping = false
-	var jumpCallback = {
-	}
-
-	override method jump() {
-		if (not isJumping and self.entity().isCollidingFrom(abajo)) {
-			isJumping = true
-			jumpCallback.apply()
-			jumpEffect.play()
-		}
-	}
-
-	override method onJump(_jumpCallback) {
-		jumpCallback = _jumpCallback
-	}
-
-	method jumpCallback() = jumpCallback
-
-	override method resetJump() {
-		isJumping = false
-	}
-
-	override method entity() = entity
-
-	override method entity(_entity) {
-		entity = _entity
-	}
-
-	method isJumping() = isJumping
-
-}
-
 class MovementController {
 
 	var movableEntity
-	var jumpCallback = {
-	}
-	var jumpManager = new StaticJumpManager(entity = movableEntity)
-
-	method jumpManager(_jumpManager) {
-		jumpManager = _jumpManager
-		jumpManager.entity(self.movableEntity())
-		jumpManager.onJump(jumpCallback)
-	}
-
-	method jumpManager() = jumpManager
-
-	method onJump(cb) {
-		jumpCallback = cb
-		jumpManager.onJump(cb)
-	}
 
 	method movableEntity(_movableEntity) {
 		movableEntity = _movableEntity
-		jumpManager.entity(movableEntity)
 	}
 
 	method movableEntity() {
@@ -116,12 +21,6 @@ class MovementController {
 
 	method remove() {
 		inputManager.unsuscribe(self)
-	}
-
-	method isJumping() = jumpManager.isJumping()
-
-	method onFloorTouched() {
-		jumpManager.resetJump()
 	}
 
 	method onDispatchInput(input)
@@ -158,30 +57,15 @@ class MovementController {
 		self.movableEntity().move(n, 0)
 	}
 
-	method jump() {
-		jumpManager.jump()
-	}
-
 }
 
 class StaticMovementManager inherits MovementController {
-
-	override method jumpManager(_jumpManager) {
-	}
-
-	override method onJump(cb) {
-	}
 
 	override method movableEntity(_movableEntity) {
 	}
 
 	override method movableEntity() {
 		return null
-	}
-
-	override method isJumping() = false
-
-	override method onFloorTouched() {
 	}
 
 	override method onDispatchInput(input) {
@@ -215,9 +99,6 @@ class StaticMovementManager inherits MovementController {
 	}
 
 	override method goRight(n) {
-	}
-
-	override method jump() {
 	}
 
 }
@@ -261,48 +142,47 @@ class GravityController {
 
 }
 
-class DoubleJumpManager inherits SimpleJumpManager {
-
-	var hasDoubleJump = true
-
-	override method jump() {
-		if (isJumping and hasDoubleJump and not self.entity().isCollidingFrom(arriba)) {
-			self.jumpCallback().apply()
-			hasDoubleJump = false
-		}
-		super()
-	}
-
-	override method resetJump() {
-		super()
-		hasDoubleJump = true
-	}
-
-}
-
 class CollidableMovementController inherits MovementController {
 
 	method moveRightIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(derecha)) {
 			self.movableEntity().move(distance, 0)
-		} else {
-			self.moveToFixPositionInX()
 		}
 	}
 
 	method moveLeftIfCan(distance) {
 		if (not self.movableEntity().isCollidingFrom(izquierda)) {
 			self.movableEntity().move(-distance, 0)
-		} else {
-			self.moveToFixPositionInX()
 		}
 	}
 	
-	method moveToFixPositionInX() {
-		const positionX = self.movableEntity().originPosition().x()
-		const movementToFixPosition = positionX.truncate(0) - positionX
-		self.movableEntity().move(movementToFixPosition, 0)
-	} 
+	method moveUpIfCan(distance) {
+		if (not self.movableEntity().isCollidingFrom(arriba)) {
+			self.movableEntity().move(0, distance)
+		}
+	}
+	
+	method moveDownIfCan(distance) {
+		if (not self.movableEntity().isCollidingFrom(abajo)) {
+			self.movableEntity().move(0, -distance)
+		}
+	}
+
+	override method goUp() {
+		self.moveUpIfCan(1)
+	}
+	
+	override method goUp(n) {
+		self.moveUpIfCan(n)
+	}
+	
+	override method goDown() {
+		self.moveDownIfCan(1)
+	}
+	
+	override method goDown(n) {
+		self.moveDownIfCan(n)
+	}
 
 	override method goLeft() {
 		self.moveLeftIfCan(1)
@@ -329,8 +209,6 @@ class CharacterMovementController inherits CollidableMovementController {
 			self.goLeft()
 		} else if (input == "right") {
 			self.goRight()
-		} else if (input == "space") {
-			self.jump()
 		} else if(input == "up") {
 			self.goUp()
 		} else if(input == "down") {
