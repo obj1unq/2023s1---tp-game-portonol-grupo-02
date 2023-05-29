@@ -1,4 +1,4 @@
-import example.*
+import structureGenerator.*
 import Entities.*
 import gameConfig.*
 import Sprite.*
@@ -12,26 +12,30 @@ class ImageCopy {
 
 object levelManager {
 	
-	var actualLevel = 0
+	var lastLevel = null
 	
-	const levels = [
+	const levels = new Queue(elements = [
 		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 4),
 		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 6),
 		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 8)
-	]
+	])
 	
 	method loadNextLevel() {
-		if(actualLevel > 0) {
-			levels.get(actualLevel - 1).clearLevel()
+		if(lastLevel != null) {
+			lastLevel.clearLevel()
 		}
-		if(actualLevel < levels.size()){
+		
+		if(not levels.isEmpty()){
 			gameConfig.player().initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
-			levels.get(actualLevel).initializeLevel()
+			const level = levels.dequeue()
+			level.initializeLevel()
+			lastLevel = level
+			
 		} else {
 			global.deathScreen()
 		}
-		actualLevel++
 	}
+
 }
 
 class Trapdoor inherits GravityEntity {
@@ -47,7 +51,6 @@ class Trapdoor inherits GravityEntity {
 	}
 	
 	method goToNextLevel() {
-		self.onRemove()
 		fromRoom.unrender()
 		levelManager.loadNextLevel()
 	}
@@ -95,16 +98,41 @@ class Door inherits GravityEntity {
  
 class DungeonRoom inherits Node {	
 	const property doors = #{}
+	const property structures = #{}
 	
 	method piso()
 	
 	method render() {
 		self.renderDoors()
+		self.renderStructures()
+	}
+	
+	method unrender() {
+		self.unrenderDoors()
+		self.unrenderStructures()
+	}
+	
+	method renderStructures() {
+		structures.forEach {
+			structure => structure.onAttach()
+		}
+	}
+	
+	method unrenderStructures() {
+		structures.forEach {
+			structure => structure.onRemove()
+		}
 	}
 	
 	method renderDoors() {
 		doors.forEach {
-			door => door.onAttach()
+			structure => structure.onAttach()
+		}
+	}
+	
+	method unrenderDoors() {
+		doors.forEach {
+			structure => structure.onRemove()
 		}
 	}
 	
@@ -137,11 +165,6 @@ class DungeonRoom inherits Node {
 		doors.add(door)
 	}
 	
-	method unrender() {
-		doors.forEach {
-			door => door.onRemove()
-		}
-	}
 }
 
 class PlayerDungeonRoom inherits DungeonRoom {
@@ -218,6 +241,7 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity())
 		trapdoor.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 		trapdoor.imageMap([[new Image(imageName = "trapdoor.jpg")]])
+		structures.add(trapdoor)
 		trapdoor.onAttach()
 	}
 	
@@ -228,27 +252,27 @@ class Level {
 	const structureFactory
 	const roomQuantity
 	const player
-	var graph = null
+	var structureGenerator = null
 	var structure = null
 	var levelRoomAssets = null
-	var bossNode = null
-	var spawnNode = null
 	var spawnRoom = null
 	var bossRoom = null
-	const nodeRoomRelation = new Dictionary()
-	const property dungeonRooms = []
 	
 	method initializeLevel() {
 		self.generateStructure()
-		self.setSpawnPointRoom()
 		self.setBossRoom()
-		self.setLeftoversAsRooms()
-		self.connectRooms()
 		self.generateRoomAsset()
+		self.generateDoors()
 		self.renderSpawnPoint()
 		self.initGravity()
 	}
-	
+		
+	method generateDoors() {
+		structure.forEach {
+			room => room.generateDoors()
+		}
+	}
+		
 	method clearLevel() {
 		levelRoomAssets.forEach {
 			asset => asset.onRemove()
@@ -278,59 +302,27 @@ class Level {
 		}
 	}
 	
-	method connectRooms() {
-		nodeRoomRelation.keys().forEach {
-			node =>
-				const room = nodeRoomRelation.get(node)
-				self.copyNeighboursFrom(node, room)
-				room.generateDoors()
-		}
-	}
-	
-	method copyNeighboursFrom(node, room) {
-		node.neighboursDirections().forEach {
-			neighbourDirection => 
-				const neighbour = node.neighbourIn(neighbourDirection)
-				const neighbourRoom = nodeRoomRelation.get(neighbour)
-				room.addNeighbourInDirection(neighbourRoom, neighbourDirection)
-		}
-	}
 	
 	method generateStructure() {
-		graph = new Graph(maxQuantity = roomQuantity)
-		graph.generate()
-		structure = graph.nodes()
-	}
-	
-	method setSpawnPointRoom() {
-		spawnNode = graph.startingNode()
-		spawnRoom = new PlayerDungeonRoom(player = player, position = spawnNode.position())
-		nodeRoomRelation.put(spawnNode, spawnRoom)
-		dungeonRooms.add(spawnRoom)
+		structureGenerator = new DungeonStructureGenerator(maxQuantity = roomQuantity)
+		structureGenerator.generate()
+		structure = structureGenerator.rooms()
+		spawnRoom = structureGenerator.startingRoom()
 	}
  	
 	method setBossRoom() {
-		var nodesWithOneNeighbour = graph.nodesWithNNeighbours(1)
+		var roomsWithOneNeighbour = structureGenerator.roomsWithNNeighbours(1)
 		
-		if(nodesWithOneNeighbour == []) {
-			nodesWithOneNeighbour = graph.nodesWithNNeighbours(2)
+		if(roomsWithOneNeighbour == []) {
+			roomsWithOneNeighbour = structureGenerator.roomsWithNNeighbours(2)
 		}
 		
-		bossNode = nodesWithOneNeighbour.last()
-		bossRoom = new BossDungeonRoom(player = gameConfig.player(), position = bossNode.position())
-		nodeRoomRelation.put(bossNode, bossRoom)
-		dungeonRooms.add(bossRoom)
-	}
-	
-	method setLeftoversAsRooms() {
-		structure.forEach {
-			node => 
-				if(node != bossNode and node != spawnNode) {
-					const dungeonRoom = new EnemiesDungeonRoom(player = gameConfig.player(), position = node.position())
-					dungeonRooms.add(dungeonRoom)
-					nodeRoomRelation.put(node, dungeonRoom)
-				}
-		}
+		const replaced = roomsWithOneNeighbour.last()
+		structure.remove(replaced)
+		bossRoom = new BossDungeonRoom(player = gameConfig.player(), position = replaced.position())
+		bossRoom.replace(replaced)
+		structure.add(bossRoom)
+		
 	}
 	
 }

@@ -298,9 +298,6 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 	
 	method jumpIfShould(time) {
-		if(self.shouldJump()) {
-			self.jump()
-		}
 	}
 	
 	method isByPlayerSide() {

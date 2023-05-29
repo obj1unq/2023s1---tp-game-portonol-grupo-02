@@ -1,71 +1,72 @@
 import wollok.game.*
 import gameConfig.*
+import dungeonRooms.*
 
-class Graph {
+class DungeonStructureGenerator {
 	
-	const property nodes = []
+	const property rooms = []
 	const maxQuantity
-	const pendingNodes = new Queue()
-	var nodesQuantity = 0
-	const property startingNode = new Node(position = game.at(0, 0))
+	const pendingRooms = new Queue()
+	var roomsQuantity = 0
+	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player())
 		
 	method generate() {
-		pendingNodes.enqueue(startingNode)
-		nodes.add(startingNode)
-		nodesQuantity++
-		self.generateGraphsUntilFinish()
+		pendingRooms.enqueue(startingRoom)
+		rooms.add(startingRoom)
+		roomsQuantity++
+		self.generateStructureUntilFinish()
 	}
 	
-	method nodesWithNNeighbours(n) {
-		return nodes.filter { room => room.neighboursQuantity() == n}
+	method roomsWithNNeighbours(n) {
+		return rooms.filter { room => room.neighboursQuantity() == n}
 	}
 	
-	method generateGraphsUntilFinish() {
-		if(nodesQuantity < maxQuantity && not pendingNodes.isEmpty()) {
-			self.generateNeighboursFor(pendingNodes.dequeue())
-			self.generateGraphsUntilFinish()
-		} else if(nodesQuantity < maxQuantity) {
-			pendingNodes.enqueue(nodes.anyOne())
-			self.generateGraphsUntilFinish()
+	method generateStructureUntilFinish() {
+		if(roomsQuantity < maxQuantity && not pendingRooms.isEmpty()) {
+			self.generateNeighboursFor(pendingRooms.dequeue())
+			self.generateStructureUntilFinish()
+		} else if(roomsQuantity < maxQuantity) {
+			pendingRooms.enqueue(rooms.anyOne())
+			self.generateStructureUntilFinish()
 		}
 	}
 	
-	method generateNeighboursFor(node) {
+	method generateNeighboursFor(room) {
 		directionManager.directions().forEach { dir =>
-				const newNeighbourDirection = node.getRandomNeighbourDirection()
-				const newNeighbourPosition = newNeighbourDirection.getFromPosition(node.position())
+				const newNeighbourDirection = room.getRandomNeighbourDirection()
+				const newNeighbourPosition = newNeighbourDirection.getFromPosition(room.position())
 				
 				if(self.canVisitNeighbour(newNeighbourPosition)) {
-					const neighbour = self.neighbourFor(node, newNeighbourDirection)
-					node.addNeighbourInDirection(neighbour, newNeighbourDirection)
-					neighbour.addNeighbourInDirection(node, newNeighbourDirection.oposite())
-					pendingNodes.enqueue(neighbour)
+					const neighbour = self.neighbourFor(room, newNeighbourDirection)
+					room.addNeighbourInDirection(neighbour, newNeighbourDirection)
+					neighbour.addNeighbourInDirection(room, newNeighbourDirection.oposite())
+					pendingRooms.enqueue(neighbour)
 				}
 		}
 	}
 	
 	method isNeighbourInPosition(position) {
-		return nodes.any {
+		return rooms.any {
 			node => node.position() == position
 		}
 	}
 	
 	method canVisitNeighbour(neighbourPosition) {
-		return randomizer.fiftyBool() and not self.isNeighbourInPosition(neighbourPosition) and nodesQuantity < maxQuantity
+		return randomizer.fiftyBool() and not self.isNeighbourInPosition(neighbourPosition) and roomsQuantity < maxQuantity
 	}
 	
 	method neighbourFor(dungeonRoom, direction) {
 		
 		const neighbourPosition = direction.getFromPosition(dungeonRoom.position())
 		
-		const neighbour = nodes.findOrDefault({
+		const neighbour = rooms.findOrDefault({
 						room => room.position() == neighbourPosition and room.position().y() == neighbourPosition.y()
 			   		}, null)
 		
 		return if(neighbour == null) {
-			const newNeighbour = new Node(position = neighbourPosition)
-			nodes.add(newNeighbour)
-			nodesQuantity++
+			const newNeighbour = new EnemiesDungeonRoom(position = neighbourPosition, player = gameConfig.player())
+			rooms.add(newNeighbour)
+			roomsQuantity++
 			return newNeighbour
 		} else {
 			neighbour
@@ -116,6 +117,19 @@ class Node {
 		return neighbours.keys()
 	}
 	
+	method replace(node) {
+		node.neighboursDirections().forEach {
+			direction =>
+				const neighbour = node.neighbourIn(direction)
+				self.addNeighbourInDirection(neighbour, direction)
+				self.replaceNeighbourForSelf(neighbour, direction)
+		}
+	}
+	
+	method replaceNeighbourForSelf(neighbour, direction) {
+		neighbour.addNeighbourInDirection(self, direction.oposite())
+	}
+		
 	method neighboursQuantity() = neighbours.size()
 }
 
@@ -229,6 +243,10 @@ class Queue {
 		elements = elements.drop(1)
 		return element
 	}
+	
+	method head() = elements.first()
+	
+	method size() = elements.size()
 	
 	method enqueue(element) {
 		elements.add(element)
