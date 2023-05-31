@@ -1,6 +1,7 @@
 import Entities.*
 import gameConfig.*
 import Sprite.*
+import structureGenerator.*
 
 class StructureFactory {
 	method piso()
@@ -83,10 +84,12 @@ object level1StructureFactory inherits StructureFactory {
 }
 
 class LevelEnemyPool {
-	
-	method getRandomRoomEnemies()
+
+	method getEnemy()
+	method getRandomEnemies(quantity)
 	method getRandomBoss()
-	
+	method appendPool(_pool)
+	method addEnemy(enemy)
 }
 
 class LevelAssets {
@@ -105,14 +108,55 @@ object level1Assets {
 	method getParedAbajo() = "paredAbajo.png"
 }
 
+object emptyEnemyPool inherits LevelEnemyPool {
+	
+	var property pool = []
+	
+	override method getEnemy(){
+	}
+	override method getRandomEnemies(quantity) = []
+	override method getRandomBoss(){
+	}
+	override method appendPool(_pool){
+	}
+	override method addEnemy(enemy){
+	}
+}
+
 object level1EnemyPool inherits LevelEnemyPool {
-	override method getRandomRoomEnemies() {
-		return [new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player())]
+	
+	var property pool = new Queue(elements=[
+		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
+		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
+		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
+		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player())	
+	])
+	
+	override method getEnemy() {
+		return if (not pool.isEmpty()) pool.dequeue() else null
+	}
+	
+	override method getRandomEnemies(quantity){
+		const enemiesToRender = #{}
+		(0..quantity).forEach{ i =>
+			const e = self.getEnemy()
+			if (e != null) enemiesToRender.add(e)
+		}
+		return enemiesToRender
+	}
+	
+	override method addEnemy(enemy){
+		pool.add(enemy)
 	}
 	
 	override method getRandomBoss() {
 		// TODO: This should create a boss. This is an entity, not a boss.
 		return new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player())
 	}
+	
+	override method appendPool(_pool) {
+		_pool.pool().asList().forEach{e => pool.enqueue(e)}
+	}
 }
+
 

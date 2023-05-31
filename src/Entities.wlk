@@ -214,6 +214,7 @@ class DamageEntity inherits GravityEntity {
 class EnemyDamageEntity inherits DamageEntity {
 
 	const damageManager = new DamageManager(entity = self)
+	var deathCallback = {}
 
 	override method onCollision(colliders) {
 
@@ -233,6 +234,11 @@ class EnemyDamageEntity inherits DamageEntity {
 		}
 	}
 	
+	override method onRemove(){
+		super()
+		deathCallback.apply()
+	}
+	
 	override method update(time){
 		super(time)
 		
@@ -243,6 +249,10 @@ class EnemyDamageEntity inherits DamageEntity {
 		if (damageManager.notCooldownLeft()){
 			damageManager.resetCooldown()
 		}
+	}
+	
+	method setDeathCallback(cb){
+		deathCallback = cb
 	}
 
 }
@@ -269,7 +279,7 @@ class PlayerDamageEntity inherits DamageEntity {
 	
 	override method onRemove() {
 		super()
-		console.println("Se removió el personaje")
+		//console.println("Se removió el personaje")
 	}
 	
 	override method update(time) {}
