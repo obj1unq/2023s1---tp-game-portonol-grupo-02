@@ -6,9 +6,7 @@ class DamageManager {
 	var property cooldownManager = notOnCooldown
 
 	method dealDmg(receiver) {
-		if (cooldownManager.canDealDamage()) {
-			receiver.takeDmg(entity.damage())
-		}
+		cooldownManager.dealDamage(receiver)
 	}
 
 	method onTimePassed(time) {
@@ -51,7 +49,7 @@ class OnCooldown inherits CooldownManager {
 
 	override method checkIfCooldownFinished() {
 		if (cooldownTime <= 0) {
-			damageManager.cooldown(damageManager.notOnCooldown())
+			damageManager.cooldownManager(damageManager.notOnCooldown())
 			self.resetCooldown()
 		}
 	}
@@ -66,7 +64,7 @@ class NotOnCooldown inherits CooldownManager {
 	}
 
 	method toggleCooldown() {
-		damageManager.cooldown(damageManager.onCooldown())
+		damageManager.cooldownManager(damageManager.onCooldown())
 	}
 
 	override method onTimePassed(time) {
