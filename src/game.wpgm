@@ -10,7 +10,8 @@ import Input.*
 import Movement.*
 import Position.*
 import Sprite.*
-import SoundEffect.* 
+import SoundEffect.*
+import Global.* 
 
 program myGame {
 		
@@ -29,6 +30,8 @@ program myGame {
 	
 	gameConfig.gravity(gravity)
 	gameConfig.player(player)
+	global.gravity(gravity)
+	global.player(player)
 	
 	levelManager.loadNextLevel()
 	

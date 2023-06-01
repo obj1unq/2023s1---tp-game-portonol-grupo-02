@@ -2,6 +2,7 @@ import Entities.*
 import gameConfig.*
 import Sprite.*
 import structureGenerator.*
+import enemiesFactories.*
 
 class StructureFactory {
 	method piso()
@@ -85,6 +86,8 @@ object level1StructureFactory inherits StructureFactory {
 
 class LevelEnemyPool {
 
+	const levelFactory
+
 	method getEnemy()
 	method getRandomEnemies(quantity)
 	method getRandomBoss()
@@ -108,7 +111,7 @@ object level1Assets {
 	method getParedAbajo() = "paredAbajo.png"
 }
 
-object emptyEnemyPool inherits LevelEnemyPool {
+object emptyEnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
 	
 	var property pool = []
 	
@@ -123,30 +126,35 @@ object emptyEnemyPool inherits LevelEnemyPool {
 	}
 }
 
-object level1EnemyPool inherits LevelEnemyPool {
+object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
 	
-	var property pool = new Queue(elements=[
-		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
-		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
-		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player()),
-		new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player())	
-	])
+	var property pool = new Queue(elements=[])
 	
 	override method getEnemy() {
-		return if (not pool.isEmpty()) pool.dequeue() else null
+		return if(not pool.isEmpty()) {
+			const enemy = pool.dequeue()
+			enemy.resetState()
+			return enemy
+		} else {
+			const enemy = levelFactory.getRandomEnemy()
+			console.println(enemy)
+			return enemy
+		}
 	}
 	
+	// TODO: Agregar posiciones
 	override method getRandomEnemies(quantity){
-		const enemiesToRender = #{}
+		const enemiesToRender = []
 		(0..quantity).forEach{ i =>
 			const e = self.getEnemy()
-			if (e != null) enemiesToRender.add(e)
+			enemiesToRender.add(e)
 		}
+		console.println(enemiesToRender)
 		return enemiesToRender
 	}
 	
 	override method addEnemy(enemy){
-		pool.add(enemy)
+		pool.enqueue(enemy)
 	}
 	
 	override method getRandomBoss() {
@@ -155,7 +163,7 @@ object level1EnemyPool inherits LevelEnemyPool {
 	}
 	
 	override method appendPool(_pool) {
-		_pool.pool().asList().forEach{e => pool.enqueue(e)}
+		pool.enqueueList(_pool.pool().asList())
 	}
 }
 

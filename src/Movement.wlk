@@ -220,8 +220,6 @@ class CharacterMovementController inherits CollidableMovementController {
 
 class EnemyMovementController inherits CollidableMovementController {
 	
-	override method init() {}
-	override method remove() {}
 	override method onDispatchInput(input) {}
 	
 }

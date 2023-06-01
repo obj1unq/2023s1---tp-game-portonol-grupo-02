@@ -35,7 +35,12 @@ class Entity inherits Renderable {
 
 class MovableEntity inherits CollapsableEntity {
 
-	var movementController = new StaticMovementManager(movableEntity = null)
+	var property movementController = new StaticMovementManager(movableEntity = null)
+
+	method moveDistance(x, y) {
+		movementController.goUp(y)
+		movementController.goRight(x)
+	}
 
 	method goUp() {
 		movementController.goUp(1)
@@ -193,8 +198,8 @@ class CollapsableEntity inherits Entity {
 class DamageEntity inherits GravityEntity {
 
 	var damage
-	var hp
 	var maxHp
+	var hp = maxHp
 	var cooldown
 
 	method damage() = damage
@@ -215,6 +220,10 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	const damageManager = new DamageManager(entity = self)
 	var deathCallback = {}
+
+	method resetState() {
+		hp = maxHp
+	}
 
 	override method onCollision(colliders) {
 
@@ -241,14 +250,7 @@ class EnemyDamageEntity inherits DamageEntity {
 	
 	override method update(time){
 		super(time)
-		
-		if (damageManager.onCooldown()){
-			damageManager.cooldownLeft(damageManager.cooldownLeft() - 1)
-		}
-		
-		if (damageManager.notCooldownLeft()){
-			damageManager.resetCooldown()
-		}
+		damageManager.onTimePassed(time)
 	}
 	
 	method setDeathCallback(cb){
@@ -279,7 +281,6 @@ class PlayerDamageEntity inherits DamageEntity {
 	
 	override method onRemove() {
 		super()
-		//console.println("Se removió el personaje")
 	}
 	
 	override method update(time) {}
@@ -288,68 +289,42 @@ class PlayerDamageEntity inherits DamageEntity {
 
 class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	const player
-	var property velocityX = 1
+	var property velocity = 1
 	
 	override method update(time){
 		super(time)
 		self.moveTowardsPlayer(time)
-		self.jumpIfShould(time)
 	}
 	
 	method moveTowardsPlayer(time) {
-		const relativeDistanceFromPlayer = self.movementTowardsPlayer(time)
-		if(not self.isByPlayerSide()) {
-			if(relativeDistanceFromPlayer < 0) {
-				self.goLeft(- relativeDistanceFromPlayer)
-			} else if(relativeDistanceFromPlayer > 0) {
-				self.goRight(relativeDistanceFromPlayer)
-			}
-		}
+		self.moveDistance(
+			self.horizontalMovementTowardsPlayer(time),
+			self.verticalMovementTowardsPlayer(time)
+		)
 	}
-	
-	method jumpIfShould(time) {
-	}
-	
-	method isByPlayerSide() {
-		return player.originPosition().x().truncate(0) == self.originPosition().x().truncate(0)
-	}
-	
-	method shouldJump()
-	
-	method movementTowardsPlayer(time){
-		const relativePositionPlayer = player.originPosition().x() - self.originPosition().x()
-		return if(relativePositionPlayer < 0) {
+		
+	method movementTowardsPlayer(time, relativeDistance){
+		return if(relativeDistance < 0) {
 			- self.movementByTime(time)
 		} else {
 			self.movementByTime(time)
 		}
 	}
 	
+	method horizontalMovementTowardsPlayer(time) {
+		return self.movementTowardsPlayer(time, player.originPosition().x() - self.originPosition().x())
+	}
+	
+	method verticalMovementTowardsPlayer(time) {
+		return self.movementTowardsPlayer(time, player.originPosition().y() - self.originPosition().y())
+	}
+	
 	method movementByTime(time) {
-		return (time * velocityX) / 1000
+		return (time * velocity) / 1000
 	}
 	
 }
 
-class Zombie inherits WalkToPlayerEnemy {
-	
-	override method shouldJump() = self.isPlayerAbove() and self.isByPlayerSide() 
-	
-	method isPlayerAbove() {
-		return false}
-//		return player.originPosition().y() - player.height() > self.originPosition().y()
-//	}
-	
-}
+class Zombie inherits WalkToPlayerEnemy(velocity = 0.5) {}
 
-class Slime inherits WalkToPlayerEnemy {
-	
-	override method moveTowardsPlayer(time) {
-		if(self.isJumping()) {
-			super(time)
-		}
-	}
-	
-	override method shouldJump() = true
-	
-}
+class Slime inherits WalkToPlayerEnemy(velocity = 5) {}

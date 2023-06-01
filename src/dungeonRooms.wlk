@@ -22,17 +22,18 @@ object levelManager {
 	])
 	
 	method loadNextLevel() {
+		// TODO: Inicializar con null objects
 		if(lastLevel != null) {
 			lastLevel.clearLevel()
-			lastPool = lastLevel.levelEnemyPool()
 		}
 		
 		if(not levels.isEmpty()){
 			gameConfig.player().initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 			const level = levels.dequeue()
-			level.initializeLevel()
 			level.levelEnemyPool().appendPool(lastPool)
+			level.initializeLevel()
 			lastLevel = level
+			lastPool = lastLevel.levelEnemyPool()
 		} else {
 			global.deathScreen()
 		}
@@ -138,7 +139,7 @@ class DungeonRoom inherits Node {
 		}
 	}
 	
-	method generateLevel() {
+	method generateRoom() {
 		neighbours.keys().forEach {
 			direction =>
 				self.generateDoorIn(direction)
@@ -199,6 +200,12 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	override method render() {
 		super()
 		self.closeDoors()
+		self.addEnemies()
+		self.renderEnemies()
+		self.checkIfOpenDoors()
+	}
+	
+	method renderEnemies() {
 		enemies.forEach {
 			enemy => 
 				enemy.setDeathCallback{
@@ -206,9 +213,13 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 					levelManager.lastPool().addEnemy(enemy)
 					self.checkIfOpenDoors()
 				}
+				enemy.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 				enemy.onAttach()
 		}
-		self.checkIfOpenDoors()
+	}
+	
+	method addEnemies() {
+		 enemies.addAll(levelManager.lastPool().getRandomEnemies(enemiesCap))
 	}
 	
 	method checkIfOpenDoors() {
@@ -232,10 +243,6 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 		return enemies.size() == 0
 	}
 	
-	override method generateLevel(){
-		super()
-		enemies = enemies + levelManager.lastPool().getRandomEnemies(enemiesCap)
-	}
 }
 
 class BossDungeonRoom inherits EnemiesDungeonRoom {
@@ -257,7 +264,7 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 }
 
 class Level {
-	const levelEnemyPool
+	const property levelEnemyPool
 	const structureFactory
 	const roomQuantity
 	const player
@@ -280,7 +287,7 @@ class Level {
 		
 	method generateLevel() {
 		structure.forEach {
-			room => room.generateLevel()
+			room => room.generateRoom()
 		}
 	}
 		

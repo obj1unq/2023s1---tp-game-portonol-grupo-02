@@ -256,6 +256,10 @@ class Queue {
 		return elements.size() == 0
 	}
 	
+	method enqueueList(list) {
+		elements.addAll(list)
+	}
+	
 	method asList() = elements
 	
 }
