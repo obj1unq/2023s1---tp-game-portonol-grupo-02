@@ -118,20 +118,20 @@ class GravityEntity inherits MovableEntity {
 		super()
 		self.gravity().suscribe(self)
 	}
+	
+	override method onCollision(colliders) {
+		
+	}
 
 	override method onRemove() {
 		super()
 		self.gravity().unsuscribe(self)
 	}
 
-	override method onCollision(colliders) {
-		// No hace nada
-	}
-
 	method update(time){
-		if(isRendered) {
-			self.checkForCollision()			
-		}
+//		if(isRendered) {
+//			self.checkForCollision()			
+//		}
 	}
 
 }
@@ -327,4 +327,4 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 
 class Zombie inherits WalkToPlayerEnemy(velocity = 0.5) {}
 
-class Slime inherits WalkToPlayerEnemy(velocity = 5) {}
+class Slime inherits WalkToPlayerEnemy(velocity = 1) {}

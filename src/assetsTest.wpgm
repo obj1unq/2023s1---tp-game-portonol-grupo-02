@@ -1,19 +1,24 @@
 import pools.*
 import wollok.game.* 
+import Sprite.*
 
 program abc {
 
 		
 	game.title("Jump trying")
-	game.height(12)
-	game.width(20)
+	game.height(5)
+	game.width(5)
 	game.boardGround("invisible.png")
 	
-	level1StructureFactory.piso().onAttach()
-	level1StructureFactory.paredIzquierda().onAttach()
-	level1StructureFactory.paredDerecha().onAttach()
-	level1StructureFactory.paredAbajo().onAttach()
-	level1StructureFactory.paredArriba().onAttach()
+//	level1StructureFactory.piso().onAttach()
+//	level1StructureFactory.paredIzquierda().onAttach()
+//	level1StructureFactory.paredDerecha().onAttach()
+//	level1StructureFactory.paredAbajo().onAttach()
+//	level1StructureFactory.paredArriba().onAttach()
+
+	const image = new Image(imageName = "fotorectarojo.png")
+	image.position().inPosition(1, 1)
+	game.addVisual(image)
 	
 	game.start()
 

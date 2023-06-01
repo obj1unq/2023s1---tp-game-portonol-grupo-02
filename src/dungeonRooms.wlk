@@ -69,7 +69,6 @@ class Door inherits GravityEntity {
 	var isOpen = true
 	
 	override method onCollision(colliders) {
-		super(colliders)
 		if(isOpen and self.collidedWithPlayer(colliders)) {
 			self.movePlayerToOpositeDoor()
 			from.unrender()
@@ -193,7 +192,7 @@ class PlayerDungeonRoom inherits DungeonRoom {
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
-	var enemiesCap = 4
+	var enemiesCap = 2
 	
 	override method piso() = "muro.png"
 	
@@ -306,18 +305,7 @@ class Level {
 	}
 	
 	method generateRoomAsset() {
-		levelRoomAssets = [
-			structureFactory.piso(),
-			structureFactory.paredIzquierda(),
-			structureFactory.paredDerecha(),
-			structureFactory.paredAbajo(),
-			structureFactory.paredArriba()	
-		]
 		
-		levelRoomAssets.forEach {
-			roomAsset => 
-				roomAsset.onAttach()
-		}
 	}
 	
 	

@@ -6,7 +6,11 @@ class Image {
 	var imageName
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
+	var withCollisions = false
 
+	method withCollisions(state){
+		withCollisions = state
+	}
 
 	method image() = imageName
 
@@ -27,6 +31,13 @@ class Image {
 	method renderAt(_position) {
 		position = _position
 		game.addVisual(self)
+		self.initCollisionChecker()
+	}
+	
+	method initCollisionChecker() {
+		if(self.hasEntity() and withCollisions) {
+			game.onCollideDo(self, { collider => self.entity().onCollision([collider]) })
+		}
 	}
 
 	method move(x, y) {
@@ -45,7 +56,7 @@ class Image {
 }
 
 class Renderable {
-
+	var withCollisions = true
 	var imageMap = [[new Image(imageName = "default.png")]]
 	var isRendered = false
 	
@@ -55,7 +66,7 @@ class Renderable {
 		imageMap = _imageMap
 		imageMap.forEach {
 			column => 
-				column.forEach { img => img.entity(self)}
+				column.forEach { img => img.entity(self); img.withCollisions(withCollisions) }
 		}
 	}
 
@@ -63,6 +74,8 @@ class Renderable {
 		const firstImage = imageMap.get(0).get(0)
 		game.say(firstImage, message)
 	}
+
+	method onCollision(colliders){}
 
 	method render(initialX, initialY) {
 		isRendered = true

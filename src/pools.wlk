@@ -24,7 +24,7 @@ object level1StructureFactory inherits StructureFactory {
 				}
 				structure.add(column)
 		}
-		const piso = new Entity()
+		const piso = new Entity(withCollisions = false)
 		piso.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		piso.imageMap(structure)
 		return piso
@@ -38,7 +38,7 @@ object level1StructureFactory inherits StructureFactory {
 				column.add(new Image(imageName = "paredIzquierda.png"))
 		}
 		structure.add(column)
-		const pared = new Entity()
+		const pared = new Entity(withCollisions = false)
 		pared.initialPositions(gameConfig.doorYOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		pared.imageMap(structure)
 		return pared
@@ -52,7 +52,7 @@ object level1StructureFactory inherits StructureFactory {
 				column.add(new Image(imageName = "paredDerecha.png"))
 		}
 		structure.add(column)
-		const pared = new Entity()
+		const pared = new Entity(withCollisions = false)
 		pared.initialPositions(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		pared.imageMap(structure)
 		return pared
@@ -64,7 +64,7 @@ object level1StructureFactory inherits StructureFactory {
 			x =>
 				structure.add([new Image(imageName = "paredAbajo.png")])
 		}
-		const pared = new Entity()
+		const pared = new Entity(withCollisions = false)
 		pared.imageMap(structure)
 		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.doorYOffset())
 		return pared
@@ -76,7 +76,7 @@ object level1StructureFactory inherits StructureFactory {
 			x =>
 				structure.add([new Image(imageName = "paredArriba.png")])
 		}
-		const pared = new Entity()
+		const pared = new Entity(withCollisions = false)
 		pared.imageMap(structure)
 		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
 		return pared
