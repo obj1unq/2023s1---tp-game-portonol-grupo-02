@@ -2,9 +2,9 @@ import Position.*
 import Damage.DamageManager
 import wollok.game.*
 import Sprite.Renderable
-import Movement.StaticMovementManager
 import gameConfig.*
 import Global.global
+import Movement.*
 
 class Entity inherits Renderable {
 	
@@ -119,43 +119,20 @@ class GravityEntity inherits MovableEntity {
 		self.gravity().suscribe(self)
 	}
 	
-	override method onCollision(colliders) {
-		
-	}
+	override method onCollision(colliders) {}
 
 	override method onRemove() {
 		super()
 		self.gravity().unsuscribe(self)
 	}
 
-	method update(time){
-//		if(isRendered) {
-//			self.checkForCollision()			
-//		}
-	}
+	method update(time){}
 
 }
 
 class CollapsableEntity inherits Entity {
 
-	method isCollapsing() {
-		return self.collisions().size() > 0
-	}
-
-	method collisions() {
-		const collisions = []
-
-		self.forEach({img, x, y => 
-			collisions.addAll(
-				self.game().colliders(img).filter{
-					coll => not coll.isPartOfEntity(self)
-				}
-			)
-		})
-		
-		return collisions
-	}
-
+	// TODO: Se puede mejorar si se pregunta a los bordes y no a todas las entidades
 	method isCollidingFrom(direction) {
 		return self.any{ img , x , y => 
 			self.collisionsFrom(direction, x, y).any{ 
@@ -165,32 +142,20 @@ class CollapsableEntity inherits Entity {
 		}
 	}
 
-
-	// Aplicar polimorfismo
+	// TODO: Aplicar polimorfismo
 	method collisionsFrom(direction, x, y) {
 		return if (direction == arriba) {
-			self.game().getObjectsIn(dummiePosition.inPosition(x, y.truncate(0) + 1))
+			self.game().getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) + 1))
 		} else if (direction == abajo) {
-			self.game().getObjectsIn(dummiePosition.inPosition(x, y.truncate(0) - 1))
+			self.game().getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) - 1))
 		} else if (direction == izquierda) {
-			self.game().getObjectsIn(dummiePosition.inPosition(x.truncate(0) - 1, y))
+			self.game().getObjectsIn(dummiePosition.withPosition(x.truncate(0) - 1, y))
 		} else if (direction == derecha) {
-			self.game().getObjectsIn(dummiePosition.inPosition(x.truncate(0) + 1, y))
+			self.game().getObjectsIn(dummiePosition.withPosition(x.truncate(0) + 1, y))
 		}
 	}
 
-	method isCollidingFromTopOrBottom() {
-		return self.isCollidingFrom(arriba) or self.isCollidingFrom(abajo)
-	}
-
-	method checkForCollision() {
-		const colliders = self.collisions()
-		if (colliders.size() > 0) {
-			self.onCollision(colliders)
-		}
-	}
-
-	method onCollision(colliders)
+	method onCollision(collider)
 
 }
 
@@ -213,6 +178,12 @@ class DamageEntity inherits GravityEntity {
 	}
 
 	method isDead() = hp <= 0
+	
+	method isPlayer(collider) {
+		return collider.hasEntity() and global.isPlayer(collider.entity())
+	}
+	
+	method die()
 
 }
 
@@ -225,22 +196,31 @@ class EnemyDamageEntity inherits DamageEntity {
 		hp = maxHp
 	}
 
-	override method onCollision(colliders) {
-
-		super(colliders)
-		
-		const enemy = colliders.findOrDefault({ collider => collider.hasEntity() and global.isPlayer(collider.entity()) }, null)
-		if (enemy != null){
-			damageManager.dealDmg(enemy.entity())
+	method playerOrNullishEnemy(collider) {
+		return if(self.isPlayer(collider)) {
+			collider.entity()
+		} else {
+			return nullishDamagableEntity
 		}
+	}
+
+	override method onCollision(collider) {
+
+		super(collider)
+		
+		damageManager.dealDmg(self.playerOrNullishEnemy(collider))
 		
 	}
 
 	override method takeDmg(damage) {
 		super(damage)
 		if (self.isDead()) {
-			self.onRemove()
+			self.die()
 		}
+	}
+	
+	override method die() {
+		self.onRemove()
 	}
 	
 	override method onRemove(){
@@ -259,6 +239,11 @@ class EnemyDamageEntity inherits DamageEntity {
 
 }
 
+object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gravity = null, maxHp = 0) {
+	override method takeDmg(dmg) {}
+	override method die() {}
+}
+
 class PlayerDamageEntity inherits DamageEntity {
 
 	const damageManager = new DamageManager(entity = self)
@@ -268,28 +253,29 @@ class PlayerDamageEntity inherits DamageEntity {
 	override method takeDmg(damage) {
 		super(damage)
 		if (self.isDead()) {
-			// Game over logic. We probably need to implement a pause in the game with a button to return to main menu or something.
-			// self.game().stop()
-			deathSfx.play()
-			self.say("me morí")
-			self.onRemove()
-			global.deathScreen()
+			self.die()
 		} else {
-			damageSfx.play()
+			self.playDamageSound()
 		}
 	}
 	
-	override method onRemove() {
-		super()
+	override method die() {
+		deathSfx.play()
+		self.onRemove()
+		global.deathScreen()
 	}
 	
-	override method update(time) {}
-
+	method playDamageSound() {
+		damageSfx.play()
+	}
+	
 }
 
 class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	const player
 	var property velocity = 1
+	
+	method playerPosition() = player.originPosition()
 	
 	override method update(time){
 		super(time)
@@ -297,26 +283,33 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 	
 	method moveTowardsPlayer(time) {
-		self.moveDistance(
-			self.horizontalMovementTowardsPlayer(time),
-			self.verticalMovementTowardsPlayer(time)
-		)
+		if(not self.isInPlayerPosition()) {
+			self.moveDistance(
+				self.horizontalMovementTowardsPlayer(time).limitBetween(-1, 1),
+				self.verticalMovementTowardsPlayer(time).limitBetween(-1, 1)
+			)
+		}
+	}
+	
+	method isInPlayerPosition() {
+		dummiePosition.inPosition(player.xMiddle(), player.yMiddle())
+		return self.isInPosition(dummiePosition)
 	}
 		
 	method movementTowardsPlayer(time, relativeDistance){
 		return if(relativeDistance < 0) {
 			- self.movementByTime(time)
-		} else {
+		} else if (relativeDistance > 0) {
 			self.movementByTime(time)
-		}
+		} else { 0 }
 	}
 	
 	method horizontalMovementTowardsPlayer(time) {
-		return self.movementTowardsPlayer(time, player.originPosition().x() - self.originPosition().x())
+		return self.movementTowardsPlayer(time, self.playerPosition().x() - self.originPosition().x().truncate(0))
 	}
 	
 	method verticalMovementTowardsPlayer(time) {
-		return self.movementTowardsPlayer(time, player.originPosition().y() - self.originPosition().y())
+		return self.movementTowardsPlayer(time, self.playerPosition().y() - self.originPosition().y().truncate(0))
 	}
 	
 	method movementByTime(time) {
@@ -325,6 +318,30 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	
 }
 
-class Zombie inherits WalkToPlayerEnemy(velocity = 0.5) {}
+class DelayedWalkToPlayerEnemy inherits WalkToPlayerEnemy {
+	var property movementCooldown
+	var property movementCooldownReload
+	
+	method onStartWalking()
+	
+}
 
-class Slime inherits WalkToPlayerEnemy(velocity = 1) {}
+class Zombie inherits WalkToPlayerEnemy(velocity = 1) {}
+
+class Fly inherits WalkToPlayerEnemy(velocity = 2) {}
+
+class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 400, movementCooldownReload = 400) {
+	const lastPlayerPosition = new MutablePosition(x = player.originPosition().x(), y = player.originPosition().y())
+	
+	override method update(time){
+		super(time)
+		movementController.onTimePassed(time)
+	}
+	
+	override method playerPosition() = lastPlayerPosition
+	
+	override method onStartWalking() {
+		lastPlayerPosition.inPosition(player.originPosition().x(), player.originPosition().y())
+	}
+	
+}

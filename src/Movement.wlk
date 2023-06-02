@@ -2,6 +2,7 @@ import wollok.game.*
 import Input.inputManager
 import Position.*
 import SoundEffect.*
+import CooldownManager.*
 
 class MovementController {
 
@@ -216,6 +217,44 @@ class CharacterMovementController inherits CollidableMovementController {
 		}
 	}
 
+}
+
+class CooldownMovementController inherits CollidableMovementController {
+	
+	const property onMovementCooldown = new OnMovementCooldown(movementManager = self, totalCooldownTime = movableEntity.movementCooldownReload())
+	const property notOnMovementCooldown = new NotOnMovementCooldown(movementManager = self, totalCooldownTime = movableEntity.movementCooldown())
+	var property movementCooldown = notOnMovementCooldown
+	
+	method onTimePassed(time) {
+		movementCooldown.onTimePassed(time)
+	}
+	
+	override method moveRightIfCan(distance) {
+		if(movementCooldown.canMove()) {
+			super(distance)
+		}
+	}
+
+	override method moveLeftIfCan(distance) {
+		if(movementCooldown.canMove()) {
+			super(distance)
+		}
+	}
+	
+	override method moveUpIfCan(distance) {
+		if(movementCooldown.canMove()) {
+			super(distance)
+		}
+	}
+	
+	override method moveDownIfCan(distance) {
+		if(movementCooldown.canMove()) {
+			super(distance)
+		}
+	}
+	
+	override method onDispatchInput(input) {}
+	
 }
 
 class EnemyMovementController inherits CollidableMovementController {

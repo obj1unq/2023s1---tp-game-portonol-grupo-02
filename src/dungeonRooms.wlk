@@ -16,9 +16,9 @@ object levelManager {
 	var property lastPool = emptyEnemyPool
 	
 	const levels = new Queue(elements = [
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 4),
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 6),
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 8)
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8)
 	])
 	
 	method loadNextLevel() {
@@ -89,11 +89,8 @@ class Door inherits GravityEntity {
 		isOpen = true
 	}
 	
-	method collidedWithPlayer(colliders) {
-		return colliders.any {
-			collider =>
-				collider.hasEntity() and collider.entity() == gameConfig.player()
-		}
+	method collidedWithPlayer(collider) {
+		return collider.hasEntity() and collider.entity() == gameConfig.player()
 	}
 	
 }
@@ -192,7 +189,7 @@ class PlayerDungeonRoom inherits DungeonRoom {
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
-	var enemiesCap = 2
+	var enemiesCap = 3
 	
 	override method piso() = "muro.png"
 	
@@ -264,7 +261,6 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 
 class Level {
 	const property levelEnemyPool
-	const structureFactory
 	const roomQuantity
 	const player
 	var structureGenerator = null

@@ -36,7 +36,13 @@ class Image {
 	
 	method initCollisionChecker() {
 		if(self.hasEntity() and withCollisions) {
-			game.onCollideDo(self, { collider => self.entity().onCollision([collider]) })
+			game.onCollideDo(self, { collider => self.dispatchCollider(collider) })
+		}
+	}
+
+	method dispatchCollider(collider) {
+		if(collider.hasEntity() and not self.isPartOfEntity(collider.entity())) {
+			self.entity().onCollision(collider)
 		}
 	}
 
@@ -123,23 +129,22 @@ class Renderable {
 		)
 	}
 	
-	method filter(callback) {
-		
-		const elements = []
-		const length = if(imageMap.size() < 1) (0 .. imageMap.size()) else (0 .. imageMap.size() - 1)
-		const height = if(imageMap.get(0).size() < 1) (0 .. imageMap.get(0).size()) else (0 .. imageMap.get(0).size() - 1)
-		length.forEach({
-			x => height.forEach(
-				{ y => 
-					if(callback.apply(imageMap.get(x).get(y), x, y)){
-						elements.add(imageMap.get(x).get(y))
-					}
-				}
-			)
-		})
-		return elements
+	method xMiddle() {
+		return self.originPosition().x().truncate(0) + (self.length() / 2)		
+	} 
+	
+	method yMiddle() {
+		return self.originPosition().y().truncate(0) - (self.height() / 2)		
 	}
-
+	
+	method middleLength() = self.length() / 2
+	method middleHeight() = self.height() / 2
+	
+	method isInPosition(position) {
+		return position.distanceWithX(self.xMiddle()) <= self.middleLength()
+			and position.distanceWithY(self.yMiddle()) <= self.middleHeight()
+	}
+	
 	method originPosition(){
 		return imageMap.get(0).get(0).position()
 	}

@@ -1,15 +1,6 @@
 import wollok.game.*
 
-object dummiePosition {
-	var property x = 0
-	var property y = 0
-
-	method inPosition(_x, _y) {
-		x = _x
-		y = _y
-		return self
-	}
-}
+object dummiePosition inherits MutablePosition(x = 0, y = 0){}
 
 class MutablePosition {
 
@@ -19,6 +10,10 @@ class MutablePosition {
 	method inPosition(_x, _y) {
 		x = _x
 		y = _y
+	}
+	
+	method withPosition(_x, _y) {
+		self.inPosition(_x, _y)
 		return self
 	}
 
@@ -74,6 +69,16 @@ class MutablePosition {
 		const deltaX = x - position.x()
 		const deltaY = y - position.y()
 		return (deltaX.square() + deltaY.square()).squareRoot()
+	}
+
+	method distanceWithX(_x) {
+		const deltaX = x - _x
+		return deltaX.abs()
+	}
+	
+	method distanceWithY(_y) {
+		const deltaY = y - _y
+		return deltaY.abs()
 	}
 
 	/**
