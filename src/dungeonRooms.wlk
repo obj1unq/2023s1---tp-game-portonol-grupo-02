@@ -13,6 +13,7 @@ class ImageCopy {
 object levelManager {
 	
 	var lastLevel = null
+	var property lastPool = emptyEnemyPool
 	
 	const levels = new Queue(elements = [
 		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 4),
@@ -21,6 +22,7 @@ object levelManager {
 	])
 	
 	method loadNextLevel() {
+		// TODO: Inicializar con null objects
 		if(lastLevel != null) {
 			lastLevel.clearLevel()
 		}
@@ -28,9 +30,10 @@ object levelManager {
 		if(not levels.isEmpty()){
 			gameConfig.player().initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 			const level = levels.dequeue()
+			level.levelEnemyPool().appendPool(lastPool)
 			level.initializeLevel()
 			lastLevel = level
-			
+			lastPool = lastLevel.levelEnemyPool()
 		} else {
 			global.deathScreen()
 		}
@@ -66,7 +69,6 @@ class Door inherits GravityEntity {
 	var isOpen = true
 	
 	override method onCollision(colliders) {
-		super(colliders)
 		if(isOpen and self.collidedWithPlayer(colliders)) {
 			self.movePlayerToOpositeDoor()
 			from.unrender()
@@ -80,7 +82,9 @@ class Door inherits GravityEntity {
 	}
 	
 	method close() {
-		isOpen = false	
+		// Habria que cambiar esto por polimorfismo(PuertaAbierta, PuertaCerrada), para que no nos cague a pedos el profe
+		// De paso podemos poner que acá cambie la imagen a su versión cerrada y en el método de abajo a abierta
+		isOpen = false
 	}
 	
 	method open() {
@@ -136,11 +140,11 @@ class DungeonRoom inherits Node {
 		}
 	}
 	
-	method generateDoors() {
+	method generateRoom() {
 		neighbours.keys().forEach {
 			direction =>
 				self.generateDoorIn(direction)
-		}		
+		}
 	}
 	
 	method openDoors() {
@@ -189,22 +193,34 @@ class PlayerDungeonRoom inherits DungeonRoom {
 }
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
-	const enemies = #{}
+	var enemies = #{}
+	var enemiesCap = 2
 	
 	override method piso() = "muro.png"
 	
 	override method render() {
 		super()
 		self.closeDoors()
+		self.addEnemies()
+		self.renderEnemies()
+		self.checkIfOpenDoors()
+	}
+	
+	method renderEnemies() {
 		enemies.forEach {
 			enemy => 
 				enemy.setDeathCallback{
 					enemies.remove(enemy)
+					levelManager.lastPool().addEnemy(enemy)
 					self.checkIfOpenDoors()
 				}
+				enemy.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 				enemy.onAttach()
 		}
-		self.checkIfOpenDoors()
+	}
+	
+	method addEnemies() {
+		 enemies.addAll(levelManager.lastPool().getRandomEnemies(enemiesCap))
 	}
 	
 	method checkIfOpenDoors() {
@@ -227,6 +243,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	method thereAreNoEnemies() {
 		return enemies.size() == 0
 	}
+	
 }
 
 class BossDungeonRoom inherits EnemiesDungeonRoom {
@@ -248,7 +265,7 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 }
 
 class Level {
-	const levelEnemyPool
+	const property levelEnemyPool
 	const structureFactory
 	const roomQuantity
 	const player
@@ -262,14 +279,16 @@ class Level {
 		self.generateStructure()
 		self.setBossRoom()
 		self.generateRoomAsset()
-		self.generateDoors()
+		self.generateLevel()
 		self.renderSpawnPoint()
 		self.initGravity()
 	}
+	
+	method levelEnemyPool() = levelEnemyPool
 		
-	method generateDoors() {
+	method generateLevel() {
 		structure.forEach {
-			room => room.generateDoors()
+			room => room.generateRoom()
 		}
 	}
 		
@@ -288,18 +307,7 @@ class Level {
 	}
 	
 	method generateRoomAsset() {
-		levelRoomAssets = [
-			structureFactory.piso(),
-			structureFactory.paredIzquierda(),
-			structureFactory.paredDerecha(),
-			structureFactory.paredAbajo(),
-			structureFactory.paredArriba()	
-		]
 		
-		levelRoomAssets.forEach {
-			roomAsset => 
-				roomAsset.onAttach()
-		}
 	}
 	
 	

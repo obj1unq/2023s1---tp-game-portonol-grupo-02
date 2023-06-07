@@ -4,6 +4,7 @@ import Position.*
 
 object global {
 	const enemies = #{}
+	var property gravity
 	var player
 	
 	method addEnemy(enemy){
@@ -13,6 +14,8 @@ object global {
 	method player(_player){
 		player = _player
 	}
+	
+	method player() = player
 	
 	method deathScreen(){
 		const deathModal = new Image(imageName = "deathscreen.png")

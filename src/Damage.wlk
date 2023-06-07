@@ -1,34 +1,80 @@
 class DamageManager {
-	
-	const entity
-	var property cooldownState = notOnCooldown
-	var property cooldownLeft = entity.cooldown()
-	
+
+	const property entity
+	const property notOnCooldown = new NotOnCooldown(damageManager = self)
+	const property onCooldown = new OnCooldown(damageManager = self)
+	var property cooldownManager = notOnCooldown
+
 	method dealDmg(receiver) {
-		if (not self.onCooldown()){
-			receiver.takeDmg(entity.damage())
-			self.toogleCooldown()
+		cooldownManager.dealDamage(receiver)
+	}
+
+	method onTimePassed(time) {
+		cooldownManager.onTimePassed(time)
+	}
+
+}
+
+class CooldownManager {
+
+	const damageManager
+	var property cooldownTime = damageManager.entity().cooldown() // In MS
+
+	method dealDamage(receiver)
+
+	method onTimePassed(time) {
+	}
+
+	method resetCooldown() {
+	}
+
+	method checkIfCooldownFinished() {
+	}
+
+}
+
+class OnCooldown inherits CooldownManager {
+
+	override method dealDamage(receiver) {
+	}
+
+	override method onTimePassed(time) {
+		cooldownTime -= time
+		self.checkIfCooldownFinished()
+	}
+
+	override method resetCooldown() {
+		cooldownTime = damageManager.entity().cooldown()
+	}
+
+	override method checkIfCooldownFinished() {
+		if (cooldownTime <= 0) {
+			damageManager.cooldownManager(damageManager.notOnCooldown())
+			self.resetCooldown()
 		}
 	}
-	
-	method toogleCooldown(){
-		cooldownState = cooldownState.nextState()
+
+}
+
+class NotOnCooldown inherits CooldownManager {
+
+	override method dealDamage(receiver) {
+		receiver.takeDmg(damageManager.entity().damage())
+		self.toggleCooldown()
 	}
-	
-	method onCooldown() = cooldownState == onCooldown
-	
-	method notCooldownLeft() = cooldownLeft == 0
 
-	method resetCooldown(){
-		cooldownLeft = entity.cooldown()
-		self.toogleCooldown()
+	method toggleCooldown() {
+		damageManager.cooldownManager(damageManager.onCooldown())
 	}
+
+	override method onTimePassed(time) {
+	}
+
+	override method resetCooldown() {
+	}
+
+	override method checkIfCooldownFinished() {
+	}
+
 }
 
-object onCooldown {
-	const property nextState = notOnCooldown
-}
-
-object notOnCooldown {
-	const property nextState = onCooldown
-}

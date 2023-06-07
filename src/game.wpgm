@@ -10,7 +10,8 @@ import Input.*
 import Movement.*
 import Position.*
 import Sprite.*
-import SoundEffect.* 
+import SoundEffect.*
+import Global.* 
 
 program myGame {
 		
@@ -19,7 +20,7 @@ program myGame {
 	game.width(20)
 	game.boardGround("negro.jpg")
 	
-	var gravity = new GravityController(name = "mainGravity", tickTime = 50, gameInstance = game)
+	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
 	inputManager.init()
 	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
 	var controlManager = new CharacterMovementController(movableEntity = player)
@@ -29,6 +30,12 @@ program myGame {
 	
 	gameConfig.gravity(gravity)
 	gameConfig.player(player)
+	global.gravity(gravity)
+	global.player(player)
+	
+	const image = new Image(imageName = "fondosala.png")
+	image.position().inPosition(1, 1)
+	game.addVisual(image)
 	
 	levelManager.loadNextLevel()
 	
