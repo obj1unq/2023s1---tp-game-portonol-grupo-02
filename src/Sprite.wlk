@@ -19,7 +19,7 @@ object getFromSelf inherits ImageStrategy {
 
 class Image {
 
-	var imageName = null
+	var property imageName = null
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
 	var withCollisions = false
@@ -81,9 +81,16 @@ class Image {
 class Renderable {
 	var withCollisions = true
 	var imageMap = [[new Image(imageName = "default.png")]]
+	var imageHeight = 50
+	var imageLength = 50
 	var isRendered = false
 	
 	method isRendered() = isRendered
+
+	method setImageMap() {
+		const sprayHeight = (imageHeight / 50) - 1
+		const sprayLength = (imageLength / 50) - 1
+	}
 
 	method imageMap(_imageMap) {
 		imageMap = _imageMap

@@ -20,24 +20,23 @@ program myGame {
 	game.width(20)
 	game.boardGround("negro.jpg")
 	
-	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
-	inputManager.init()
-	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
-	var controlManager = new CharacterMovementController(movableEntity = player)
-	player.setMovementController(controlManager)
-	player.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
-	player.imageMap([[new Image(imageName = "pepita.png")]])
+//	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
+//	inputManager.init()
+//	var player = new PlayerDamageEntity(gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
+//	var controlManager = new CharacterMovementController(movableEntity = player)
+//	player.setMovementController(controlManager)
+//	player.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
+//	player.imageMap([[new Image(imageName = "pepita.png")]])
+//	
+//	gameConfig.gravity(gravity)
+//	gameConfig.player(player)
+//	global.gravity(gravity)
+//	global.player(player)
 	
-	gameConfig.gravity(gravity)
-	gameConfig.player(player)
-	global.gravity(gravity)
-	global.player(player)
+	const image = new Image(imageName = "alpiste.png")
+	image.renderAt(new MutablePosition(x = 1, y = 1))
 	
-	const image = new Image(imageName = "fondosala.png")
-	image.position().inPosition(1, 1)
-	game.addVisual(image)
-	
-	levelManager.loadNextLevel()
+//	levelManager.loadNextLevel()
 	
 	game.start()
 	
