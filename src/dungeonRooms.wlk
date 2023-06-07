@@ -82,7 +82,9 @@ class Door inherits GravityEntity {
 	}
 	
 	method close() {
-		isOpen = false	
+		// Habria que cambiar esto por polimorfismo(PuertaAbierta, PuertaCerrada), para que no nos cague a pedos el profe
+		// De paso podemos poner que acá cambie la imagen a su versión cerrada y en el método de abajo a abierta
+		isOpen = false
 	}
 	
 	method open() {
