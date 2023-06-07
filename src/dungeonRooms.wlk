@@ -60,16 +60,32 @@ class Trapdoor inherits GravityEntity {
 	
 }
 
+class DoorState {
+	method getAsset()
+	method isOpen()
+}
+
+object closedDoor inherits DoorState {
+	method getAsset() = "-closed.png"
+	method isOpen() = false
+}
+
+object openedDoor inherits DoorState {
+	method getAsset() = ".png"
+	method isOpen() = true
+}
+
+
 class Door inherits GravityEntity {
 	const from
 	const to
 	const direction
 	const property getPosition = direction.positionInMiddle()
 	const property getImage = direction.doorAsset()
-	var isOpen = true
+	var state = openedDoor
 	
 	override method onCollision(colliders) {
-		if(isOpen and self.collidedWithPlayer(colliders)) {
+		if(state.isOpen() and self.collidedWithPlayer(colliders)) {
 			self.movePlayerToOpositeDoor()
 			from.unrender()
 			to.render()
@@ -82,13 +98,11 @@ class Door inherits GravityEntity {
 	}
 	
 	method close() {
-		// Habria que cambiar esto por polimorfismo(PuertaAbierta, PuertaCerrada), para que no nos cague a pedos el profe
-		// De paso podemos poner que acá cambie la imagen a su versión cerrada y en el método de abajo a abierta
-		isOpen = false
+		state = closedDoor
 	}
 	
 	method open() {
-		isOpen = true
+		state = openedDoor
 	}
 	
 	method collidedWithPlayer(collider) {

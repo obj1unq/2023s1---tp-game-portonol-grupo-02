@@ -1,18 +1,35 @@
 import wollok.game.*
 import Position.MutablePosition
 
+class ImageStrategy {
+	method getImage(image)
+}
+
+object getFromParent inherits ImageStrategy {
+	override method getImage(image) {
+		return image.entity().imageName()
+	}
+}
+
+object getFromSelf inherits ImageStrategy {
+	override method getImage(image) {
+		return image.imageName()
+	}
+}
+
 class Image {
 
-	var imageName
+	var imageName = null
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
 	var withCollisions = false
+	var property imageStrategy = getFromSelf
 
 	method withCollisions(state){
 		withCollisions = state
 	}
 
-	method image() = imageName
+	method image() = imageStrategy.getImage(self)
 
 	method entity(_entity) {
 		entity = _entity
@@ -72,7 +89,7 @@ class Renderable {
 		imageMap = _imageMap
 		imageMap.forEach {
 			column => 
-				column.forEach { img => img.entity(self); img.withCollisions(withCollisions) }
+				column.forEach { img => img.entity(self); img.withCollisions(withCollisions); img.imageStrategy(getFromParent) }
 		}
 	}
 
@@ -96,6 +113,7 @@ class Renderable {
 		})
 	}
 	
+	method imageName() = null
 
 	method unrender() {
 		isRendered = false
