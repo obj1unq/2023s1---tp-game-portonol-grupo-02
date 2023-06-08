@@ -66,13 +66,13 @@ class DoorState {
 }
 
 object closedDoor inherits DoorState {
-	method getAsset() = "-closed.png"
-	method isOpen() = false
+	override method getAsset() = "-closed.png"
+	override method isOpen() = false
 }
 
 object openedDoor inherits DoorState {
-	method getAsset() = ".png"
-	method isOpen() = true
+	override method getAsset() = ".png"
+	override method isOpen() = true
 }
 
 
@@ -81,7 +81,6 @@ class Door inherits GravityEntity {
 	const to
 	const direction
 	const property getPosition = direction.positionInMiddle()
-	const property getImage = direction.doorAsset()
 	var state = openedDoor
 	
 	override method onCollision(colliders) {
@@ -90,6 +89,10 @@ class Door inherits GravityEntity {
 			from.unrender()
 			to.render()
 		}
+	}
+	
+	override method imageName(){
+		return super() + state.getAsset()
 	}
 	
 	method movePlayerToOpositeDoor() {
@@ -174,9 +177,9 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity())
+		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity(), imageName = direction.doorAsset())
 		door.initialPositions(door.getPosition().x(), door.getPosition().y())
-		door.imageMap([[new Image(imageName = door.getImage())]])
+		door.setImageMap()
 		doors.add(door)
 	}
 	
@@ -266,9 +269,8 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 	}
 	
 	method spawnTrapdoor() {
-		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity())
+		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity(), imageName = "trapdoor.jpg")
 		trapdoor.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
-		trapdoor.imageMap([[new Image(imageName = "trapdoor.jpg")]])
 		structures.add(trapdoor)
 		trapdoor.onAttach()
 	}

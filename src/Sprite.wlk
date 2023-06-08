@@ -19,7 +19,7 @@ object getFromSelf inherits ImageStrategy {
 
 class Image {
 
-	var property imageName = null
+	var property imageName = "invisible.png"
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
 	var withCollisions = false
@@ -79,8 +79,9 @@ class Image {
 }
 
 class Renderable {
+	var imageName = "pepita.png"
 	var withCollisions = true
-	var imageMap = [[new Image(imageName = "default.png")]]
+	var imageMap = []
 	var imageHeight = 50
 	var imageLength = 50
 	var isRendered = false
@@ -90,13 +91,19 @@ class Renderable {
 	method setImageMap() {
 		const sprayHeight = (imageHeight / 50) - 1
 		const sprayLength = (imageLength / 50) - 1
-	}
-
-	method imageMap(_imageMap) {
-		imageMap = _imageMap
-		imageMap.forEach {
-			column => 
-				column.forEach { img => img.entity(self); img.withCollisions(withCollisions); img.imageStrategy(getFromParent) }
+		(0..sprayLength).forEach{ i =>
+			const column = []
+			(0..sprayHeight).forEach{ j =>
+				const img = new Image() 
+				column.add(img)
+				img.entity(self)
+				img.withCollisions(withCollisions)
+			 	if (j == sprayHeight and i == 0){	 		
+				 	img.imageStrategy(getFromParent)
+				 	img.imageName(imageName)
+			 	}
+			}
+			imageMap.add(column)	
 		}
 	}
 
@@ -120,7 +127,7 @@ class Renderable {
 		})
 	}
 	
-	method imageName() = null
+	method imageName() = imageName
 
 	method unrender() {
 		isRendered = false
@@ -136,9 +143,9 @@ class Renderable {
 	}
 
 	method forEach(callback) {
-		const length = if(imageMap.size() < 1) (0 .. imageMap.size()) else (0 .. imageMap.size() - 1)
-		const height = if(imageMap.get(0).size() < 1) (0 .. imageMap.get(0).size()) else (0 .. imageMap.get(0).size() - 1)
-		length.forEach({ x => height.forEach({ y => callback.apply(imageMap.get(x).get(y), x, y)})})
+		const width = (0..imageMap.size() - 1)
+		const height = (0..imageMap.get(0).size() - 1)
+		width.forEach({ x => height.forEach({ y => callback.apply(imageMap.get(x).get(y), x, y)})})
 	}
 	
 	method any(callback) {

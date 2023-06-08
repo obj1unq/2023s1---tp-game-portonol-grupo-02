@@ -147,7 +147,7 @@ object top {
 		return game.at(position.x(), position.y() + 1)
 	}
 	
-	method doorAsset() = "topDoor.png"
+	method doorAsset() = "topDoor"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.xMiddle(), gameConfig.height() - gameConfig.doorYOffset())
@@ -166,7 +166,7 @@ object bottom {
 		return game.at(position.x(), position.y() - 1)
 	}
 	
-	method doorAsset() = "bottomDoor.png"
+	method doorAsset() = "bottomDoor"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.xMiddle(), gameConfig.doorYOffset())
@@ -185,7 +185,7 @@ object left {
 		return game.at(position.x() - 1, position.y())
 	}
 	
-	method doorAsset() = "leftDoor.png"
+	method doorAsset() = "leftDoor"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.doorXOffset(), gameConfig.yMiddle())
@@ -204,7 +204,7 @@ object right {
 		return game.at(position.x() + 1, position.y())
 	}
 	
-	method doorAsset() = "rightDoor.png"
+	method doorAsset() = "rightDoor"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.yMiddle())
