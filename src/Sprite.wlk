@@ -1,18 +1,35 @@
 import wollok.game.*
 import Position.MutablePosition
 
+class ImageStrategy {
+	method getImage(image)
+}
+
+object getFromParent inherits ImageStrategy {
+	override method getImage(image) {
+		return image.entity().imageName()
+	}
+}
+
+object getFromSelf inherits ImageStrategy {
+	override method getImage(image) {
+		return image.imageName()
+	}
+}
+
 class Image {
 
-	var imageName
+	var property imageName = "invisible.png"
 	var entity = null
 	var property position = new MutablePosition(x = 0, y = 0)
 	var withCollisions = false
+	var property imageStrategy = getFromSelf
 
 	method withCollisions(state){
 		withCollisions = state
 	}
 
-	method image() = imageName
+	method image() = imageStrategy.getImage(self)
 
 	method entity(_entity) {
 		entity = _entity
@@ -36,7 +53,13 @@ class Image {
 	
 	method initCollisionChecker() {
 		if(self.hasEntity() and withCollisions) {
-			game.onCollideDo(self, { collider => self.entity().onCollision([collider]) })
+			game.onCollideDo(self, { collider => self.dispatchCollider(collider) })
+		}
+	}
+
+	method dispatchCollider(collider) {
+		if(collider.hasEntity() and not self.isPartOfEntity(collider.entity())) {
+			self.entity().onCollision(collider)
 		}
 	}
 
@@ -56,17 +79,31 @@ class Image {
 }
 
 class Renderable {
+	var imageName = "pepita.png"
 	var withCollisions = true
-	var imageMap = [[new Image(imageName = "default.png")]]
+	var imageMap = []
+	var imageHeight = 50
+	var imageLength = 50
 	var isRendered = false
 	
 	method isRendered() = isRendered
 
-	method imageMap(_imageMap) {
-		imageMap = _imageMap
-		imageMap.forEach {
-			column => 
-				column.forEach { img => img.entity(self); img.withCollisions(withCollisions) }
+	method setImageMap() {
+		const sprayHeight = (imageHeight / 50) - 1
+		const sprayLength = (imageLength / 50) - 1
+		(0..sprayLength).forEach{ i =>
+			const column = []
+			(0..sprayHeight).forEach{ j =>
+				const img = new Image() 
+				column.add(img)
+				img.entity(self)
+				img.withCollisions(withCollisions)
+			 	if (j == sprayHeight and i == 0){	 		
+				 	img.imageStrategy(getFromParent)
+				 	img.imageName(imageName)
+			 	}
+			}
+			imageMap.add(column)	
 		}
 	}
 
@@ -90,6 +127,7 @@ class Renderable {
 		})
 	}
 	
+	method imageName() = imageName
 
 	method unrender() {
 		isRendered = false
@@ -105,9 +143,9 @@ class Renderable {
 	}
 
 	method forEach(callback) {
-		const length = if(imageMap.size() < 1) (0 .. imageMap.size()) else (0 .. imageMap.size() - 1)
-		const height = if(imageMap.get(0).size() < 1) (0 .. imageMap.get(0).size()) else (0 .. imageMap.get(0).size() - 1)
-		length.forEach({ x => height.forEach({ y => callback.apply(imageMap.get(x).get(y), x, y)})})
+		const width = (0..imageMap.size() - 1)
+		const height = (0..imageMap.get(0).size() - 1)
+		width.forEach({ x => height.forEach({ y => callback.apply(imageMap.get(x).get(y), x, y)})})
 	}
 	
 	method any(callback) {
@@ -123,23 +161,22 @@ class Renderable {
 		)
 	}
 	
-	method filter(callback) {
-		
-		const elements = []
-		const length = if(imageMap.size() < 1) (0 .. imageMap.size()) else (0 .. imageMap.size() - 1)
-		const height = if(imageMap.get(0).size() < 1) (0 .. imageMap.get(0).size()) else (0 .. imageMap.get(0).size() - 1)
-		length.forEach({
-			x => height.forEach(
-				{ y => 
-					if(callback.apply(imageMap.get(x).get(y), x, y)){
-						elements.add(imageMap.get(x).get(y))
-					}
-				}
-			)
-		})
-		return elements
+	method xMiddle() {
+		return self.originPosition().x().truncate(0) + (self.length() / 2)		
+	} 
+	
+	method yMiddle() {
+		return self.originPosition().y().truncate(0) - (self.height() / 2)		
 	}
-
+	
+	method middleLength() = self.length() / 2
+	method middleHeight() = self.height() / 2
+	
+	method isInPosition(position) {
+		return position.distanceWithX(self.xMiddle()) <= self.middleLength()
+			and position.distanceWithY(self.yMiddle()) <= self.middleHeight()
+	}
+	
 	method originPosition(){
 		return imageMap.get(0).get(0).position()
 	}

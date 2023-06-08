@@ -4,86 +4,6 @@ import Sprite.*
 import structureGenerator.*
 import enemiesFactories.*
 
-class StructureFactory {
-	method piso()
-	method paredIzquierda()
-	method paredDerecha()
-	method paredAbajo()
-	method paredArriba()
-}
-
-object level1StructureFactory inherits StructureFactory {
-	override method piso() {
-		const structure = []
-		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
-			x =>
-				const column = []
-				(gameConfig.doorYOffset() .. gameConfig.height() - gameConfig.doorYOffset()).forEach {
-					y =>
-						column.add(new Image(imageName = "piso.png"))
-				}
-				structure.add(column)
-		}
-		const piso = new Entity(withCollisions = false)
-		piso.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
-		piso.imageMap(structure)
-		return piso
-	}
-	
-	override method paredIzquierda() {
-		const structure = []
-		const column = []
-		(gameConfig.doorYOffset().. gameConfig.height() - gameConfig.doorYOffset()).forEach {
-			y =>
-				column.add(new Image(imageName = "paredIzquierda.png"))
-		}
-		structure.add(column)
-		const pared = new Entity(withCollisions = false)
-		pared.initialPositions(gameConfig.doorYOffset(), gameConfig.height() - gameConfig.doorYOffset())
-		pared.imageMap(structure)
-		return pared
-	}
-	
-	override method paredDerecha() {
-		const structure = []
-		const column = []
-		(gameConfig.doorYOffset().. gameConfig.height() - gameConfig.doorYOffset()).forEach {
-			y =>
-				column.add(new Image(imageName = "paredDerecha.png"))
-		}
-		structure.add(column)
-		const pared = new Entity(withCollisions = false)
-		pared.initialPositions(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
-		pared.imageMap(structure)
-		return pared
-	}
-	
-	override method paredAbajo() {
-		const structure = []
-		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
-			x =>
-				structure.add([new Image(imageName = "paredAbajo.png")])
-		}
-		const pared = new Entity(withCollisions = false)
-		pared.imageMap(structure)
-		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.doorYOffset())
-		return pared
-	}
-	
-	override method paredArriba() {
-		const structure = []
-		(gameConfig.doorXOffset().. gameConfig.width() - gameConfig.doorXOffset()).forEach {
-			x =>
-				structure.add([new Image(imageName = "paredArriba.png")])
-		}
-		const pared = new Entity(withCollisions = false)
-		pared.imageMap(structure)
-		pared.initialPositions(gameConfig.doorXOffset(), gameConfig.height() - gameConfig.doorYOffset())
-		return pared
-	}
-	
-}
-
 class LevelEnemyPool {
 
 	const levelFactory
@@ -93,22 +13,6 @@ class LevelEnemyPool {
 	method getRandomBoss()
 	method appendPool(_pool)
 	method addEnemy(enemy)
-}
-
-class LevelAssets {
-	method getParedIzquierda()
-	method getParedDerecha()
-	method getPiso()
-	method getParedArriba()
-	method getParedAbajo()
-}
-
-object level1Assets {
-	method getParedIzquierda() = "paredIzquierda.png"
-	method getParedDerecha() = "paredDerecha.png"
-	method getPiso() = "piso.png"
-	method getParedArriba() = "paredArriba.png"
-	method getParedAbajo() = "paredAbajo.png"
 }
 
 object emptyEnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {

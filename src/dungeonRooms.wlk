@@ -16,9 +16,9 @@ object levelManager {
 	var property lastPool = emptyEnemyPool
 	
 	const levels = new Queue(elements = [
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 4),
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 6),
-		new Level(levelEnemyPool = level1EnemyPool, structureFactory = level1StructureFactory, player = gameConfig.player(), roomQuantity = 8)
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8)
 	])
 	
 	method loadNextLevel() {
@@ -60,20 +60,39 @@ class Trapdoor inherits GravityEntity {
 	
 }
 
+class DoorState {
+	method getAsset()
+	method isOpen()
+}
+
+object closedDoor inherits DoorState {
+	override method getAsset() = "-closed.png"
+	override method isOpen() = false
+}
+
+object openedDoor inherits DoorState {
+	override method getAsset() = ".png"
+	override method isOpen() = true
+}
+
+
 class Door inherits GravityEntity {
 	const from
 	const to
 	const direction
 	const property getPosition = direction.positionInMiddle()
-	const property getImage = direction.doorAsset()
-	var isOpen = true
+	var state = openedDoor
 	
 	override method onCollision(colliders) {
-		if(isOpen and self.collidedWithPlayer(colliders)) {
+		if(state.isOpen() and self.collidedWithPlayer(colliders)) {
 			self.movePlayerToOpositeDoor()
 			from.unrender()
 			to.render()
 		}
+	}
+	
+	override method imageName(){
+		return super() + state.getAsset()
 	}
 	
 	method movePlayerToOpositeDoor() {
@@ -82,20 +101,15 @@ class Door inherits GravityEntity {
 	}
 	
 	method close() {
-		// Habria que cambiar esto por polimorfismo(PuertaAbierta, PuertaCerrada), para que no nos cague a pedos el profe
-		// De paso podemos poner que acá cambie la imagen a su versión cerrada y en el método de abajo a abierta
-		isOpen = false
+		state = closedDoor
 	}
 	
 	method open() {
-		isOpen = true
+		state = openedDoor
 	}
 	
-	method collidedWithPlayer(colliders) {
-		return colliders.any {
-			collider =>
-				collider.hasEntity() and collider.entity() == gameConfig.player()
-		}
+	method collidedWithPlayer(collider) {
+		return collider.hasEntity() and collider.entity() == gameConfig.player()
 	}
 	
 }
@@ -163,9 +177,9 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity())
+		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity(), imageName = direction.doorAsset())
 		door.initialPositions(door.getPosition().x(), door.getPosition().y())
-		door.imageMap([[new Image(imageName = door.getImage())]])
+		door.setImageMap()
 		doors.add(door)
 	}
 	
@@ -194,7 +208,7 @@ class PlayerDungeonRoom inherits DungeonRoom {
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
-	var enemiesCap = 2
+	var enemiesCap = 3
 	
 	override method piso() = "muro.png"
 	
@@ -255,9 +269,8 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 	}
 	
 	method spawnTrapdoor() {
-		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity())
+		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity(), imageName = "trapdoor.jpg")
 		trapdoor.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
-		trapdoor.imageMap([[new Image(imageName = "trapdoor.jpg")]])
 		structures.add(trapdoor)
 		trapdoor.onAttach()
 	}
@@ -266,7 +279,6 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 
 class Level {
 	const property levelEnemyPool
-	const structureFactory
 	const roomQuantity
 	const player
 	var structureGenerator = null
