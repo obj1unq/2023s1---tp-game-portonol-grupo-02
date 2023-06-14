@@ -40,7 +40,7 @@ object flyEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
 		const fly = new Fly(player = global.player(), damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), imageName = "fly.png")
 		fly.setImageMap()
-		fly.movementController(new EnemyMovementController(movableEntity = fly))
+		fly.movementController(new CollidableMovementController(movableEntity = fly))
 		return fly
 	}
 }
@@ -49,7 +49,7 @@ object zombieEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
 		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), imageName = "pepita.png")
 		zombie.setImageMap()
-		zombie.movementController(new EnemyMovementController(movableEntity = zombie))
+		zombie.movementController(new CollidableMovementController(movableEntity = zombie))
 		return zombie
 	}
 }

@@ -134,27 +134,15 @@ class CollapsableEntity inherits Entity {
 
 	// TODO: Se puede mejorar si se pregunta a los bordes y no a todas las entidades
 	method isCollidingFrom(direction) {
-		return self.any{ img , x , y => 
-			self.collisionsFrom(direction, x, y).any{ 
+		return 
+		self.any{ img , x , y => 
+			direction.collisionsFrom(x, y).any{ 
 				collider => 
-				not self.isPartOfThisEntity(collider) and collider.isCollidable()
+					collider.isCollidable()
 			}
 		}
 	}
-
-	// TODO: Aplicar polimorfismo
-	method collisionsFrom(direction, x, y) {
-		return if (direction == arriba) {
-			self.game().getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) + 1))
-		} else if (direction == abajo) {
-			self.game().getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) - 1))
-		} else if (direction == izquierda) {
-			self.game().getObjectsIn(dummiePosition.withPosition(x.truncate(0) - 1, y))
-		} else if (direction == derecha) {
-			self.game().getObjectsIn(dummiePosition.withPosition(x.truncate(0) + 1, y))
-		}
-	}
-
+	
 	method onCollision(collider)
 
 }
@@ -297,11 +285,11 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 		
 	method movementTowardsPlayer(time, relativeDistance){
-		return if(relativeDistance < 0) {
-			- self.movementByTime(time)
-		} else if (relativeDistance > 0) {
-			self.movementByTime(time)
-		} else { 0 }
+		// self.movementByTime(time) = movimiento
+		// relativeDistance = distancia en eje
+		// x / x.abs()
+		const sign = relativeDistance / relativeDistance.abs().max(1)
+		return self.movementByTime(time) * sign
 	}
 	
 	method horizontalMovementTowardsPlayer(time) {

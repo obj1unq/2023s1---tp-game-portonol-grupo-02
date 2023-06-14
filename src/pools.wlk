@@ -49,11 +49,12 @@ object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory
 	// TODO: Agregar posiciones
 	override method getRandomEnemies(quantity){
 		const enemiesToRender = []
-		(0..quantity).forEach{ i =>
-			const e = self.getEnemy()
-			enemiesToRender.add(e)
+		if(quantity > 0) {
+			(0 .. quantity - 1).forEach{ i =>
+				const e = self.getEnemy()
+				enemiesToRender.add(e)
+			}			
 		}
-		console.println(enemiesToRender)
 		return enemiesToRender
 	}
 	
