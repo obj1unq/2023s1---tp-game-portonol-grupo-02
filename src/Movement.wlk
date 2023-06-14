@@ -3,6 +3,7 @@ import Input.inputManager
 import Position.*
 import SoundEffect.*
 import CooldownManager.*
+import structureGenerator.*
 
 class MovementController {
 
@@ -16,15 +17,9 @@ class MovementController {
 		return movableEntity
 	}
 
-	method init() {
-		inputManager.suscribe(self)
-	}
+	method init() {}
 
-	method remove() {
-		inputManager.unsuscribe(self)
-	}
-
-	method onDispatchInput(input)
+	method remove() {}
 
 	method goUp() {
 		self.movableEntity().move(0, 1)
@@ -67,9 +62,6 @@ class StaticMovementManager inherits MovementController {
 
 	override method movableEntity() {
 		return null
-	}
-
-	override method onDispatchInput(input) {
 	}
 
 	override method init() {
@@ -145,26 +137,30 @@ class GravityController {
 
 class CollidableMovementController inherits MovementController {
 
+	method canMoveTo(direction) {
+		return not self.movableEntity().isCollidingFrom(direction)
+	}
+
 	method moveRightIfCan(distance) {
-		if (not self.movableEntity().isCollidingFrom(derecha)) {
+		if (self.canMoveTo(right)) {
 			self.movableEntity().move(distance, 0)
 		}
 	}
 
 	method moveLeftIfCan(distance) {
-		if (not self.movableEntity().isCollidingFrom(izquierda)) {
+		if (self.canMoveTo(left)) {
 			self.movableEntity().move(-distance, 0)
 		}
 	}
 	
 	method moveUpIfCan(distance) {
-		if (not self.movableEntity().isCollidingFrom(arriba)) {
+		if (self.canMoveTo(top)) {
 			self.movableEntity().move(0, distance)
 		}
 	}
 	
 	method moveDownIfCan(distance) {
-		if (not self.movableEntity().isCollidingFrom(abajo)) {
+		if (self.canMoveTo(bottom)) {
 			self.movableEntity().move(0, -distance)
 		}
 	}
@@ -205,7 +201,15 @@ class CollidableMovementController inherits MovementController {
 
 class CharacterMovementController inherits CollidableMovementController {
 
-	override method onDispatchInput(input) {
+	override method init() {
+		inputManager.suscribe(self)
+	}
+
+	override method remove() {
+		inputManager.unsuscribe(self)
+	}
+
+	method onDispatchInput(input) {
 		if (input == "left") {
 			self.goLeft()
 		} else if (input == "right") {
@@ -229,37 +233,7 @@ class CooldownMovementController inherits CollidableMovementController {
 		movementCooldown.onTimePassed(time)
 	}
 	
-	override method moveRightIfCan(distance) {
-		if(movementCooldown.canMove()) {
-			super(distance)
-		}
-	}
-
-	override method moveLeftIfCan(distance) {
-		if(movementCooldown.canMove()) {
-			super(distance)
-		}
-	}
-	
-	override method moveUpIfCan(distance) {
-		if(movementCooldown.canMove()) {
-			super(distance)
-		}
-	}
-	
-	override method moveDownIfCan(distance) {
-		if(movementCooldown.canMove()) {
-			super(distance)
-		}
-	}
-	
-	override method onDispatchInput(input) {}
-	
-}
-
-class EnemyMovementController inherits CollidableMovementController {
-	
-	override method onDispatchInput(input) {}
-	
+	override method canMoveTo(direction) = super(direction) && movementCooldown.canMove()
+		
 }
 

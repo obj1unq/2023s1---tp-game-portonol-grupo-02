@@ -1,6 +1,7 @@
 import wollok.game.*
 import gameConfig.*
 import dungeonRooms.*
+import Position.*
 
 class DungeonStructureGenerator {
 	
@@ -143,6 +144,10 @@ object directionManager {
 object top {
 	method oposite() = bottom
 	
+	method collisionsFrom(x, y) {
+		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) + 1))
+	}
+	
 	method getFromPosition(position) {
 		return game.at(position.x(), position.y() + 1)
 	}
@@ -161,6 +166,10 @@ object top {
 
 object bottom {
 	method oposite() = top
+	
+	method collisionsFrom(x, y) {
+		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) - 1))
+	}
 	
 	method getFromPosition(position) {
 		return game.at(position.x(), position.y() - 1)
@@ -181,6 +190,10 @@ object bottom {
 object left {
 	method oposite() = right
 	
+	method collisionsFrom(x, y) {
+		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) - 1, y))
+	}
+	
 	method getFromPosition(position) {
 		return game.at(position.x() - 1, position.y())
 	}
@@ -199,6 +212,10 @@ object left {
 
 object right {
 	method oposite() = left
+	
+	method collisionsFrom(x, y) {
+		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) + 1, y))
+	}
 	
 	method getFromPosition(position) {
 		return game.at(position.x() + 1, position.y())

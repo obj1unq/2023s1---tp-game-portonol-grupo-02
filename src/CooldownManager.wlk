@@ -60,6 +60,10 @@ class NotOnMovementCooldown inherits MovementCooldown {
 
 }
 
+class IndeterminateNotOnMovementCooldown inherits NotOnMovementCooldown {
+	override method onTimePassed(time){}
+}
+
 class OnMovementCooldown inherits MovementCooldown {
 
 	override method opositeCooldown() {
