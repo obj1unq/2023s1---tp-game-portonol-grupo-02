@@ -144,6 +144,10 @@ object directionManager {
 object top {
 	method oposite() = bottom
 	
+	method onInput(movementController) {
+		movementController.goUp()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) + 1))
 	}
@@ -166,6 +170,10 @@ object top {
 
 object bottom {
 	method oposite() = top
+	
+	method onInput(movementController) {
+		movementController.goDown()
+	}
 	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) - 1))
@@ -190,6 +198,10 @@ object bottom {
 object left {
 	method oposite() = right
 	
+	method onInput(movementController) {
+		movementController.goLeft()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) - 1, y))
 	}
@@ -212,6 +224,10 @@ object left {
 
 object right {
 	method oposite() = left
+	
+	method onInput(movementController) {
+		movementController.goRight()
+	}
 	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) + 1, y))

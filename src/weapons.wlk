@@ -1,13 +1,13 @@
 class Weapon {
-	method attack(damageEntity)	
+	method attack(dealer)	
 }
 
 object nullWeapon inherits Weapon {
-	override method attack(damageEntity) {}
+	override method attack(dealer) {}
 }
 
 class MeleeWeapon inherits Weapon {
-	override method attack(damageEntity) {
+	override method attack(dealer) {
 		
 	}
 }
