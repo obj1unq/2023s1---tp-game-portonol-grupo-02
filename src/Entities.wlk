@@ -1,18 +1,16 @@
 import Position.*
 import Damage.DamageManager
 import wollok.game.*
-import Sprite.Renderable
+import Sprite.Image
 import gameConfig.*
 import Global.global
 import Movement.*
 
-class Entity inherits Renderable {
+class Entity inherits Image {
 	
 	var initialY = 0
 	var initialX = 0
-		
-	method game() = game
-		
+				
 	method initialPositions(x, y){
 		initialX = x
 		initialY = y
@@ -26,7 +24,7 @@ class Entity inherits Renderable {
 		self.unrender()
 	}
 	
-	method isCollidable(){
+	override method isCollidable(){
 		return false
 	}
 
@@ -119,8 +117,6 @@ class GravityEntity inherits MovableEntity {
 		self.gravity().suscribe(self)
 	}
 	
-	override method onCollision(colliders) {}
-
 	override method onRemove() {
 		super()
 		self.gravity().unsuscribe(self)
@@ -132,19 +128,12 @@ class GravityEntity inherits MovableEntity {
 
 class CollapsableEntity inherits Entity {
 
-	// TODO: Se puede mejorar si se pregunta a los bordes y no a todas las entidades
 	method isCollidingFrom(direction) {
-		return 
-		self.any{ img , x , y => 
-			direction.collisionsFrom(x, y).any{ 
-				collider => 
-					collider.isCollidable()
+		return direction.collisionsFrom(self.position().x(), self.position().y()).any{ 
+				collider => collider.isCollidable()
 			}
-		}
 	}
 	
-	method onCollision(collider)
-
 }
 
 
@@ -167,10 +156,6 @@ class DamageEntity inherits GravityEntity {
 
 	method isDead() = hp <= 0
 	
-	method isPlayer(collider) {
-		return collider.hasEntity() and global.isPlayer(collider.entity())
-	}
-	
 	method die()
 
 }
@@ -185,8 +170,8 @@ class EnemyDamageEntity inherits DamageEntity {
 	}
 
 	method playerOrNullishEnemy(collider) {
-		return if(self.isPlayer(collider)) {
-			collider.entity()
+		return if(global.isPlayer(collider)) {
+			collider
 		} else {
 			return nullishDamagableEntity
 		}
@@ -263,7 +248,7 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	const player
 	var property velocity = 1
 	
-	method playerPosition() = player.originPosition()
+	method playerPosition() = player.position()
 	
 	override method update(time){
 		super(time)
@@ -280,24 +265,21 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	}
 	
 	method isInPlayerPosition() {
-		dummiePosition.inPosition(player.xMiddle(), player.yMiddle())
-		return self.isInPosition(dummiePosition)
+		return player.position().x() == self.position().x().truncate(0)
+					and player.position().y() == self.position().y().truncate(0)
 	}
 		
 	method movementTowardsPlayer(time, relativeDistance){
-		// self.movementByTime(time) = movimiento
-		// relativeDistance = distancia en eje
-		// x / x.abs()
 		const sign = relativeDistance / relativeDistance.abs().max(1)
 		return self.movementByTime(time) * sign
 	}
 	
 	method horizontalMovementTowardsPlayer(time) {
-		return self.movementTowardsPlayer(time, self.playerPosition().x() - self.originPosition().x().truncate(0))
+		return self.movementTowardsPlayer(time, self.playerPosition().x() - self.position().x().truncate(0))
 	}
 	
 	method verticalMovementTowardsPlayer(time) {
-		return self.movementTowardsPlayer(time, self.playerPosition().y() - self.originPosition().y().truncate(0))
+		return self.movementTowardsPlayer(time, self.playerPosition().y() - self.position().y().truncate(0))
 	}
 	
 	method movementByTime(time) {
@@ -319,7 +301,7 @@ class Zombie inherits WalkToPlayerEnemy(velocity = 1) {}
 class Fly inherits WalkToPlayerEnemy(velocity = 2) {}
 
 class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 400, movementCooldownReload = 400) {
-	const lastPlayerPosition = new MutablePosition(x = player.originPosition().x(), y = player.originPosition().y())
+	const lastPlayerPosition = new MutablePosition(x = player.position().x(), y = player.position().y())
 	
 	override method update(time){
 		super(time)
@@ -329,7 +311,7 @@ class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 
 	override method playerPosition() = lastPlayerPosition
 	
 	override method onStartWalking() {
-		lastPlayerPosition.inPosition(player.originPosition().x(), player.originPosition().y())
+		lastPlayerPosition.inPosition(player.position().x(), player.position().y())
 	}
 	
 }

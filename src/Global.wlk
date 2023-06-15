@@ -18,8 +18,8 @@ object global {
 	method player() = player
 	
 	method deathScreen(){
-		const deathModal = new Image(imageName = "deathscreen.png")
-		deathModal.renderAt(new MutablePosition(x = 0, y = 0))
+		const deathModal = new Image(baseImageName = "deathscreen")
+		deathModal.render(0,0)
 	}
 	
 	method isEnemy(entity) = enemies.any{enemy => enemy == entity}
