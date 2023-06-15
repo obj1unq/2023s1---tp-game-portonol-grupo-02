@@ -5,6 +5,7 @@ import Sprite.Image
 import gameConfig.*
 import Global.global
 import Movement.*
+import weapons.*
 
 class Entity inherits Image {
 	
@@ -146,7 +147,7 @@ class DamageEntity inherits GravityEntity {
 
 	method damage() = damage
 
-	method hp() = hp * 100 / maxHp
+	method hp() = hp
 
 	method cooldown() = cooldown
 
@@ -155,6 +156,8 @@ class DamageEntity inherits GravityEntity {
 	}
 
 	method isDead() = hp <= 0
+	
+	method attack() {}
 	
 	method die()
 
@@ -187,7 +190,9 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	override method takeDmg(damage) {
 		super(damage)
+		console.println("recibio daño, nueva vida = " + hp)
 		if (self.isDead()) {
+			console.println("ripeé")
 			self.die()
 		}
 	}
@@ -218,8 +223,8 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 }
 
 class PlayerDamageEntity inherits DamageEntity {
-
-	const damageManager = new DamageManager(entity = self)
+	const weapon = new MeleeWeapon()
+	const property damageManager = new DamageManager(entity = self)
 	const damageSfx
 	const deathSfx
 
@@ -230,6 +235,15 @@ class PlayerDamageEntity inherits DamageEntity {
 		} else {
 			self.playDamageSound()
 		}
+	}
+	
+	override method update(time){
+		super(time)
+		damageManager.onTimePassed(time)
+	}
+	
+	override method attack() {
+		weapon.attack(self)
 	}
 	
 	override method die() {

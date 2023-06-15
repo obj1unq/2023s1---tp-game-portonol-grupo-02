@@ -18,7 +18,9 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 ) {
 	
 	override method getRandomEnemy() {
-		return enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+		const enemy = enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+		global.addEnemy(enemy)
+		return enemy
 	}
 
 }

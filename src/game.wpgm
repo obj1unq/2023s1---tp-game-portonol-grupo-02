@@ -22,7 +22,7 @@ program myGame {
 	
 	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
 	inputManager.init()
-	var player = new PlayerDamageEntity(baseImageName = "pepita", gravity = gravity, hp = 100, maxHp = 10000, damage = 30, cooldown = 2000, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
+	var player = new PlayerDamageEntity(baseImageName = "pepita", gravity = gravity, hp = 100, maxHp = 10000, damage = 10000, cooldown = 0, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
 	var controlManager = new CharacterMovementController(movableEntity = player)
 	player.setMovementController(controlManager)
 	player.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())

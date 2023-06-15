@@ -211,17 +211,6 @@ class CharacterMovementController inherits CollidableMovementController {
 	}
 
 	method onDispatchInput(input) {
-		if (input == "a") {
-			self.goLeft()
-		} else if (input == "d") {
-			self.goRight()
-		} else if(input == "w") {
-			self.goUp()
-		} else if(input == "s") {
-			self.goDown()
-		} else {
-			facingDirection = input
-		}
 		input.onInput(self)
 	}
 

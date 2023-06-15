@@ -44,12 +44,10 @@ object levelManager {
 class Trapdoor inherits GravityEntity {
 	const fromRoom
 	
-	override method onCollision(colliders) {
-		super(colliders)
-		if(colliders.any {
-			collider => global.isPlayer(collider)
-		}) {
-			self.goToNextLevel()			
+	override method onCollision(collider) {
+		super(collider)
+		if(global.isPlayer(collider)){
+			self.goToNextLevel()
 		}
 	}
 	
@@ -279,14 +277,12 @@ class Level {
 	const player
 	var structureGenerator = null
 	var structure = null
-	var levelRoomAssets = null
 	var spawnRoom = null
 	var bossRoom = null
 	
 	method initializeLevel() {
 		self.generateStructure()
 		self.setBossRoom()
-		self.generateRoomAsset()
 		self.generateLevel()
 		self.renderSpawnPoint()
 		self.initGravity()
@@ -301,9 +297,10 @@ class Level {
 	}
 		
 	method clearLevel() {
-		levelRoomAssets.forEach {
-			asset => asset.onRemove()
-		}
+// 		Acá estaría bueno sacarle decoracioens al nivel
+//		levelRoomAssets.forEach {
+//			asset => asset.onRemove()
+//		}
 	}
 	
 	method initGravity() {
@@ -313,11 +310,6 @@ class Level {
 	method renderSpawnPoint() {
 		spawnRoom.render()
 	}
-	
-	method generateRoomAsset() {
-		
-	}
-	
 	
 	method generateStructure() {
 		structureGenerator = new DungeonStructureGenerator(maxQuantity = roomQuantity)

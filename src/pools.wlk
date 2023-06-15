@@ -41,7 +41,6 @@ object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory
 			return enemy
 		} else {
 			const enemy = levelFactory.getRandomEnemy()
-			console.println(enemy)
 			return enemy
 		}
 	}

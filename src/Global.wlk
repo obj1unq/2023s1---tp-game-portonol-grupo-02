@@ -3,7 +3,7 @@ import Sprite.*
 import Position.*
 
 object global {
-	const enemies = #{}
+	const enemies = []
 	var property gravity
 	var player
 	
@@ -15,6 +15,10 @@ object global {
 		player = _player
 	}
 	
+	method removeEnemy(enemy) {
+		enemies.remove(enemy)
+	}
+	
 	method player() = player
 	
 	method deathScreen(){
@@ -22,7 +26,7 @@ object global {
 		deathModal.render(0,0)
 	}
 	
-	method isEnemy(entity) = enemies.any{enemy => enemy == entity}
+	method isEnemy(entity) = enemies.contains(entity)
 	
 	method isPlayer(entity) = entity == player
 	
