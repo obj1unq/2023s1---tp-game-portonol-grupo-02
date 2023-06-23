@@ -3,8 +3,9 @@ import Position.MutablePosition
 
 class Image {
 
-	var property baseImageName = "invisible.png"
+	var property baseImageName = "invisible"
 	var property position = new MutablePosition(x = 0, y = 0)
+	const shouldCheckCollision = true
 
 	method state() = ""
 
@@ -17,7 +18,9 @@ class Image {
 	}
 	
 	method initCollision() {
-		game.onCollideDo(self, { collider => self.onCollision(collider) })
+		if(shouldCheckCollision) {
+			game.onCollideDo(self, { collider => self.onCollision(collider) })			
+		}
 	}
 	
 	method onCollision(collider){}

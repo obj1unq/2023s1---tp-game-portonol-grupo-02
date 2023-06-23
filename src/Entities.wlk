@@ -6,6 +6,7 @@ import gameConfig.*
 import Global.global
 import Movement.*
 import weapons.*
+import structureGenerator.*
 
 class Entity inherits Image {
 	
@@ -36,40 +37,48 @@ class MovableEntity inherits CollapsableEntity {
 
 	var property movementController = new StaticMovementManager(movableEntity = null)
 
+	var direction = new NullDirectionSpriteModifier()
+
+	override method state() = super() + direction.imageModifier()
+	
 	method moveDistance(x, y) {
-		movementController.goUp(y)
-		movementController.goRight(x)
+		self.goUp(y)
+		self.goRight(x)
 	}
 
 	method goUp() {
-		movementController.goUp(1)
+		self.goUp(1)
 	}
 
 	method goLeft() {
-		movementController.goLeft(1)
+		self.goLeft(1)
 	}
 
 	method goDown() {
-		movementController.goDown(1)
+		self.goDown(1)
 	}
 
 	method goRight() {
-		movementController.goRight(1)
+		self.goRight(1)
 	}
 
 	method goUp(n) {
+		direction.direction(top)
 		movementController.goUp(n)
 	}
 
 	method goLeft(n) {
+		direction.direction(left)
 		movementController.goLeft(n)
 	}
 
 	method goDown(n) {
+		direction.direction(bottom)
 		movementController.goDown(n)
 	}
 
 	method goRight(n) {
+		direction.direction(right)
 		movementController.goRight(n)
 	}
 
@@ -222,7 +231,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 	override method die() {}
 }
 
-class PlayerDamageEntity inherits DamageEntity {
+class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weapon = new MeleeWeapon()
 	const property damageManager = new DamageManager(entity = self)
 	const damageSfx
@@ -240,6 +249,8 @@ class PlayerDamageEntity inherits DamageEntity {
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)
+//		console.println(self.image())
+		console.println(direction.imageModifier())
 	}
 	
 	override method attack() {
@@ -271,10 +282,21 @@ class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	
 	method moveTowardsPlayer(time) {
 		if(not self.isInPlayerPosition()) {
-			self.moveDistance(
-				self.horizontalMovementTowardsPlayer(time).limitBetween(-1, 1),
-				self.verticalMovementTowardsPlayer(time).limitBetween(-1, 1)
-			)
+			const movementX = self.horizontalMovementTowardsPlayer(time).limitBetween(-1, 1)
+			const movementY = self.verticalMovementTowardsPlayer(time).limitBetween(-1, 1)
+			
+			if(movementX < 0) {
+				self.goLeft(-movementX)
+			} else if(movementX > 0) {
+				self.goRight(movementX)
+			}
+
+			if(movementY < 0) {
+				self.goDown(-movementY)
+			} else if(movementY > 0) {
+				self.goUp(movementY)
+			}
+			
 		}
 	}
 	
@@ -310,7 +332,7 @@ class DelayedWalkToPlayerEnemy inherits WalkToPlayerEnemy {
 	
 }
 
-class Zombie inherits WalkToPlayerEnemy(velocity = 1) {}
+class Zombie inherits WalkToPlayerEnemy(velocity = 1, direction = new StateDirectionSpriteModifier()) {}
 
 class Fly inherits WalkToPlayerEnemy(velocity = 2) {}
 

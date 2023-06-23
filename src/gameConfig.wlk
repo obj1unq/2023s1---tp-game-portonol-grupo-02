@@ -11,4 +11,16 @@ object gameConfig {
 	const property width = game.width() - 1
 	const property height = game.height() - 1
 
+	method canMoveVertically(y) {
+		return (y <= height - doorYOffset) and (y >= doorYOffset)
+	}
+	
+	method canMoveHorizontally(x) {
+		return (x <= width - doorXOffset) and (x >= doorXOffset)
+	}
+	
+	method isInMapLimits(x, y) {
+		return self.canMoveVertically(y) and self.canMoveHorizontally(x)
+	}
+
 }

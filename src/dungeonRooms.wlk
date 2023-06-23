@@ -4,6 +4,7 @@ import gameConfig.*
 import Sprite.*
 import pools.*
 import Global.*
+import Blocks.Block
 
 class ImageCopy {
 	const property image
@@ -77,8 +78,8 @@ object openedDoor inherits DoorState {
 class Door inherits GravityEntity {
 	const from
 	const to
-	const direction
-	const property getPosition = direction.positionInMiddle()
+	const facingDirection
+	const property getPosition = facingDirection.positionInMiddle()
 	var state = openedDoor
 	
 	override method onCollision(collider) {
@@ -95,7 +96,7 @@ class Door inherits GravityEntity {
 	}
 	
 	method movePlayerToOpositeDoor() {
-		const nextPosition = direction.oposite().positionNStepsInto(1)
+		const nextPosition = facingDirection.oposite().positionNStepsInto(1)
 		gameConfig.player().initialPositions(nextPosition.x(), nextPosition.y())
 	}
 	
@@ -172,7 +173,7 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity(), baseImageName = direction.doorAsset())
+		const door = new Door(from = self, to = neighbour, facingDirection = direction, gravity = gameConfig.gravity(), baseImageName = direction.doorAsset())
 		door.initialPositions(door.getPosition().x(), door.getPosition().y())
 		doors.add(door)
 	}

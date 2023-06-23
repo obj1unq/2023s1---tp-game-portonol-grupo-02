@@ -47,7 +47,7 @@ object flyEnemyFactory inherits EnemyFactory {
 
 object zombieEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
-		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "zombie-down")
+		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "zombie")
 		zombie.movementController(new CollidableMovementController(movableEntity = zombie))
 		return zombie
 	}
