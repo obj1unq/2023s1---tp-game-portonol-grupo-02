@@ -16,7 +16,7 @@ program abc {
 //	level1StructureFactory.paredAbajo().onAttach()
 //	level1StructureFactory.paredArriba().onAttach()
 
-	const image = new Image(imageName = "fotorectarojo.png")
+	const image = new Image(baseImageName = "fotorectarojo.png")
 	image.position().inPosition(1, 1)
 	game.addVisual(image)
 	

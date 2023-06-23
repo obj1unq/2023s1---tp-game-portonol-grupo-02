@@ -18,7 +18,9 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 ) {
 	
 	override method getRandomEnemy() {
-		return enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+		const enemy = enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+		global.addEnemy(enemy)
+		return enemy
 	}
 
 }
@@ -29,8 +31,7 @@ class EnemyFactory {
 
 object slimeEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
-		const slime = new Slime(player = global.player(), damage = 10 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), imageName = "slime.png")
-		slime.setImageMap()
+		const slime = new Slime(player = global.player(), damage = 10 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "slime")
 		slime.movementController(new CooldownMovementController(movableEntity = slime))
 		return slime
 	}
@@ -38,8 +39,7 @@ object slimeEnemyFactory inherits EnemyFactory {
 
 object flyEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
-		const fly = new Fly(player = global.player(), damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), imageName = "fly.png")
-		fly.setImageMap()
+		const fly = new Fly(player = global.player(), damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "fly")
 		fly.movementController(new CollidableMovementController(movableEntity = fly))
 		return fly
 	}
@@ -47,8 +47,7 @@ object flyEnemyFactory inherits EnemyFactory {
 
 object zombieEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
-		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), imageName = "pepita.png")
-		zombie.setImageMap()
+		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "zombie")
 		zombie.movementController(new CollidableMovementController(movableEntity = zombie))
 		return zombie
 	}

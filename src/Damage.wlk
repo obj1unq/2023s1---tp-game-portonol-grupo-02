@@ -1,4 +1,5 @@
 import CooldownManager.*
+import Global.*
 
 class DamageManager {
 

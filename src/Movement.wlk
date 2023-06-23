@@ -4,10 +4,12 @@ import Position.*
 import SoundEffect.*
 import CooldownManager.*
 import structureGenerator.*
+import gameConfig.gameConfig
 
 class MovementController {
 
 	var movableEntity
+	var property facingDirection = bottom
 
 	method movableEntity(_movableEntity) {
 		movableEntity = _movableEntity
@@ -16,25 +18,32 @@ class MovementController {
 	method movableEntity() {
 		return movableEntity
 	}
+	
+	method canMoveTo(direction) {
+		return gameConfig.isInMapLimits(
+				direction.getXFromPosition(movableEntity.position()),
+				direction.getYFromPosition(movableEntity.position())			
+			)
+	}
 
 	method init() {}
 
 	method remove() {}
 
 	method goUp() {
-		self.movableEntity().move(0, 1)
+		self.goUp(1)
 	}
 
 	method goLeft() {
-		self.movableEntity().move(-1, 0)
+		self.goLeft(1)
 	}
 
 	method goDown() {
-		self.movableEntity().move(0, -1)
+		self.goDown(1)
 	}
 
 	method goRight() {
-		self.movableEntity().move(1, 0)
+		self.goRight(1)
 	}
 
 	method goUp(n) {
@@ -137,8 +146,8 @@ class GravityController {
 
 class CollidableMovementController inherits MovementController {
 
-	method canMoveTo(direction) {
-		return not self.movableEntity().isCollidingFrom(direction)
+	override method canMoveTo(direction) {
+		return super(direction) and not self.movableEntity().isCollidingFrom(direction)
 	}
 
 	method moveRightIfCan(distance) {
@@ -210,15 +219,7 @@ class CharacterMovementController inherits CollidableMovementController {
 	}
 
 	method onDispatchInput(input) {
-		if (input == "left") {
-			self.goLeft()
-		} else if (input == "right") {
-			self.goRight()
-		} else if(input == "up") {
-			self.goUp()
-		} else if(input == "down") {
-			self.goDown()
-		}
+		input.onInput(self)
 	}
 
 }
@@ -236,4 +237,33 @@ class CooldownMovementController inherits CollidableMovementController {
 	override method canMoveTo(direction) = super(direction) && movementCooldown.canMove()
 		
 }
+
+class DirectionSpriteModifier {
+	
+	method imageModifier()
+	
+	method direction(_direction)
+	
+}
+
+class NullDirectionSpriteModifier inherits DirectionSpriteModifier {
+	
+	override method imageModifier() = ""
+	
+	override method direction(_direction) {}
+	
+}
+
+class StateDirectionSpriteModifier inherits DirectionSpriteModifier {
+	
+	var direction = bottom
+	
+	override method imageModifier() = direction.imageModifier()
+	
+	override method direction(_direction){
+		direction = _direction
+	}
+	
+}
+
 

@@ -1,3 +1,5 @@
+import Global.global
+
 class CooldownManager {
 
 	var property totalCooldownTime

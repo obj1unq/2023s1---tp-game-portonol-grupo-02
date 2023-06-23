@@ -144,6 +144,10 @@ object directionManager {
 object top {
 	method oposite() = bottom
 	
+	method onInput(movementController) {
+		movementController.movableEntity().goUp()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) + 1))
 	}
@@ -152,7 +156,17 @@ object top {
 		return game.at(position.x(), position.y() + 1)
 	}
 	
+	method getXFromPosition(position) {
+		return position.x()
+	}
+	
+	method getYFromPosition(position) {
+		return position.y() + 1
+	}
+	
 	method doorAsset() = "topDoor"
+	
+	method imageModifier() = "-up"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.xMiddle(), gameConfig.height() - gameConfig.doorYOffset())
@@ -167,6 +181,10 @@ object top {
 object bottom {
 	method oposite() = top
 	
+	method onInput(movementController) {
+		movementController.movableEntity().goDown()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x, y.truncate(0) - 1))
 	}
@@ -175,7 +193,17 @@ object bottom {
 		return game.at(position.x(), position.y() - 1)
 	}
 	
+	method getXFromPosition(position) {
+		return position.x()
+	}
+	
+	method getYFromPosition(position) {
+		return position.y() - 1
+	}
+	
 	method doorAsset() = "bottomDoor"
+	
+	method imageModifier() = "-down"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.xMiddle(), gameConfig.doorYOffset())
@@ -190,6 +218,10 @@ object bottom {
 object left {
 	method oposite() = right
 	
+	method onInput(movementController) {
+		movementController.movableEntity().goLeft()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) - 1, y))
 	}
@@ -198,11 +230,21 @@ object left {
 		return game.at(position.x() - 1, position.y())
 	}
 	
+	method getXFromPosition(position) {
+		return position.x() - 1
+	}
+	
+	method getYFromPosition(position) {
+		return position.y()
+	}
+	
 	method doorAsset() = "leftDoor"
 	
 	method positionInMiddle() {
 		return game.at(gameConfig.doorXOffset(), gameConfig.yMiddle())
 	}
+	
+	method imageModifier() = "-left"
 	
 	method positionNStepsInto(n) {
 		return self.positionInMiddle().right(n)
@@ -213,6 +255,10 @@ object left {
 object right {
 	method oposite() = left
 	
+	method onInput(movementController) {
+		movementController.movableEntity().goRight()
+	}
+	
 	method collisionsFrom(x, y) {
 		return game.getObjectsIn(dummiePosition.withPosition(x.truncate(0) + 1, y))
 	}
@@ -220,6 +266,16 @@ object right {
 	method getFromPosition(position) {
 		return game.at(position.x() + 1, position.y())
 	}
+	
+	method getXFromPosition(position) {
+		return position.x() + 1
+	}
+	
+	method getYFromPosition(position) {
+		return position.y()
+	}
+	
+	method imageModifier() = "-right"
 	
 	method doorAsset() = "rightDoor"
 	

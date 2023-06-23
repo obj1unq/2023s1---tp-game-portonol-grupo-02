@@ -4,6 +4,7 @@ import gameConfig.*
 import Sprite.*
 import pools.*
 import Global.*
+import Blocks.Block
 
 class ImageCopy {
 	const property image
@@ -44,12 +45,10 @@ object levelManager {
 class Trapdoor inherits GravityEntity {
 	const fromRoom
 	
-	override method onCollision(colliders) {
-		super(colliders)
-		if(colliders.any {
-			collider => collider.hasEntity() and collider.entity() == gameConfig.player()
-		}) {
-			self.goToNextLevel()			
+	override method onCollision(collider) {
+		super(collider)
+		if(global.isPlayer(collider)){
+			self.goToNextLevel()
 		}
 	}
 	
@@ -66,12 +65,12 @@ class DoorState {
 }
 
 object closedDoor inherits DoorState {
-	override method getAsset() = "-closed.png"
+	override method getAsset() = "-closed"
 	override method isOpen() = false
 }
 
 object openedDoor inherits DoorState {
-	override method getAsset() = ".png"
+	override method getAsset() = ""
 	override method isOpen() = true
 }
 
@@ -79,24 +78,25 @@ object openedDoor inherits DoorState {
 class Door inherits GravityEntity {
 	const from
 	const to
-	const direction
-	const property getPosition = direction.positionInMiddle()
+	const facingDirection
+	const property getPosition = facingDirection.positionInMiddle()
 	var state = openedDoor
 	
-	override method onCollision(colliders) {
-		if(state.isOpen() and self.collidedWithPlayer(colliders)) {
+	override method onCollision(collider) {
+		if(state.isOpen() and global.isPlayer(collider)) {
 			self.movePlayerToOpositeDoor()
 			from.unrender()
 			to.render()
 		}
 	}
 	
-	override method imageName(){
+//	TODO:
+	override method state(){
 		return super() + state.getAsset()
 	}
 	
 	method movePlayerToOpositeDoor() {
-		const nextPosition = direction.oposite().positionNStepsInto(1)
+		const nextPosition = facingDirection.oposite().positionNStepsInto(1)
 		gameConfig.player().initialPositions(nextPosition.x(), nextPosition.y())
 	}
 	
@@ -106,10 +106,6 @@ class Door inherits GravityEntity {
 	
 	method open() {
 		state = openedDoor
-	}
-	
-	method collidedWithPlayer(collider) {
-		return collider.hasEntity() and collider.entity() == gameConfig.player()
 	}
 	
 }
@@ -177,9 +173,8 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, direction = direction, gravity = gameConfig.gravity(), imageName = direction.doorAsset())
+		const door = new Door(from = self, to = neighbour, facingDirection = direction, gravity = gameConfig.gravity(), baseImageName = direction.doorAsset())
 		door.initialPositions(door.getPosition().x(), door.getPosition().y())
-		door.setImageMap()
 		doors.add(door)
 	}
 	
@@ -208,7 +203,7 @@ class PlayerDungeonRoom inherits DungeonRoom {
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
-	var enemiesCap = 3
+	var enemiesCap = 4
 	
 	override method piso() = "muro.png"
 	
@@ -269,7 +264,7 @@ class BossDungeonRoom inherits EnemiesDungeonRoom {
 	}
 	
 	method spawnTrapdoor() {
-		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity(), imageName = "trapdoor.jpg")
+		const trapdoor = new Trapdoor(fromRoom = self, gravity = gameConfig.gravity(), baseImageName = "trapdoor")
 		trapdoor.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 		structures.add(trapdoor)
 		trapdoor.onAttach()
@@ -283,14 +278,12 @@ class Level {
 	const player
 	var structureGenerator = null
 	var structure = null
-	var levelRoomAssets = null
 	var spawnRoom = null
 	var bossRoom = null
 	
 	method initializeLevel() {
 		self.generateStructure()
 		self.setBossRoom()
-		self.generateRoomAsset()
 		self.generateLevel()
 		self.renderSpawnPoint()
 		self.initGravity()
@@ -305,9 +298,10 @@ class Level {
 	}
 		
 	method clearLevel() {
-		levelRoomAssets.forEach {
-			asset => asset.onRemove()
-		}
+// 		Acá estaría bueno sacarle decoracioens al nivel
+//		levelRoomAssets.forEach {
+//			asset => asset.onRemove()
+//		}
 	}
 	
 	method initGravity() {
@@ -317,11 +311,6 @@ class Level {
 	method renderSpawnPoint() {
 		spawnRoom.render()
 	}
-	
-	method generateRoomAsset() {
-		
-	}
-	
 	
 	method generateStructure() {
 		structureGenerator = new DungeonStructureGenerator(maxQuantity = roomQuantity)

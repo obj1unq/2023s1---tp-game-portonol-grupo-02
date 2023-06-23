@@ -1,22 +1,7 @@
 import Sprite.Image
 
-class Block inherits Image {
-
-	override method hadCollidedWithBlock() = true
+class Block inherits Image (shouldCheckCollision = false) {
 
 	override method isCollidable() = true
 
 }
-
-class CollisionableBlock inherits Block {
-
-	var direction
-
-	override method isCollidable() = true
-
-	method position() = position
-
-	method from(_direction) = _direction == direction
-
-}
-
