@@ -2,6 +2,7 @@ import wollok.game.*
 import gameConfig.*
 import dungeonRooms.*
 import Position.*
+import Sprite.Image
 
 class DungeonStructureGenerator {
 	
@@ -9,7 +10,7 @@ class DungeonStructureGenerator {
 	const maxQuantity
 	const pendingRooms = new Queue()
 	var roomsQuantity = 0
-	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player())
+	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player() /* , decorations = decorationFactory.getSpawnDecorations() */)
 		
 	method generate() {
 		pendingRooms.enqueue(startingRoom)
@@ -66,6 +67,10 @@ class DungeonStructureGenerator {
 		
 		return if(neighbour == null) {
 			const newNeighbour = new EnemiesDungeonRoom(position = neighbourPosition, player = gameConfig.player())
+			// Acá deberíamos de agregar decoraciones de un factory
+			const blood = new Image(baseImageName = "blood")
+			blood.position().inPosition(1, 1)
+			newNeighbour.addDecoration(blood)
 			rooms.add(newNeighbour)
 			roomsQuantity++
 			return newNeighbour

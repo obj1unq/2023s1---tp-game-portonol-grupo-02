@@ -15,6 +15,8 @@ class DamageManager {
 	method onTimePassed(time) {
 		cooldownManager.onTimePassed(time)
 	}
+	
+//	method imageModifier() = cooldownManager.imageModifier()
 
 }
 

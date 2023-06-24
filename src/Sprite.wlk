@@ -17,6 +17,10 @@ class Image {
 		self.initCollision()
 	}
 	
+	method render() {
+		game.addVisual(self)
+	}
+	
 	method initCollision() {
 		if(shouldCheckCollision) {
 			game.onCollideDo(self, { collider => self.onCollision(collider) })			

@@ -116,6 +116,8 @@ class NotOnDamageCooldown inherits DamageCooldown {
 		receiver.takeDmg(damageManager.entity().damage())
 		self.toggleCooldown()
 	}
+	
+	
 
 	override method opositeCooldown() {
 		return damageManager.onCooldown()
