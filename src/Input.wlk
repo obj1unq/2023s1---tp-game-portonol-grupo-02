@@ -23,7 +23,7 @@ object inputManager {
 		keyboard.s().onPressDo({ self.dispatchInput(bottom)})
 		keyboard.w().onPressDo({ self.dispatchInput(top)})
 		keyboard.space().onPressDo({ self.dispatchInput(space)})
-//		keyboard.c().onPressDo({ self.dispatchInput("c")})
+		keyboard.c().onPressDo({ self.dispatchInput(c)})
 		keyboard.up().onPressDo({ self.dispatchInput(north) })
 		keyboard.down().onPressDo({ self.dispatchInput(south) })
 		keyboard.left().onPressDo({ self.dispatchInput(west) })
@@ -35,6 +35,12 @@ object inputManager {
 class Orientation {
 	method onInput(movementController) {
 		movementController.facingDirection(self)
+	}
+}
+
+object c {
+	method onInput(movementController) {
+		movementController.movableEntity().changeWeapon()
 	}
 }
 

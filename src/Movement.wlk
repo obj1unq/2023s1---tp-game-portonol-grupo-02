@@ -277,6 +277,8 @@ class StateDirectionSpriteModifier inherits DirectionSpriteModifier {
 		direction = _direction
 	}
 	
+	method direction() = direction
+	
 }
 
 

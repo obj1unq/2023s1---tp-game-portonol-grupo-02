@@ -12,9 +12,13 @@ class IBoss {
 	const bossRoom
 	
 	method spawnItem()
-		
-	method makeEntryAnimation()
 	
+	method animation()
+	
+	method makeEntryAnimation() {
+		transitionManager.play(self.animation())
+	}
+		
 	/*
 	 * override method die() {
 	 * 

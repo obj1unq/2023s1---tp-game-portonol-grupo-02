@@ -26,7 +26,9 @@ class DistanceWeapon inherits Weapon {
 	const projectileFactory
 
 	override method attack(dealer) {
-		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction())
+		const startingPosition = dealer.direction().direction().getFromPosition(dealer.position())
+		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction())
+		projectile.initialPositions(startingPosition.x(), startingPosition.y())
 		projectile.onAttach()
 	}
 }
@@ -38,20 +40,33 @@ class Projectile inherits GravityEntity {
 	const fromEntity
 	const velocity
 	
+	override method onRemove() {
+		super()
+		console.println("bala eliminada")
+	}
+	
 	override method update(time){
-		if(gameConfig.isInMapLimits(self.position().x(), self.position().y())){
+		if(not gameConfig.isInMapLimits(self.position().x(), self.position().y())){
 			self.onRemove()
 		} else {
-			to.advance(self.position())
+			self.checkForCollision()
+			to.advance(velocity, self.position())
 		}
 	}
 	
 	method canDamage(entity)
 	
+	method checkForCollision() {
+		self.colliders().forEach {
+			collider => self.onCollision(collider)
+		}
+	}
+	
 	override method onCollision(collider) {
 		super(collider)
-		if(self.canDamage(collider)) {			
-			fromEntity.dealDamage(collider)
+		if(self.canDamage(collider) and isRendered) {			
+			self.onRemove()
+			collider.takeDmg(fromEntity.damage())
 		}
 	}
 }
@@ -68,7 +83,7 @@ class PlayerProjectile inherits Projectile {
 	}
 }
 
-class RockProjectile inherits PlayerProjectile(baseImageName = "rock-projectile", velocity = 5) {}
+class RockProjectile inherits PlayerProjectile(baseImageName = "rock-projectile", velocity = 1) {}
 
 class ProjectileFactory {
 	method createProjectileFrom(dealer, direction)
@@ -76,8 +91,37 @@ class ProjectileFactory {
 
 object rockProjectileFactory inherits ProjectileFactory {
 	override method createProjectileFrom(dealer, direction) {
-		const startingPosition = direction.getFromPosition(dealer.position())
-		const rock = new RockProjectile(fromEntity = dealer, gravity = global.gravity(), to = direction)
-		rock.initialPositions(startingPosition.x(), startingPosition.y())
+		return new RockProjectile(fromEntity = dealer, gravity = global.gravity(), to = direction)
 	}
+}
+
+class WeaponManager {
+	var actualWeapon = 0
+	const weapons = []
+	
+	method changeWeapon() {
+		if(weapons.size() != 0) {
+			actualWeapon++
+			self.changeNextWeapon()
+		}
+	}
+	
+	method changeNextWeapon() {
+		if(actualWeapon >= weapons.size()) {
+			actualWeapon = 0
+		}
+	}
+	
+	method attack(dealer) {
+		weapons.get(actualWeapon).attack(dealer)
+	}
+	
+	method addWeapon(weapon) {
+		weapons.add(weapon)
+	}
+	
+	method removeWeapon(weapon) {
+		weapons.remove(weapon)
+	}
+	
 }
