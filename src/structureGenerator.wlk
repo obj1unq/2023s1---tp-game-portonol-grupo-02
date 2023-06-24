@@ -165,6 +165,10 @@ object top {
 		return position.x()
 	}
 	
+	method advance(distance, position) {
+		position.up(distance)
+	}
+	
 	method getYFromPosition(position) {
 		return position.y() + 1
 	}
@@ -196,6 +200,10 @@ object bottom {
 	
 	method getFromPosition(position) {
 		return game.at(position.x(), position.y() - 1)
+	}
+	
+	method advance(distance, position) {
+		position.down(distance)
 	}
 	
 	method getXFromPosition(position) {
@@ -235,6 +243,10 @@ object left {
 		return game.at(position.x() - 1, position.y())
 	}
 	
+	method advance(distance, position) {
+		position.left(distance)
+	}
+	
 	method getXFromPosition(position) {
 		return position.x() - 1
 	}
@@ -270,6 +282,10 @@ object right {
 	
 	method getFromPosition(position) {
 		return game.at(position.x() + 1, position.y())
+	}
+	
+	method advance(distance, position) {
+		position.right(distance)
 	}
 	
 	method getXFromPosition(position) {
