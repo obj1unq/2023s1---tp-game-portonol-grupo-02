@@ -2,17 +2,25 @@ import Global.*
 import Entities.GravityEntity
 import structureGenerator.*
 import gameConfig.*
+import SoundEffect.stabKnifeEffect
+import SoundEffect.slingshotEffect
 
 class Weapon {
-	method attack(dealer)	
+	method attack(dealer) {
+		self.makeSound()	
+	}
+	
+	method makeSound()
 }
 
 object nullWeapon inherits Weapon {
+	override method makeSound() {}
 	override method attack(dealer) {}
 }
 
 class MeleeWeapon inherits Weapon {
 	override method attack(dealer) {
+		super(dealer)
 		const facingDirection = dealer.movementController().facingDirection()
 		const colliders = facingDirection.collisionsFrom(dealer.position().x(), dealer.position().y())
 		colliders.forEach {
@@ -20,16 +28,26 @@ class MeleeWeapon inherits Weapon {
 				if(global.isEnemy(collider)) { dealer.damageManager().dealDmg(collider) }
 		}
 	}
+	
+	override method makeSound() {
+		stabKnifeEffect.play()
+	}
+	
 }
 
 class DistanceWeapon inherits Weapon {
 	const projectileFactory
 
 	override method attack(dealer) {
+		super(dealer)
 		const startingPosition = dealer.direction().direction().getFromPosition(dealer.position())
 		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction())
 		projectile.initialPositions(startingPosition.x(), startingPosition.y())
 		projectile.onAttach()
+	}
+	
+	override method makeSound() {
+		slingshotEffect.play()
 	}
 }
 

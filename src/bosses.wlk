@@ -54,6 +54,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	
 	method spawnItem() {
 		const item = consumablesPool.getRandomItem(bossRoom)
+		bossRoom.addConsumable(item)
 		item.onAttach()
 	}
 	

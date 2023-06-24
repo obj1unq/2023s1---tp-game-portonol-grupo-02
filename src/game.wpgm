@@ -42,7 +42,7 @@ program myGame {
 		],
 		duration = 6000
 	)
-	
+
 	const image = new Image(baseImageName = "fondosala")
 	image.render(1, 1)
 	
@@ -53,5 +53,5 @@ program myGame {
 	transitionManager.play(transition)
 	
 	game.start()
-	
+		
 }

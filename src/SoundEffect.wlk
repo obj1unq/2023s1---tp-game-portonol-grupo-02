@@ -21,20 +21,30 @@ object slimeJumpEffect inherits SoundEffect {
 
 }
 
-object characterJumpEffect inherits SoundEffect {
-
-	override method play() {
-		game.sound("mariojump.mp3").play()
-	}
-
-}
-
 object damagePlayerEffect inherits SoundEffect {
 
 	override method play() {
 		game.sound("dmgplayer.mp3").play()
 	}
 
+}
+
+object stabKnifeEffect inherits SoundEffect {
+	override method play() {
+		game.sound("knife-impact-sound.mp3").play()
+	}
+}
+
+object itemPickedUpEffect inherits SoundEffect {
+	override method play() {
+		game.sound("item-pickup-sound.mp3").play()
+	}
+}
+
+object slingshotEffect inherits SoundEffect {
+	override method play() {
+		game.sound("slingshot-sound.mp3").play()
+	}
 }
 
 object deathPlayerEffect inherits SoundEffect {
