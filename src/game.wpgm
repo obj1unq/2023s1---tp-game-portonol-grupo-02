@@ -11,7 +11,9 @@ import Movement.*
 import Position.*
 import Sprite.*
 import SoundEffect.*
-import Global.* 
+import Global.*
+import transitionManager.Transition
+import transitionManager.transitionManager 
 
 program myGame {
 		
@@ -32,10 +34,21 @@ program myGame {
 	global.gravity(gravity)
 	global.player(player)
 	
+	const transition = new Transition(
+		frames = [
+			"loading"
+		],
+		duration = 3000
+	)
+	
 	const image = new Image(baseImageName = "fondosala")
 	image.render(1, 1)
 	
 	levelManager.loadNextLevel()
+	
+	gravity.init()
+	
+	transitionManager.play(transition)
 	
 	game.start()
 	

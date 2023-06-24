@@ -286,7 +286,7 @@ class Level {
 		self.setBossRoom()
 		self.generateLevel()
 		self.renderSpawnPoint()
-		self.initGravity()
+//		self.initGravity()
 	}
 	
 	method levelEnemyPool() = levelEnemyPool
@@ -304,9 +304,9 @@ class Level {
 //		}
 	}
 	
-	method initGravity() {
-		gameConfig.gravity().init()
-	}
+//	method initGravity() {
+//		gameConfig.gravity().init()
+//	}
 	
 	method renderSpawnPoint() {
 		spawnRoom.render()

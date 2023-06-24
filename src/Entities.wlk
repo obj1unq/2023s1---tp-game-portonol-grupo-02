@@ -35,7 +35,7 @@ class Entity inherits Image {
 
 class MovableEntity inherits CollapsableEntity {
 
-	var property movementController = new StaticMovementManager(movableEntity = null)
+	var property movementController = staticMovementManager
 
 	var direction = new NullDirectionSpriteModifier()
 
@@ -249,8 +249,6 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)
-//		console.println(self.image())
-		console.println(direction.imageModifier())
 	}
 	
 	override method attack() {
