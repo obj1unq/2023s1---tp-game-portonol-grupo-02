@@ -12,9 +12,13 @@ class IBoss {
 	const bossRoom
 	
 	method spawnItem()
-		
-	method makeEntryAnimation()
 	
+	method animation()
+	
+	method makeEntryAnimation() {
+		transitionManager.play(self.animation())
+	}
+		
 	/*
 	 * override method die() {
 	 * 
@@ -50,6 +54,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	
 	method spawnItem() {
 		const item = consumablesPool.getRandomItem(bossRoom)
+		bossRoom.addConsumable(item)
 		item.onAttach()
 	}
 	

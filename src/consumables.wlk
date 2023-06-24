@@ -1,13 +1,20 @@
 import Entities.GravityEntity
 import Global.*
 import gameConfig.*
+import SoundEffect.itemPickedUpEffect
+import transitionManager.Transition
+import transitionManager.transitionManager
 
 class Consumable inherits GravityEntity(initialY = gameConfig.yMiddle() + 2, initialX = gameConfig.xMiddle()) {
 	const forRoom
 	
 	method consumedBy(player) {
 		forRoom.removeConsumable(self)
+		self.playPickupAnimation()
+		itemPickedUpEffect.play()
 	}
+	
+	method playPickupAnimation() {}
 		
 	override method onCollision(collider) {
 		if(collider == global.player()) {
@@ -30,6 +37,20 @@ class DamageModifierConsumable inherits Consumable {
 	override method consumedBy(player) {
 		super(player)
 		player.addDamage(damage)
+	}
+	
+	override method playPickupAnimation() {
+		const transition = 
+			new Transition(
+					frames = [
+						"mate-pickup-anim-1",
+						"mate-pickup-anim-2",
+						"mate-pickup-anim-3"
+					],
+				duration = 800
+			)
+		transitionManager.play(transition)
+		itemPickedUpEffect.play()
 	}
 }
 

@@ -90,7 +90,6 @@ class Door inherits GravityEntity {
 		}
 	}
 	
-//	TODO:
 	override method state(){
 		return super() + state.getAsset()
 	}
