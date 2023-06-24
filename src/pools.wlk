@@ -3,6 +3,9 @@ import gameConfig.*
 import Sprite.*
 import structureGenerator.*
 import enemiesFactories.*
+import consumables.*
+import Global.global
+import dungeonRooms.levelManager
 
 class LevelEnemyPool {
 
@@ -13,21 +16,31 @@ class LevelEnemyPool {
 	method getRandomBoss()
 	method appendPool(_pool)
 	method addEnemy(enemy)
+	method boss(forRoom)
+	method removeEnemy(enemy)
+	
+}
+
+object consumablesPool {
+	const items = [mateFactory, canioncitoDDLFactory]
+	
+	method getRandomItem(forRoom) {
+		const item = items.anyOne()
+		return item.getConsumable(forRoom)	
+	}
 }
 
 object emptyEnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
 	
 	var property pool = []
 	
-	override method getEnemy(){
-	}
+	override method boss(forRoom) {}
+	override method getEnemy(){}
 	override method getRandomEnemies(quantity) = []
-	override method getRandomBoss(){
-	}
-	override method appendPool(_pool){
-	}
-	override method addEnemy(enemy){
-	}
+	override method getRandomBoss(){}
+	override method appendPool(_pool){}
+	override method addEnemy(enemy){}
+	override method removeEnemy(enemy){}
 }
 
 object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
@@ -43,6 +56,14 @@ object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory
 			const enemy = levelFactory.getRandomEnemy()
 			return enemy
 		}
+	}
+	
+	override method removeEnemy(enemy) {
+		pool.remove(enemy)
+	}
+	
+	override method boss(forRoom) {
+		return levelFactory.boss(forRoom)
 	}
 	
 	// TODO: Agregar posiciones
@@ -71,4 +92,33 @@ object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory
 	}
 }
 
+class RemoveBehaviour {
+	method onRemove(entity)
+	method onAdd(entity)
+}
 
+class GlobalRemoveBehaviour inherits RemoveBehaviour {
+	override method onRemove(entity) {
+	 	global.removeEnemy(entity)
+	 }
+	 
+	 override method onAdd(entity) {
+	 	global.addEnemy(entity)
+	 }
+}
+
+object poolRemoveBehaviour inherits GlobalRemoveBehaviour {
+	
+	 override method onRemove(entity) {
+	 	super(entity)
+	 	levelManager.lastPool().addEnemy(entity)
+	 }
+	 
+	 override method onAdd(entity) {
+	 	super(entity)
+	 	levelManager.lastPool().removeEnemy(entity)
+	 }
+	 
+}
+
+object globalRemoveBehaviour inherits GlobalRemoveBehaviour {}

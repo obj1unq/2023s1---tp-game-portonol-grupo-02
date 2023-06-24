@@ -4,7 +4,7 @@ import Position.*
 import Movement.staticMovementManager
 
 object global {
-	const enemies = []
+	const property enemies = []
 	var property gravity
 	var player
 	var playerMovementManager = staticMovementManager

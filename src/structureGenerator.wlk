@@ -330,6 +330,10 @@ class Queue {
 		elements.add(element)
 	}
 	
+	method remove(element) {
+		elements.remove(element)
+	}
+	
 	method isEmpty(){
 		return elements.size() == 0
 	}

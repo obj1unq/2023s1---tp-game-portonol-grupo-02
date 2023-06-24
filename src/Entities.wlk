@@ -7,6 +7,7 @@ import Global.global
 import Movement.*
 import weapons.*
 import structureGenerator.*
+import pools.poolRemoveBehaviour
 
 class Entity inherits Image {
 	
@@ -180,13 +181,19 @@ class DamageEntity inherits GravityEntity {
 
 }
 
-class EnemyDamageEntity inherits DamageEntity {
 
+class EnemyDamageEntity inherits DamageEntity {
+	const removeBehaviour = poolRemoveBehaviour
 	const damageManager = new DamageManager(entity = self)
 	var deathCallback = {}
 
 	method resetState() {
 		hp = maxHp
+	}
+
+	override method onAttach() {
+		super()
+		global.addEnemy(self)
 	}
 
 	method playerOrNullishEnemy(collider) {
@@ -221,8 +228,9 @@ class EnemyDamageEntity inherits DamageEntity {
 	override method onRemove(){
 		super()
 		deathCallback.apply()
+		global.removeEnemy(self)
 	}
-	
+		
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)

@@ -43,12 +43,6 @@ program myGame {
 		duration = 3000
 	)
 	
-	// Sacar
-	keyboard.i().onPressDo {
-		const mate = new CanioncitoDDL(gravity = gravity)
-		mate.onAttach()
-	}
-	
 	const image = new Image(baseImageName = "fondosala")
 	image.render(1, 1)
 	

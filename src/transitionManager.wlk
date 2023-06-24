@@ -40,7 +40,8 @@ object transitionManager {
 	method finishAnimation() {
 		game.removeTickEvent(transitionName)
 		currentImage.unrender()
-		global.resumeGame()		
+		global.resumeGame()
+		currentTime = 0
 	}
 	
 }

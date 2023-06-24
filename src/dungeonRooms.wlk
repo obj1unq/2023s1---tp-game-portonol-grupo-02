@@ -114,6 +114,7 @@ class DungeonRoom inherits Node {
 	const property doors = #{}
 	const property structures = #{}
 	const property decorations = #{}
+	const property consumables = #{}
 	
 	method piso()
 	
@@ -121,12 +122,14 @@ class DungeonRoom inherits Node {
 		self.renderDoors()
 		self.renderStructures()
 		self.renderDecorations()
+		self.renderConsumables()
 	}
 	
 	method unrender() {
 		self.unrenderDoors()
 		self.unrenderStructures()
 		self.unrenderDecorations()
+		self.unrenderConsumables()
 	}
 	
 	method addDecoration(decoration) {
@@ -136,6 +139,26 @@ class DungeonRoom inherits Node {
 	method renderStructures() {
 		structures.forEach {
 			structure => structure.onAttach()
+		}
+	}
+	
+	method addConsumable(consumable) {
+		consumables.add(consumable)
+	}
+	
+	method removeConsumable(consumable) {
+		consumables.remove(consumable)
+	}
+	
+	method renderConsumables() {
+		consumables.forEach {
+			consumable => consumable.onAttach()
+		}
+	}
+	
+	method unrenderConsumables() {
+		consumables.forEach {
+			consumable => consumable.onRemove()
 		}
 	}
 	
@@ -241,7 +264,6 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 			enemy => 
 				enemy.setDeathCallback{
 					enemies.remove(enemy)
-					levelManager.lastPool().addEnemy(enemy)
 					self.checkIfOpenDoors()
 				}
 				enemy.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
@@ -279,12 +301,25 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 }
 
-class BossDungeonRoom inherits EnemiesDungeonRoom {
+class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}) {
+	const levelEnemyFactory
+	
 	override method piso() = "rojo.png"
 	
 	override method onDoorOpening() {
 		super()
 		self.spawnTrapdoor()
+	}
+	
+	override method addEnemies() {
+		if (not cleaned) {
+			const boss = levelEnemyFactory.boss(self)
+			boss.setDeathCallback {
+				enemies.remove(boss)
+				self.checkIfOpenDoors()
+			}
+			enemies.add(boss)
+		}	
 	}
 	
 	method spawnTrapdoor() {
@@ -352,7 +387,7 @@ class Level {
 		
 		const replaced = roomsWithOneNeighbour.last()
 		structure.remove(replaced)
-		bossRoom = new BossDungeonRoom(player = gameConfig.player(), position = replaced.position())
+		bossRoom = new BossDungeonRoom(levelEnemyFactory = levelEnemyPool, player = gameConfig.player(), position = replaced.position())
 		bossRoom.replace(replaced)
 		structure.add(bossRoom)
 		

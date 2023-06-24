@@ -144,6 +144,19 @@ class GravityController {
 
 }
 
+object nullishGravityController inherits GravityController(gameInstance = null, name = null, tickTime = null) {
+	
+	override method suscribe(body) {}
+
+	override method unsuscribe(body) {}
+	
+	override method init() {}
+
+	override method pause() {}
+
+	override method start() {}
+}
+
 class CollidableMovementController inherits MovementController {
 
 	override method canMoveTo(direction) {

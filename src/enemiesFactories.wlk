@@ -2,13 +2,15 @@ import Entities.*
 import Global.*
 import Sprite.*
 import Movement.*
+import bosses.SlimeTurret
+import gameConfig.*
 
 class LevelEnemyFactory {
 	const scaleDamage
 	const scaleHP
 	const enemiesFactories = []
 	method getRandomEnemy()
-
+	method boss(forRoom)
 }
 
 object level1EnemyFactory inherits LevelEnemyFactory(
@@ -17,10 +19,14 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 	scaleHP = 1
 ) {
 	
+	override method boss(forRoom) {
+		const boss = new SlimeTurret(bossRoom = forRoom, player = global.player(), damage = 40, maxHp = 300, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
+		boss.changeMovementController(new CooldownMovementController(movableEntity = boss))
+		return boss
+	}
+	
 	override method getRandomEnemy() {
-		const enemy = enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
-		global.addEnemy(enemy)
-		return enemy
+		return enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
 	}
 
 }
@@ -32,7 +38,7 @@ class EnemyFactory {
 object slimeEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
 		const slime = new Slime(player = global.player(), damage = 10 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "slime")
-		slime.movementController(new CooldownMovementController(movableEntity = slime))
+		slime.changeMovementController(new CooldownMovementController(movableEntity = slime))
 		return slime
 	}
 }
@@ -40,7 +46,7 @@ object slimeEnemyFactory inherits EnemyFactory {
 object flyEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
 		const fly = new Fly(player = global.player(), damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "fly")
-		fly.movementController(new CollidableMovementController(movableEntity = fly))
+		fly.changeMovementController(new CollidableMovementController(movableEntity = fly))
 		return fly
 	}
 }
@@ -48,7 +54,7 @@ object flyEnemyFactory inherits EnemyFactory {
 object zombieEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
 		const zombie = new Zombie(player = global.player(), damage = 20 * scaleDamage, maxHp = 50 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "zombie")
-		zombie.movementController(new CollidableMovementController(movableEntity = zombie))
+		zombie.changeMovementController(new CollidableMovementController(movableEntity = zombie))
 		return zombie
 	}
 }
