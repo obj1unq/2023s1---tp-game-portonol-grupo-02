@@ -40,7 +40,7 @@ program myGame {
 		frames = [
 			"loading"
 		],
-		duration = 3000
+		duration = 6000
 	)
 	
 	const image = new Image(baseImageName = "fondosala")

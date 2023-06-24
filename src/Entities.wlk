@@ -193,7 +193,7 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	override method onAttach() {
 		super()
-		global.addEnemy(self)
+		removeBehaviour.onAdd(self)
 	}
 
 	method playerOrNullishEnemy(collider) {
@@ -214,9 +214,7 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("recibio daño, nueva vida = " + hp)
 		if (self.isDead()) {
-			console.println("ripeé")
 			self.die()
 		}
 	}
@@ -228,7 +226,7 @@ class EnemyDamageEntity inherits DamageEntity {
 	override method onRemove(){
 		super()
 		deathCallback.apply()
-		global.removeEnemy(self)
+		removeBehaviour.onRemove(self)
 	}
 		
 	override method update(time){
@@ -352,6 +350,10 @@ class Fly inherits WalkToPlayerEnemy(velocity = 2) {}
 
 class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 400, movementCooldownReload = 400) {
 	const lastPlayerPosition = new MutablePosition(x = player.position().x(), y = player.position().y())
+	
+	override method resetState() {
+		lastPlayerPosition.inPosition(player.position().x(), player.position().y())
+	}
 	
 	override method update(time){
 		super(time)
