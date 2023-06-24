@@ -163,6 +163,14 @@ class DamageEntity inherits GravityEntity {
 	method takeDmg(dmg) {
 		hp -= dmg
 	}
+	
+	method addDamage(quantity) {
+		damage += quantity
+	}
+	
+	method heal(quantity) {
+		hp = maxHp.min(hp + quantity)
+	}
 
 	method isDead() = hp <= 0
 	
