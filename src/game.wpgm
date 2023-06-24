@@ -13,7 +13,9 @@ import Sprite.*
 import SoundEffect.*
 import Global.*
 import transitionManager.Transition
-import transitionManager.transitionManager 
+import transitionManager.transitionManager
+import consumables.Mate
+import consumables.CanioncitoDDL 
 
 program myGame {
 		
@@ -40,6 +42,12 @@ program myGame {
 		],
 		duration = 3000
 	)
+	
+	// Sacar
+	keyboard.i().onPressDo {
+		const mate = new CanioncitoDDL(gravity = gravity)
+		mate.onAttach()
+	}
 	
 	const image = new Image(baseImageName = "fondosala")
 	image.render(1, 1)
