@@ -64,7 +64,7 @@ class MovementController {
 
 }
 
-class StaticMovementManager inherits MovementController {
+object staticMovementManager inherits MovementController(movableEntity = null) {
 
 	override method movableEntity(_movableEntity) {
 	}
@@ -128,7 +128,7 @@ class GravityController {
 
 	method pause() {
 		continue = false
-		gameInstance.removeTick(name)
+		gameInstance.removeTickEvent(name)
 	}
 
 	method start() {

@@ -1,11 +1,24 @@
 import wollok.game.*
 import Sprite.*
 import Position.*
+import Movement.staticMovementManager
 
 object global {
 	const enemies = []
 	var property gravity
 	var player
+	var playerMovementManager = staticMovementManager
+	
+	method pauseGame() {
+		playerMovementManager = player.movementController()
+		player.changeMovementController(staticMovementManager)
+		gravity.pause()
+	}
+	
+	method resumeGame() {
+		player.changeMovementController(playerMovementManager)
+		gravity.init()
+	}
 	
 	method addEnemy(enemy){
 		enemies.add(enemy)

@@ -113,17 +113,24 @@ class Door inherits GravityEntity {
 class DungeonRoom inherits Node {	
 	const property doors = #{}
 	const property structures = #{}
+	const property decorations = #{}
 	
 	method piso()
 	
 	method render() {
 		self.renderDoors()
 		self.renderStructures()
+		self.renderDecorations()
 	}
 	
 	method unrender() {
 		self.unrenderDoors()
 		self.unrenderStructures()
+		self.unrenderDecorations()
+	}
+	
+	method addDecoration(decoration) {
+		decorations.add(decoration)
 	}
 	
 	method renderStructures() {
@@ -132,9 +139,22 @@ class DungeonRoom inherits Node {
 		}
 	}
 	
+	
 	method unrenderStructures() {
 		structures.forEach {
 			structure => structure.onRemove()
+		}
+	}
+	
+	method renderDecorations() {
+		decorations.forEach {
+			decoration => decoration.render()
+		}
+	}
+	
+	method unrenderDecorations() {
+		decorations.forEach {
+			decoration => decoration.unrender()
 		}
 	}
 	
@@ -204,6 +224,7 @@ class PlayerDungeonRoom inherits DungeonRoom {
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
 	var enemiesCap = 4
+	var cleaned = false
 	
 	override method piso() = "muro.png"
 	
@@ -229,7 +250,9 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	}
 	
 	method addEnemies() {
-		 enemies.addAll(levelManager.lastPool().getRandomEnemies(enemiesCap))
+		 if(not cleaned) {
+			 enemies.addAll(levelManager.lastPool().getRandomEnemies(enemiesCap))		 	
+		 }
 	}
 	
 	method checkIfOpenDoors() {
@@ -240,6 +263,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 	method onDoorOpening() {
 		self.openDoors()
+		cleaned = true
 	}
 	
 	override method unrender() {
@@ -286,7 +310,7 @@ class Level {
 		self.setBossRoom()
 		self.generateLevel()
 		self.renderSpawnPoint()
-		self.initGravity()
+//		self.initGravity()
 	}
 	
 	method levelEnemyPool() = levelEnemyPool
@@ -304,9 +328,9 @@ class Level {
 //		}
 	}
 	
-	method initGravity() {
-		gameConfig.gravity().init()
-	}
+//	method initGravity() {
+//		gameConfig.gravity().init()
+//	}
 	
 	method renderSpawnPoint() {
 		spawnRoom.render()
