@@ -118,16 +118,16 @@ class DungeonRoom inherits Node {
 	method piso()
 	
 	method render() {
+		self.renderDecorations()
 		self.renderDoors()
 		self.renderStructures()
-		self.renderDecorations()
 		self.renderConsumables()
 	}
 	
 	method unrender() {
+		self.unrenderDecorations()
 		self.unrenderDoors()
 		self.unrenderStructures()
-		self.unrenderDecorations()
 		self.unrenderConsumables()
 	}
 	
@@ -160,7 +160,6 @@ class DungeonRoom inherits Node {
 			consumable => consumable.onRemove()
 		}
 	}
-	
 	
 	method unrenderStructures() {
 		structures.forEach {
@@ -300,7 +299,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 }
 
-class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}) {
+class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}, decorations = decorationFactory.getBossDecorations()) {
 	const levelEnemyFactory
 	
 	override method piso() = "rojo.png"

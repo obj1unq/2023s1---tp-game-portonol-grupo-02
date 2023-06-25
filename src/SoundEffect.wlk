@@ -41,6 +41,12 @@ object itemPickedUpEffect inherits SoundEffect {
 	}
 }
 
+object enterBossRoomEffect inherits SoundEffect {
+	override method play() {
+		game.sound("enter-boss.mp3").play()
+	}
+}
+
 object slingshotEffect inherits SoundEffect {
 	override method play() {
 		game.sound("slingshot-sound.mp3").play()

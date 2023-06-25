@@ -4,6 +4,7 @@ import gameConfig.*
 import SoundEffect.itemPickedUpEffect
 import transitionManager.Transition
 import transitionManager.transitionManager
+import wollok.game.*
 
 class Consumable inherits GravityEntity(initialY = gameConfig.yMiddle() + 2, initialX = gameConfig.xMiddle()) {
 	const forRoom
@@ -11,7 +12,6 @@ class Consumable inherits GravityEntity(initialY = gameConfig.yMiddle() + 2, ini
 	method consumedBy(player) {
 		forRoom.removeConsumable(self)
 		self.playPickupAnimation()
-		itemPickedUpEffect.play()
 	}
 	
 	method playPickupAnimation() {}
@@ -45,12 +45,31 @@ class DamageModifierConsumable inherits Consumable {
 					frames = [
 						"mate-pickup-anim-1",
 						"mate-pickup-anim-2",
-						"mate-pickup-anim-3"
+						"mate-pickup-anim-3",
+						"mate-pickup-anim-4",
+						"mate-pickup-anim-5",
+						"mate-pickup-anim-6",
+						"mate-pickup-anim-7",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-9",
+						"mate-pickup-anim-10",
+						"mate-pickup-anim-11",
+						"mate-pickup-anim-12",
+						"mate-pickup-anim-13",
+						"mate-pickup-anim-14",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16"
 					],
-				duration = 800
+				duration = 2000
 			)
 		transitionManager.play(transition)
-		itemPickedUpEffect.play()
+		game.schedule(800, {itemPickedUpEffect.play()})
 	}
 }
 
@@ -60,6 +79,39 @@ class LifeModifier inherits Consumable {
 	override method consumedBy(player) {
 		super(player)
 		player.heal(healing)
+	}
+	
+	override method playPickupAnimation() {
+		const transition = 
+			new Transition(
+					frames = [
+						"canon-pickup-anim-1",
+						"canon-pickup-anim-2",
+						"canon-pickup-anim-3",
+						"canon-pickup-anim-4",
+						"canon-pickup-anim-5",
+						"canon-pickup-anim-6",
+						"canon-pickup-anim-7",
+						"canon-pickup-anim-8",
+						"canon-pickup-anim-9",
+						"canon-pickup-anim-10",
+						"canon-pickup-anim-11",
+						"canon-pickup-anim-12",
+						"canon-pickup-anim-13",
+						"canon-pickup-anim-14",
+						"canon-pickup-anim-15",
+						"canon-pickup-anim-16",
+						"canon-pickup-anim-15",
+						"canon-pickup-anim-16",
+						"canon-pickup-anim-15",
+						"canon-pickup-anim-16",
+						"canon-pickup-anim-15",
+						"canon-pickup-anim-16"
+					],
+				duration = 2000
+			)
+		transitionManager.play(transition)
+		game.schedule(1000, {itemPickedUpEffect.play()})
 	}
 }
 

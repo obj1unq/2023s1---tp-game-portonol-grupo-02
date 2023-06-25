@@ -3,6 +3,7 @@ import pools.consumablesPool
 import transitionManager.*
 import Movement.CooldownMovementController
 import pools.globalRemoveBehaviour
+import SoundEffect.*
 
 // Por limitaciones del lenguaje, no hay interfaces. Usar esta clase como interfaz para 
 // aprovecharse del polimorfismo que ofrece wollok
@@ -33,7 +34,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	const bossRoom
 	
 	method animation() {
-		return new Transition(duration = 3000, frames = [
+		return new Transition(duration = 2000, frames = [
 			"kingSlimeScreen-1",
 			"kingSlimeScreen-2",
 			"kingSlimeScreen-3",
@@ -50,6 +51,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	
 	method makeEntryAnimation() {
 		transitionManager.play(self.animation())
+		enterBossRoomEffect.play()
 	}
 	
 	method spawnItem() {
