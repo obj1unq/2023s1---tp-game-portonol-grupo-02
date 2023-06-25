@@ -10,7 +10,7 @@ class DungeonStructureGenerator {
 	const maxQuantity
 	const pendingRooms = new Queue()
 	var roomsQuantity = 0
-	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player() /* , decorations = decorationFactory.getSpawnDecorations() */)
+	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player(), decorations = decorationFactory.getSpawnDecorations())
 		
 	method generate() {
 		pendingRooms.enqueue(startingRoom)
@@ -70,7 +70,7 @@ class DungeonStructureGenerator {
 			// Acá deberíamos de agregar decoraciones de un factory
 			const blood = new Image(baseImageName = "blood")
 			blood.position().inPosition(1, 1)
-			newNeighbour.addDecoration(blood)
+//			newNeighbour.addDecoration(blood)
 			rooms.add(newNeighbour)
 			roomsQuantity++
 			return newNeighbour
@@ -78,6 +78,13 @@ class DungeonStructureGenerator {
 			neighbour
 		}
 	}
+}
+
+object decorationFactory{
+	const spawnDecorations = #{new Image(baseImageName = "instructions")}
+	const bossDecorations = #{new Image(baseImageName = "bossDecorations")}
+	method getSpawnDecorations() = spawnDecorations
+	method getBossDecorations() = bossDecorations
 }
 
 object randomizer {
