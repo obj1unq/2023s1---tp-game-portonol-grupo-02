@@ -37,6 +37,7 @@ object global {
 	method deathScreen(){
 		const deathModal = new Image(baseImageName = "deathscreen")
 		deathModal.render(0,0)
+		// TODO: Hacer que vuelva al main menu después del tiempo del sonido
 	}
 	
 	method isEnemy(entity) = enemies.contains(entity)

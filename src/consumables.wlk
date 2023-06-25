@@ -45,9 +45,21 @@ class DamageModifierConsumable inherits Consumable {
 					frames = [
 						"mate-pickup-anim-1",
 						"mate-pickup-anim-2",
-						"mate-pickup-anim-3"
+						"mate-pickup-anim-3",
+						"mate-pickup-anim-4",
+						"mate-pickup-anim-5",
+						"mate-pickup-anim-6",
+						"mate-pickup-anim-7",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-8"
 					],
-				duration = 800
+				duration = 1200
 			)
 		transitionManager.play(transition)
 		itemPickedUpEffect.play()
