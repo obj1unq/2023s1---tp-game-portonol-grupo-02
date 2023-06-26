@@ -67,7 +67,7 @@ class DamageModifierConsumable inherits Consumable {
 					],
 				duration = 2000,
 				sfx = game.sound("item-pickup-sound.mp3"),
-				delay = 1000
+				delay = 800
 			)
 		transitionManager.play(transition)
 		
@@ -111,7 +111,7 @@ class LifeModifier inherits Consumable {
 					],
 				duration = 2000,
 				sfx = game.sound("item-pickup-sound.mp3"),
-				delay = 1000
+				delay = 800
 			)
 		transitionManager.play(transition)
 	}

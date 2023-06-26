@@ -34,13 +34,19 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	const bossRoom
 	
 	method animation() {
-		return new Transition(duration = 2000, frames = [
+		return new Transition(duration = 1200, frames = [
 			"kingSlimeScreen-1",
 			"kingSlimeScreen-2",
 			"kingSlimeScreen-3",
 			"kingSlimeScreen-4",
 			"kingSlimeScreen-5",
-			"kingSlimeScreen-5"
+			"kingSlimeScreen-6",
+			"kingSlimeScreen-7",
+			"kingSlimeScreen-8",
+			"kingSlimeScreen-9",
+			"kingSlimeScreen-10",
+			"kingSlimeScreen-11",
+			"kingSlimeScreen-12"
 		], sfx = game.sound("enter-boss.mp3"))
 	}
 	
