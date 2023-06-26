@@ -28,6 +28,15 @@ class CooldownManager {
 
 }
 
+class FlySpawnerCooldown inherits CooldownManager(totalCooldownTime = 3000) {
+	const entityFlySpawner
+	
+	override method onCooldownFinish() {
+		self.resetCooldown()
+		entityFlySpawner.spawnFly()
+	}
+}
+
 class BinaryCooldownManager inherits CooldownManager {
 	
 	method toggleAndResetCooldown() {

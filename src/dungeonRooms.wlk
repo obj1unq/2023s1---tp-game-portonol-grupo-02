@@ -359,6 +359,15 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 		self.checkIfOpenDoors()
 	}
 	
+	method addEnemy(enemy) {
+		enemies.add(enemy)
+		enemy.setDeathCallback{
+			enemies.remove(enemy)
+			self.checkIfOpenDoors()
+		}
+		enemy.onAttach()
+	}
+	
 	method renderEnemies() {
 		enemies.forEach {
 			enemy => 

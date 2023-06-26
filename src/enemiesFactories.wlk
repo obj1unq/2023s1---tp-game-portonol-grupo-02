@@ -4,6 +4,7 @@ import Sprite.*
 import Movement.*
 import bosses.SlimeTurret
 import gameConfig.*
+import bosses.LordOfFlies
 
 class LevelEnemyFactory {
 	const scaleDamage
@@ -20,8 +21,8 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 ) {
 	
 	override method boss(forRoom) {
-		const boss = new SlimeTurret(bossRoom = forRoom, player = global.player(), damage = 40, maxHp = 300, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
-		boss.changeMovementController(new CooldownMovementController(movableEntity = boss))
+		const boss = new LordOfFlies(bossRoom = forRoom, damage = 40, maxHp = 300, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
+		boss.changeMovementController(new CollidableMovementController(movableEntity = boss))
 		return boss
 	}
 	
