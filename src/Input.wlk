@@ -33,12 +33,12 @@ object inputManager {
 
 class Orientation {
 	method onInput(movementController) {
-		movementController.facingDirection(self)
-		movementController.movableEntity().direction().direction(self)
+		movementController.facingDirection(self.direction())
+		movementController.movableEntity().direction().direction(self.direction())
 		movementController.movableEntity().attack()
 	}
 		
-	method asDirection()
+	method direction()
 	
 }
 
@@ -49,37 +49,25 @@ object c {
 }
 
 object north inherits Orientation {
-	method collisionsFrom(x, y) {
-		return top.collisionsFrom(x, y)
-	}
 	
-	override method asDirection() = top
+	override method direction() = top
 	
 }
 
 object south inherits Orientation {
-	method collisionsFrom(x, y) {
-		return bottom.collisionsFrom(x, y)
-	}
 	
-	override method asDirection() = bottom
+	override method direction() = bottom
 	
 }
 
 object east inherits Orientation {
-	method collisionsFrom(x, y) {
-		return right.collisionsFrom(x, y)
-	}
-	
-	override method asDirection() = right
+
+	override method direction() = right
 	
 }
 
 object west inherits Orientation {
-	method collisionsFrom(x, y) {
-		return left.collisionsFrom(x, y)
-	}
-	
-	override method asDirection() = left
+
+	override method direction() = left
 	
 }

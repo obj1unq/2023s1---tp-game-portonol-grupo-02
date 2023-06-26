@@ -42,9 +42,7 @@ class MovableEntity inherits CollapsableEntity {
 	var property direction = new NullDirectionSpriteModifier()
 
 	override method state() = super() + direction.imageModifier()
-	
-	method direction() = direction
-		
+			
 	method moveDistance(x, y) {
 		self.goUp(y)
 		self.goRight(x)

@@ -270,9 +270,9 @@ class NullDirectionSpriteModifier inherits DirectionSpriteModifier {
 
 class StateDirectionSpriteModifier inherits DirectionSpriteModifier {
 	
-	var direction = south
+	var direction = bottom
 	
-	override method imageModifier() = direction.asDirection().imageModifier()
+	override method imageModifier() = direction.imageModifier()
 	
 	override method direction(_direction){
 		direction = _direction
