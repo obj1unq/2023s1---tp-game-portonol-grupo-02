@@ -45,7 +45,7 @@ object transitionManager {
 	}
 	
 	method finishAnimation() {
-		transition.sfx().stop()
+		transition.stopSfx()
 		game.removeTickEvent(transitionName)
 		currentImage.unrender()
 		global.resumeGame()
@@ -69,6 +69,13 @@ class Transition {
 	
 	method timeBetweenFrames() {
 		return duration / self.framesSize() 
+	}
+	
+	method stopSfx(){
+		if (delay > 0){
+			sfx.play()
+		}
+		sfx.stop()
 	}
 	
 	method decreaseDelay(minTick){
