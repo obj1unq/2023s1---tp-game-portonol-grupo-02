@@ -22,7 +22,7 @@ object transitionManager {
 	
 	method makeTick() {
 		currentTime += minTick
-		if(transition.delay() >= 0) transition.decreaseDelay()
+		if(transition.delay() >= 0) transition.decreaseDelay(minTick)
 		if(currentTime >= transition.duration()) {
 			self.finishAnimation()
 		} else {
@@ -64,8 +64,8 @@ class Transition {
 		return duration / self.framesSize() 
 	}
 	
-	method decreaseDelay(){
-		delay--
+	method decreaseDelay(minTick){
+		delay-=minTick
 		if(sfx != null and delay <= 0){
 			sfx.play()
 		}

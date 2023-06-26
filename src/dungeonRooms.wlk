@@ -55,7 +55,17 @@ object levelManager {
 						"level2Transition-31",
 						"level2Transition-32",
 						"level2Transition-33",
-						"level2Transition-34"
+						"level2Transition-34",
+						"level2Transition-35",
+						"level2Transition-36",
+						"level2Transition-37",
+						"level2Transition-38",
+						"level2Transition-39",
+						"level2Transition-40",
+						"level2Transition-41",
+						"level2Transition-42",
+						"level2Transition-43",
+						"level2Transition-44"
 					],
 				duration = 3000,
 				sfx = levelTransitionEffect
@@ -95,7 +105,17 @@ object levelManager {
 						"level3Transition-31",
 						"level3Transition-32",
 						"level3Transition-33",
-						"level3Transition-34"
+						"level3Transition-34",
+						"level3Transition-35",
+						"level3Transition-36",
+						"level3Transition-37",
+						"level3Transition-38",
+						"level3Transition-39",
+						"level3Transition-40",
+						"level3Transition-41",
+						"level3Transition-42",
+						"level3Transition-43",
+						"level3Transition-44"
 					],
 				duration = 3000,
 				sfx = levelTransitionEffect
