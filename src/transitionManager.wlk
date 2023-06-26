@@ -45,11 +45,11 @@ object transitionManager {
 	}
 	
 	method finishAnimation() {
+		transition.sfx().stop()
 		game.removeTickEvent(transitionName)
 		currentImage.unrender()
 		global.resumeGame()
 		currentTime = 0
-		transition.sfx().stop()
 		transition = null
 		onFinishTransition.apply()
 	}
@@ -73,7 +73,7 @@ class Transition {
 	
 	method decreaseDelay(minTick){
 		delay -= minTick
-		if(sfx != null and delay <= 0){
+		if(sfx != null and delay <= 0 and not sfx.played()){
 			sfx.play()
 		}
 	}
