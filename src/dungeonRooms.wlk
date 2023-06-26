@@ -19,8 +19,8 @@ object levelManager {
 	var property lastPool = emptyEnemyPool
 	
 	const levels = new Queue(elements = [
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6, transition = new Transition(
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4, background = new Image(baseImageName = "fondoNivel1")),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6, background = new Image(baseImageName = "fondoNivel2"), transition = new Transition(
 					frames = [
 						"level2Transition-1",
 						"level2Transition-2",
@@ -60,7 +60,7 @@ object levelManager {
 				duration = 3000,
 				sfx = levelTransitionEffect
 			)),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, transition = new Transition(
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, background = new Image(baseImageName = "fondoNivel3"), transition = new Transition(
 					frames = [
 						"level3Transition-1",
 						"level3Transition-2",
@@ -116,6 +116,7 @@ object levelManager {
 			lastLevel = level
 			lastPool = lastLevel.levelEnemyPool()
 		} else {
+			//TODO: Poner un you win o algo parecido
 			global.deathScreen()
 		}
 	}
@@ -418,14 +419,20 @@ class Level {
 	var spawnRoom = null
 	var bossRoom = null
 	var transition = null
+	const background = new Image()
 	
 	method initializeLevel() {
+		self.setBackgroundImage()
 		self.generateStructure()
 		self.setBossRoom()
 		self.generateLevel()
 		self.renderSpawnPoint()
 		self.playTransition()
 //		self.initGravity()
+	}
+	
+	method setBackgroundImage(){
+		background.render(gameConfig.doorXOffset(), gameConfig.doorYOffset())
 	}
 	
 	method playTransition(){
@@ -447,6 +454,7 @@ class Level {
 //		levelRoomAssets.forEach {
 //			asset => asset.onRemove()
 //		}
+		background.unrender()
 	}
 	
 //	method initGravity() {
