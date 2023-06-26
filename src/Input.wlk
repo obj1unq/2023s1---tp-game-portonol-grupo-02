@@ -22,7 +22,6 @@ object inputManager {
 		keyboard.d().onPressDo({ self.dispatchInput(right)})
 		keyboard.s().onPressDo({ self.dispatchInput(bottom)})
 		keyboard.w().onPressDo({ self.dispatchInput(top)})
-		keyboard.space().onPressDo({ self.dispatchInput(space)})
 		keyboard.c().onPressDo({ self.dispatchInput(c)})
 		keyboard.up().onPressDo({ self.dispatchInput(north) })
 		keyboard.down().onPressDo({ self.dispatchInput(south) })
@@ -34,8 +33,13 @@ object inputManager {
 
 class Orientation {
 	method onInput(movementController) {
-		movementController.facingDirection(self)
+		movementController.facingDirection(self.direction())
+		movementController.movableEntity().direction().direction(self.direction())
+		movementController.movableEntity().attack()
 	}
+		
+	method direction()
+	
 }
 
 object c {
@@ -44,32 +48,26 @@ object c {
 	}
 }
 
-object space {
-	method onInput(movementController) {
-		movementController.movableEntity().attack()
-	}
-}
-
 object north inherits Orientation {
-	method collisionsFrom(x, y) {
-		return top.collisionsFrom(x, y)
-	}
+	
+	override method direction() = top
+	
 }
 
 object south inherits Orientation {
-	method collisionsFrom(x, y) {
-		return bottom.collisionsFrom(x, y)
-	}
+	
+	override method direction() = bottom
+	
 }
 
 object east inherits Orientation {
-	method collisionsFrom(x, y) {
-		return right.collisionsFrom(x, y)
-	}
+
+	override method direction() = right
+	
 }
 
 object west inherits Orientation {
-	method collisionsFrom(x, y) {
-		return left.collisionsFrom(x, y)
-	}
+
+	override method direction() = left
+	
 }

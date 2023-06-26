@@ -5,6 +5,7 @@ import SoundEffect.*
 import CooldownManager.*
 import structureGenerator.*
 import gameConfig.gameConfig
+import Input.south
 
 class MovementController {
 

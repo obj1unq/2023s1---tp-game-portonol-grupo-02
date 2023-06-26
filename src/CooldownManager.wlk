@@ -28,22 +28,33 @@ class CooldownManager {
 
 }
 
-class MovementCooldown inherits CooldownManager {
-
-	const movementManager
-
-	method toggleCooldown() {
-		movementManager.movementCooldown(self.opositeCooldown())
+class BinaryCooldownManager inherits CooldownManager {
+	
+	method toggleAndResetCooldown() {
+		self.toggleCooldown()
+		self.resetCooldown()
 	}
-
-	method canMove()
-
-	method opositeCooldown()
 	
 	override method onCooldownFinish() {
 		self.toggleCooldown()
 		self.resetCooldown()
 	}
+	
+	method opositeCooldown()
+	
+	method toggleCooldown()
+	
+}
+
+class MovementCooldown inherits BinaryCooldownManager {
+
+	const movementManager
+
+	override method toggleCooldown() {
+		movementManager.movementCooldown(self.opositeCooldown())
+	}
+
+	method canMove()
 	
 }
 
@@ -76,21 +87,14 @@ class OnMovementCooldown inherits MovementCooldown {
 
 }
 
-class DamageCooldown inherits CooldownManager {
+class DamageCooldown inherits BinaryCooldownManager {
 
 	const damageManager
 
 	method dealDamage(receiver)
 
-	method opositeCooldown()
-
-	method toggleCooldown() {
+	override method toggleCooldown() {
 		damageManager.cooldownManager(self.opositeCooldown())
-	}
-
-	method toggleAndResetCooldown() {
-		self.toggleCooldown()
-		self.resetCooldown()
 	}
 
 }
@@ -116,8 +120,6 @@ class NotOnDamageCooldown inherits DamageCooldown {
 		receiver.takeDmg(damageManager.entity().damage())
 		self.toggleCooldown()
 	}
-	
-	
 
 	override method opositeCooldown() {
 		return damageManager.onCooldown()
@@ -131,3 +133,60 @@ class NotOnDamageCooldown inherits DamageCooldown {
 
 }
 
+class AttackCooldownManager inherits BinaryCooldownManager {
+	const weapon
+
+	method attack(dealer)
+
+	override method toggleCooldown() {
+		weapon.cooldownManager(self.opositeCooldown())
+	}
+
+}
+
+class AttackableCooldownManager inherits AttackCooldownManager {
+
+	override method attack(dealer) {
+		weapon.culminateAttack(dealer)
+		weapon.makeSound()
+		self.toggleCooldown()
+	}
+	
+	override method onTimePassed(time) {}
+
+	override method opositeCooldown() {
+		return weapon.rechargingAttackCM()
+	}
+
+}
+
+class MovementAttackableCooldownManager inherits AttackableCooldownManager {
+
+	override method attack(dealer) {
+		super(dealer)
+		dealer.cancelMovement()
+		self.opositeCooldown().dealerEntity(dealer)
+	}
+
+}
+
+class MovementRechargingAttackCooldownManager inherits RechargingAttackCooldownManager {
+	
+	var property dealerEntity = null
+	
+	override method onCooldownFinish() {
+		super()
+		dealerEntity.recoverMovement()
+	}
+	
+}
+
+class RechargingAttackCooldownManager inherits AttackCooldownManager {
+	
+	override method attack(dealer) {}
+	
+	override method opositeCooldown() {
+		return weapon.attackableCM()
+	}
+	
+}

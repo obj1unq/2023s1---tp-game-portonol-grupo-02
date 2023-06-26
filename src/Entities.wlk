@@ -37,13 +37,12 @@ class Entity inherits Image {
 class MovableEntity inherits CollapsableEntity {
 
 	var property movementController = staticMovementManager
+	var lastMovementController = null
 
-	var direction = new NullDirectionSpriteModifier()
+	var property direction = new NullDirectionSpriteModifier()
 
 	override method state() = super() + direction.imageModifier()
-	
-	method direction() = direction
-		
+			
 	method moveDistance(x, y) {
 		self.goUp(y)
 		self.goRight(x)
@@ -66,29 +65,19 @@ class MovableEntity inherits CollapsableEntity {
 	}
 
 	method goUp(n) {
-		direction.direction(top)
 		movementController.goUp(n)
 	}
 
 	method goLeft(n) {
-		direction.direction(left)
 		movementController.goLeft(n)
 	}
 
 	method goDown(n) {
-		direction.direction(bottom)
 		movementController.goDown(n)
 	}
 
 	method goRight(n) {
-		direction.direction(right)
 		movementController.goRight(n)
-	}
-
-	method isJumping() = movementController.isJumping()
-
-	method touchFloor() {
-		movementController.onFloorTouched()
 	}
 
 	override method onAttach() {
@@ -99,6 +88,16 @@ class MovableEntity inherits CollapsableEntity {
 	override method onRemove() {
 		super()
 		movementController.remove()
+	}
+
+	method cancelMovement() {
+		lastMovementController = movementController
+		self.changeMovementController(staticMovementManager)
+	}
+	
+	method recoverMovement() {
+		self.changeMovementController(lastMovementController)
+		lastMovementController = staticMovementManager
 	}
 
 	method movementController() = movementController
@@ -249,7 +248,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weaponManager = new WeaponManager(weapons = [
-		new MeleeWeapon(),
+		new Knife(),
 		new Slingshot()
 	])
 	const property damageManager = new DamageManager(entity = self)
@@ -258,7 +257,6 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("recibió daño")
 		if (self.isDead()) {
 			self.die()
 		} else {
@@ -273,6 +271,7 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)
+		weaponManager.onTimePassed(time)
 	}
 	
 	override method attack() {
