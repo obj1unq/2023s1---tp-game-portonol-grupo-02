@@ -57,7 +57,8 @@ object levelManager {
 						"level2Transition-33",
 						"level2Transition-34"
 					],
-				duration = 3000
+				duration = 3000,
+				sfx = levelTransitionEffect
 			)),
 		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, transition = new Transition(
 					frames = [
@@ -96,7 +97,8 @@ object levelManager {
 						"level3Transition-33",
 						"level3Transition-34"
 					],
-				duration = 3000
+				duration = 3000,
+				sfx = levelTransitionEffect
 			))
 	])
 	
@@ -429,7 +431,6 @@ class Level {
 	method playTransition(){
 		if (transition != null){
 			transitionManager.play(transition)
-			levelTransitionEffect.play()
 		}
 	}
 	
