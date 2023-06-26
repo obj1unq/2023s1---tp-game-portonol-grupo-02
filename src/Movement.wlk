@@ -287,16 +287,21 @@ class MovementDirectionManager {
 	var verticalDirection = top
 	
 	method move(entity, distance) {
-		if(not gameConfig.canMoveHorizontally(horizontalDirection.getFromPosition(entity.position()).x())) {
+		
+		const canMoveHorizontally = gameConfig.canMoveHorizontally(horizontalDirection.getXFromPosition(entity.position()))
+		const canMoveVertically = gameConfig.canMoveVertically(verticalDirection.getYFromPosition(entity.position()))
+		
+		if(not canMoveHorizontally) {
 			horizontalDirection = horizontalDirection.oposite()
-		} else {
-			horizontalDirection.advance(distance, entity.position())
 		}
-		if(not gameConfig.canMoveVertically(verticalDirection.getFromPosition(entity.position()).y())) {
+		
+		if(not canMoveVertically) {
 			verticalDirection = verticalDirection.oposite()
-		} else {
-			verticalDirection.advance(distance, entity.position())
 		}
+						
+		verticalDirection.advance(distance, entity.position())
+		horizontalDirection.advance(distance, entity.position())
+
 	}
 	
 }

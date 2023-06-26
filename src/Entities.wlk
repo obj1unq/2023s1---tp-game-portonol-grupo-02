@@ -373,7 +373,8 @@ class DelayedWalkToPlayerEnemy inherits WalkToPlayerEnemy {
 	
 }
 
-class PingPongEnemy inherits PingPongEnemyEntity(velocity = 4) {}
+// Por limitaciones de usar celdas, la velocidad arruina el movimiento diagonal
+class PingPongEnemy inherits PingPongEnemyEntity(velocity = 2) {}
 
 class Zombie inherits WalkToPlayerEnemy(velocity = 1, direction = new StateDirectionSpriteModifier()) {}
 
