@@ -3,7 +3,7 @@ import pools.consumablesPool
 import transitionManager.*
 import Movement.CooldownMovementController
 import pools.globalRemoveBehaviour
-import SoundEffect.*
+import wollok.game.*
 
 // Por limitaciones del lenguaje, no hay interfaces. Usar esta clase como interfaz para 
 // aprovecharse del polimorfismo que ofrece wollok
@@ -41,7 +41,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 			"kingSlimeScreen-4",
 			"kingSlimeScreen-5",
 			"kingSlimeScreen-5"
-		], sfx = enterBossRoomEffect)
+		], sfx = game.sound("enter-boss.mp3"))
 	}
 	
 	override method onAttach() {

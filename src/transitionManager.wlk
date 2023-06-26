@@ -9,12 +9,14 @@ object transitionManager {
 	var transition = null
 	const transitionName = "transition"
 	const currentImage = new Image()
+	var onFinishTransition = {}
 	
 	method currentTransition() = transition
 	
 	method play(_transition) {
 		global.pauseGame()
 		transition = _transition
+		onFinishTransition = transition.onFinish()
 		currentImage.baseImageName(transition.frame(0))
 		currentImage.render(0, 0)
 		game.onTick(100, transitionName, { self.makeTick() })
@@ -22,7 +24,9 @@ object transitionManager {
 	
 	method makeTick() {
 		currentTime += minTick
-		if(transition.delay() >= 0) transition.decreaseDelay()
+		if(transition.delay() >= 0){
+			transition.decreaseDelay(minTick)
+		}
 		if(currentTime >= transition.duration()) {
 			self.finishAnimation()
 		} else {
@@ -41,11 +45,13 @@ object transitionManager {
 	}
 	
 	method finishAnimation() {
+		transition.stopSfx()
 		game.removeTickEvent(transitionName)
 		currentImage.unrender()
-		transition = null
 		global.resumeGame()
 		currentTime = 0
+		transition = null
+		onFinishTransition.apply()
 	}
 	
 }
@@ -53,8 +59,9 @@ object transitionManager {
 class Transition {
 	const frames   = []
 	const property duration = 0 // in MS
-	const property sfx = null
+	var property sfx = null
 	var property delay = 0
+	const property onFinish = {}
 	
 	method framesSize() = frames.size()
 	
@@ -64,10 +71,18 @@ class Transition {
 		return duration / self.framesSize() 
 	}
 	
-	method decreaseDelay(){
-		delay--
-		if(sfx != null and delay <= 0){
+	method stopSfx(){
+		if (delay > 0){
+			sfx.play()
+		}
+		sfx.stop()
+	}
+	
+	method decreaseDelay(minTick){
+		delay -= minTick
+		if(sfx != null and delay <= 0 and not sfx.played()){
 			sfx.play()
 		}
 	}
+
 }
