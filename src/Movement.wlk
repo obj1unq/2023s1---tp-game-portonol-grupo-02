@@ -5,6 +5,7 @@ import SoundEffect.*
 import CooldownManager.*
 import structureGenerator.*
 import gameConfig.gameConfig
+import Input.south
 
 class MovementController {
 
@@ -269,9 +270,9 @@ class NullDirectionSpriteModifier inherits DirectionSpriteModifier {
 
 class StateDirectionSpriteModifier inherits DirectionSpriteModifier {
 	
-	var direction = bottom
+	var direction = south
 	
-	override method imageModifier() = direction.imageModifier()
+	override method imageModifier() = direction.asDirection().imageModifier()
 	
 	override method direction(_direction){
 		direction = _direction

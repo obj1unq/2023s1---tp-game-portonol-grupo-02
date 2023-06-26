@@ -37,8 +37,9 @@ class Entity inherits Image {
 class MovableEntity inherits CollapsableEntity {
 
 	var property movementController = staticMovementManager
+	var lastMovementController = null
 
-	var direction = new NullDirectionSpriteModifier()
+	var property direction = new NullDirectionSpriteModifier()
 
 	override method state() = super() + direction.imageModifier()
 	
@@ -66,29 +67,19 @@ class MovableEntity inherits CollapsableEntity {
 	}
 
 	method goUp(n) {
-		direction.direction(top)
 		movementController.goUp(n)
 	}
 
 	method goLeft(n) {
-		direction.direction(left)
 		movementController.goLeft(n)
 	}
 
 	method goDown(n) {
-		direction.direction(bottom)
 		movementController.goDown(n)
 	}
 
 	method goRight(n) {
-		direction.direction(right)
 		movementController.goRight(n)
-	}
-
-	method isJumping() = movementController.isJumping()
-
-	method touchFloor() {
-		movementController.onFloorTouched()
 	}
 
 	override method onAttach() {
@@ -99,6 +90,16 @@ class MovableEntity inherits CollapsableEntity {
 	override method onRemove() {
 		super()
 		movementController.remove()
+	}
+
+	method cancelMovement() {
+		lastMovementController = movementController
+		self.changeMovementController(staticMovementManager)
+	}
+	
+	method recoverMovement() {
+		self.changeMovementController(lastMovementController)
+		lastMovementController = staticMovementManager
 	}
 
 	method movementController() = movementController

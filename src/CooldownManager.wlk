@@ -160,6 +160,27 @@ class AttackableCooldownManager inherits AttackCooldownManager {
 
 }
 
+class MovementAttackableCooldownManager inherits AttackableCooldownManager {
+
+	override method attack(dealer) {
+		super(dealer)
+		dealer.cancelMovement()
+		self.opositeCooldown().dealerEntity(dealer)
+	}
+
+}
+
+class MovementRechargingAttackCooldownManager inherits RechargingAttackCooldownManager {
+	
+	var property dealerEntity = null
+	
+	override method onCooldownFinish() {
+		super()
+		dealerEntity.recoverMovement()
+	}
+	
+}
+
 class RechargingAttackCooldownManager inherits AttackCooldownManager {
 	
 	override method attack(dealer) {}

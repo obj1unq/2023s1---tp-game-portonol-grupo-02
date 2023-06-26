@@ -6,6 +6,8 @@ import SoundEffect.stabKnifeEffect
 import SoundEffect.slingshotEffect
 import CooldownManager.AttackableCooldownManager
 import CooldownManager.RechargingAttackCooldownManager
+import CooldownManager.MovementAttackableCooldownManager
+import CooldownManager.MovementRechargingAttackCooldownManager
 
 class Weapon {
 	method attack(dealer) {
@@ -21,28 +23,61 @@ object nullWeapon inherits Weapon {
 }
 
 class CooldownWeapon inherits Weapon {
-	const rechargeCooldown
-	const property rechargingAttackCM = new RechargingAttackCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
-	const property attackableCM = new AttackableCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
-	var attackCooldown = attackableCM
+	const property rechargeCooldown
 	
 	override method attack(dealer) {
-		attackCooldown.attack(dealer)
+		self.attackCooldown().attack(dealer)
 	}
+	
+	method attackCooldown()
+	
+	method rechargingAttackCM()
+	
+	method attackableCM()
 	
 	method culminateAttack(dealer)
 	
 	method onTimePassed(time) {
-		attackCooldown.onTimePassed(time)
+		self.attackCooldown().onTimePassed(time)
 	} 
 	
-	method cooldownManager(cooldownManager) {
-		attackCooldown = cooldownManager
-	}
+	method cooldownManager(cooldownManager)
 	
 }
 
-class MeleeWeapon inherits CooldownWeapon {
+class MovementCooldownWeapon inherits CooldownWeapon {
+	const property rechargingAttackCM = new MovementRechargingAttackCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	const property attackableCM = new MovementAttackableCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	var attackCooldown = attackableCM
+	
+	override method cooldownManager(cooldownManager) {
+		attackCooldown = cooldownManager
+	}
+	
+	override method rechargingAttackCM() = rechargingAttackCM
+	
+	override method attackableCM() = attackableCM
+	
+	override method attackCooldown() = attackCooldown
+}
+
+class OnlyCooldownWeapon inherits CooldownWeapon {
+	const property rechargingAttackCM = new RechargingAttackCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	const property attackableCM = new AttackableCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	var attackCooldown = attackableCM
+	
+	override method cooldownManager(cooldownManager) {
+		attackCooldown = cooldownManager
+	}
+	
+	override method rechargingAttackCM() = rechargingAttackCM
+	
+	override method attackableCM() = attackableCM
+	
+	override method attackCooldown() = attackCooldown
+}
+
+class MeleeWeapon inherits MovementCooldownWeapon {
 	override method culminateAttack(dealer) {
 		const facingDirection = dealer.movementController().facingDirection()
 		const colliders = facingDirection.collisionsFrom(dealer.position().x(), dealer.position().y())
@@ -54,18 +89,18 @@ class MeleeWeapon inherits CooldownWeapon {
 	
 }
 
-class Knife inherits MeleeWeapon(rechargeCooldown = 500) {
+class Knife inherits MeleeWeapon(rechargeCooldown = 200) {
 	override method makeSound() {
 		stabKnifeEffect.play()
 	}
 }
 
-class DistanceWeapon inherits CooldownWeapon {
+class DistanceWeapon inherits OnlyCooldownWeapon {
 	const projectileFactory
 
 	override method culminateAttack(dealer) {
-		const startingPosition = dealer.direction().direction().getFromPosition(dealer.position())
-		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction())
+		const startingPosition = dealer.direction().direction().asDirection().getFromPosition(dealer.position())
+		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction().asDirection())
 		projectile.initialPositions(startingPosition.x(), startingPosition.y())
 		projectile.onAttach()
 	}
