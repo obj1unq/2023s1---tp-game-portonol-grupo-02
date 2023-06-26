@@ -117,7 +117,7 @@ program myGame {
 	
 	transitionManager.play(mainMenuTransition)
 	
-	keyboard.space().onPressDo{
+	keyboard.enter().onPressDo{
 		if (transitionManager.currentTransition() != null){
 			transitionManager.finishAnimation()
 		}
