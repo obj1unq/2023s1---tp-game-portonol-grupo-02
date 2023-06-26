@@ -14,7 +14,7 @@ class LevelEnemyFactory {
 }
 
 object level1EnemyFactory inherits LevelEnemyFactory(
-	enemiesFactories = [slimeEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
+	enemiesFactories = [pingpongEnemyFactory, slimeEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
 	scaleDamage = 1, 
 	scaleHP = 1
 ) {
@@ -48,6 +48,14 @@ object flyEnemyFactory inherits EnemyFactory {
 		const fly = new Fly(player = global.player(), damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "fly")
 		fly.changeMovementController(new CollidableMovementController(movableEntity = fly))
 		return fly
+	}
+}
+
+object pingpongEnemyFactory inherits EnemyFactory {
+	override method generate(scaleDamage, scaleHP) {
+		const pingpong = new PingPongEnemy(damage = 5 * scaleDamage, maxHp = 15 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "pingpongenemy")
+		pingpong.changeMovementController(new CollidableMovementController(movableEntity = pingpong))
+		return pingpong
 	}
 }
 

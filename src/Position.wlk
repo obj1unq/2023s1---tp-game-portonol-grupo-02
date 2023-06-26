@@ -16,6 +16,11 @@ class MutablePosition {
 		self.inPosition(_x, _y)
 		return self
 	}
+	
+	method normalize() {
+		x = x.truncate(0)
+		y = y.truncate(0)
+	}
 
 	method right(n) {
 		x += n

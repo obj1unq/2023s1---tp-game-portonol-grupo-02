@@ -282,4 +282,26 @@ class StateDirectionSpriteModifier inherits DirectionSpriteModifier {
 	
 }
 
+class MovementDirectionManager {
+	var horizontalDirection = right
+	var verticalDirection = top
+	
+	method move(entity, distance) {
+		
+		const canMoveHorizontally = gameConfig.canMoveHorizontally(horizontalDirection.getXFromPosition(entity.position()))
+		const canMoveVertically = gameConfig.canMoveVertically(verticalDirection.getYFromPosition(entity.position()))
+		
+		if(not canMoveHorizontally) {
+			horizontalDirection = horizontalDirection.oposite()
+		}
+		
+		if(not canMoveVertically) {
+			verticalDirection = verticalDirection.oposite()
+		}
+						
+		verticalDirection.advance(distance, entity.position())
+		horizontalDirection.advance(distance, entity.position())
 
+	}
+	
+}
