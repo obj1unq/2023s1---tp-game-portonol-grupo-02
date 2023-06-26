@@ -47,6 +47,12 @@ object enterBossRoomEffect inherits SoundEffect {
 	}
 }
 
+object levelTransitionEffect inherits SoundEffect {
+	override method play() {
+		game.sound("leveltransition.mp3").play()
+	}
+}
+
 object slingshotEffect inherits SoundEffect {
 	override method play() {
 		game.sound("slingshot-sound.mp3").play()
