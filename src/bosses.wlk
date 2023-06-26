@@ -41,7 +41,7 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 			"kingSlimeScreen-4",
 			"kingSlimeScreen-5",
 			"kingSlimeScreen-5"
-		])
+		], sfx = enterBossRoomEffect)
 	}
 	
 	override method onAttach() {
@@ -51,7 +51,6 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	
 	method makeEntryAnimation() {
 		transitionManager.play(self.animation())
-		enterBossRoomEffect.play()
 	}
 	
 	method spawnItem() {

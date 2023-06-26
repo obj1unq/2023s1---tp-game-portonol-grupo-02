@@ -8,7 +8,7 @@ class SoundEffect {
 
 object silenceJumpEffect inherits SoundEffect {
 
-	method play() {
+	override method play() {
 	}
 
 }
@@ -47,9 +47,21 @@ object enterBossRoomEffect inherits SoundEffect {
 	}
 }
 
+object levelTransitionEffect inherits SoundEffect {
+	override method play() {
+		game.sound("leveltransition.mp3").play()
+	}
+}
+
 object slingshotEffect inherits SoundEffect {
 	override method play() {
 		game.sound("slingshot-sound.mp3").play()
+	}
+}
+
+object mainMenuMusic inherits SoundEffect {
+	override method play() {
+		game.sound("mainMenu.mp3").play()
 	}
 }
 

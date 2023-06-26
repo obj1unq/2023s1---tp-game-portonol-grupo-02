@@ -38,9 +38,33 @@ program myGame {
 	
 	const transition = new Transition(
 		frames = [
-			"loading"
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2"
 		],
-		duration = 6000
+		duration = 21000,
+		sfx = mainMenuMusic
 	)
 
 	const image = new Image(baseImageName = "fondosala")
@@ -51,6 +75,12 @@ program myGame {
 	gravity.init()
 	
 	transitionManager.play(transition)
+	
+	keyboard.space().onPressDo{
+		if (transitionManager.currentTransition() != null){
+			transitionManager.finishAnimation()
+		}
+	}
 	
 	game.start()
 		

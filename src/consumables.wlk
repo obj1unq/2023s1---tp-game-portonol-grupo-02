@@ -66,10 +66,12 @@ class DamageModifierConsumable inherits Consumable {
 						"mate-pickup-anim-15",
 						"mate-pickup-anim-16"
 					],
-				duration = 2000
+				duration = 2000,
+				sfx = itemPickedUpEffect,
+				delay = 1000
 			)
 		transitionManager.play(transition)
-		game.schedule(800, {itemPickedUpEffect.play()})
+		
 	}
 }
 
@@ -108,10 +110,11 @@ class LifeModifier inherits Consumable {
 						"canon-pickup-anim-15",
 						"canon-pickup-anim-16"
 					],
-				duration = 2000
+				duration = 2000,
+				sfx = itemPickedUpEffect,
+				delay = 1000
 			)
 		transitionManager.play(transition)
-		game.schedule(1000, {itemPickedUpEffect.play()})
 	}
 }
 

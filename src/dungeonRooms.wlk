@@ -5,6 +5,8 @@ import Sprite.*
 import pools.*
 import Global.*
 import Blocks.Block
+import transitionManager.*
+import SoundEffect.*
 
 class ImageCopy {
 	const property image
@@ -17,9 +19,87 @@ object levelManager {
 	var property lastPool = emptyEnemyPool
 	
 	const levels = new Queue(elements = [
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8)
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4, background = new Image(baseImageName = "fondoNivel1")),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6, background = new Image(baseImageName = "fondoNivel2"), transition = new Transition(
+					frames = [
+						"level2Transition-1",
+						"level2Transition-2",
+						"level2Transition-3",
+						"level2Transition-4",
+						"level2Transition-5",
+						"level2Transition-6",
+						"level2Transition-7",
+						"level2Transition-8",
+						"level2Transition-9",
+						"level2Transition-10",
+						"level2Transition-11",
+						"level2Transition-12",
+						"level2Transition-13",
+						"level2Transition-14",
+						"level2Transition-15",
+						"level2Transition-16",
+						"level2Transition-17",
+						"level2Transition-18",
+						"level2Transition-19",
+						"level2Transition-20",
+						"level2Transition-21",
+						"level2Transition-22",
+						"level2Transition-23",
+						"level2Transition-24",
+						"level2Transition-25",
+						"level2Transition-26",
+						"level2Transition-27",
+						"level2Transition-28",
+						"level2Transition-29",
+						"level2Transition-30",
+						"level2Transition-31",
+						"level2Transition-32",
+						"level2Transition-33",
+						"level2Transition-34"
+					],
+				duration = 3000,
+				sfx = levelTransitionEffect
+			)),
+		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, background = new Image(baseImageName = "fondoNivel3"), transition = new Transition(
+					frames = [
+						"level3Transition-1",
+						"level3Transition-2",
+						"level3Transition-3",
+						"level3Transition-4",
+						"level3Transition-5",
+						"level3Transition-6",
+						"level3Transition-7",
+						"level3Transition-8",
+						"level3Transition-9",
+						"level3Transition-10",
+						"level3Transition-11",
+						"level3Transition-12",
+						"level3Transition-13",
+						"level3Transition-14",
+						"level3Transition-15",
+						"level3Transition-16",
+						"level3Transition-17",
+						"level3Transition-18",
+						"level3Transition-19",
+						"level3Transition-20",
+						"level3Transition-21",
+						"level3Transition-22",
+						"level3Transition-23",
+						"level3Transition-24",
+						"level3Transition-25",
+						"level3Transition-26",
+						"level3Transition-27",
+						"level3Transition-28",
+						"level3Transition-29",
+						"level3Transition-30",
+						"level3Transition-31",
+						"level3Transition-32",
+						"level3Transition-33",
+						"level3Transition-34"
+					],
+				duration = 3000,
+				sfx = levelTransitionEffect
+			))
 	])
 	
 	method loadNextLevel() {
@@ -36,6 +116,7 @@ object levelManager {
 			lastLevel = level
 			lastPool = lastLevel.levelEnemyPool()
 		} else {
+			//TODO: Poner un you win o algo parecido
 			global.deathScreen()
 		}
 	}
@@ -337,13 +418,27 @@ class Level {
 	var structure = null
 	var spawnRoom = null
 	var bossRoom = null
+	var transition = null
+	const background = new Image()
 	
 	method initializeLevel() {
+		self.setBackgroundImage()
 		self.generateStructure()
 		self.setBossRoom()
 		self.generateLevel()
 		self.renderSpawnPoint()
+		self.playTransition()
 //		self.initGravity()
+	}
+	
+	method setBackgroundImage(){
+		background.render(gameConfig.doorXOffset(), gameConfig.doorYOffset())
+	}
+	
+	method playTransition(){
+		if (transition != null){
+			transitionManager.play(transition)
+		}
 	}
 	
 	method levelEnemyPool() = levelEnemyPool
@@ -359,6 +454,7 @@ class Level {
 //		levelRoomAssets.forEach {
 //			asset => asset.onRemove()
 //		}
+		background.unrender()
 	}
 	
 //	method initGravity() {
