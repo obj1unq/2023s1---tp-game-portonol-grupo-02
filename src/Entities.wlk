@@ -249,7 +249,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weaponManager = new WeaponManager(weapons = [
-		new MeleeWeapon(),
+		new Knife(),
 		new Slingshot()
 	])
 	const property damageManager = new DamageManager(entity = self)
@@ -258,7 +258,6 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("recibió daño")
 		if (self.isDead()) {
 			self.die()
 		} else {
@@ -273,6 +272,7 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)
+		weaponManager.onTimePassed(time)
 	}
 	
 	override method attack() {

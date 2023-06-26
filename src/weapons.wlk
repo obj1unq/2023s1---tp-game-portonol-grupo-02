@@ -4,6 +4,8 @@ import structureGenerator.*
 import gameConfig.*
 import SoundEffect.stabKnifeEffect
 import SoundEffect.slingshotEffect
+import CooldownManager.AttackableCooldownManager
+import CooldownManager.RechargingAttackCooldownManager
 
 class Weapon {
 	method attack(dealer) {
@@ -18,9 +20,30 @@ object nullWeapon inherits Weapon {
 	override method attack(dealer) {}
 }
 
-class MeleeWeapon inherits Weapon {
+class CooldownWeapon inherits Weapon {
+	const rechargeCooldown
+	const property rechargingAttackCM = new RechargingAttackCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	const property attackableCM = new AttackableCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	var attackCooldown = attackableCM
+	
 	override method attack(dealer) {
-		super(dealer)
+		attackCooldown.attack(dealer)
+	}
+	
+	method culminateAttack(dealer)
+	
+	method onTimePassed(time) {
+		attackCooldown.onTimePassed(time)
+	} 
+	
+	method cooldownManager(cooldownManager) {
+		attackCooldown = cooldownManager
+	}
+	
+}
+
+class MeleeWeapon inherits CooldownWeapon {
+	override method culminateAttack(dealer) {
 		const facingDirection = dealer.movementController().facingDirection()
 		const colliders = facingDirection.collisionsFrom(dealer.position().x(), dealer.position().y())
 		colliders.forEach {
@@ -29,17 +52,18 @@ class MeleeWeapon inherits Weapon {
 		}
 	}
 	
+}
+
+class Knife inherits MeleeWeapon(rechargeCooldown = 500) {
 	override method makeSound() {
 		stabKnifeEffect.play()
 	}
-	
 }
 
-class DistanceWeapon inherits Weapon {
+class DistanceWeapon inherits CooldownWeapon {
 	const projectileFactory
 
-	override method attack(dealer) {
-		super(dealer)
+	override method culminateAttack(dealer) {
 		const startingPosition = dealer.direction().direction().getFromPosition(dealer.position())
 		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction())
 		projectile.initialPositions(startingPosition.x(), startingPosition.y())
@@ -51,17 +75,12 @@ class DistanceWeapon inherits Weapon {
 	}
 }
 
-class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory) {}
+class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000) {}
 
 class Projectile inherits GravityEntity {
 	var property to = bottom
 	const fromEntity
 	const velocity
-	
-	override method onRemove() {
-		super()
-		console.println("bala eliminada")
-	}
 	
 	override method update(time){
 		if(not gameConfig.isInMapLimits(self.position().x(), self.position().y())){
@@ -121,6 +140,12 @@ class WeaponManager {
 		if(weapons.size() != 0) {
 			actualWeapon++
 			self.changeNextWeapon()
+		}
+	}
+	
+	method onTimePassed(time) {
+		weapons.forEach {
+			weapon => weapon.onTimePassed(time)
 		}
 	}
 	

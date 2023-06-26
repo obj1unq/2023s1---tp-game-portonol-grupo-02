@@ -17,7 +17,7 @@ object silenceJumpEffect inherits SoundEffect {
 object slimeJumpEffect inherits SoundEffect {
 
 	override method play() {
-		return game.sound("slimejump.mp3").play()
+		game.sound("slimejump.mp3").play()
 	}
 
 }
@@ -25,20 +25,20 @@ object slimeJumpEffect inherits SoundEffect {
 object damagePlayerEffect inherits SoundEffect {
 
 	override method play() {
-		return game.sound("dmgplayer.mp3").play()
+		game.sound("dmgplayer.mp3").play()
 	}
 
 }
 
 object stabKnifeEffect inherits SoundEffect {
 	override method play() {
-		return game.sound("knife-impact-sound.mp3").play()
+		game.sound("knife-impact-sound.mp3").play()
 	}
 }
 
 object slingshotEffect inherits SoundEffect {
 	override method play() {
-		return game.sound("slingshot-sound.mp3").play()
+		game.sound("slingshot-sound.mp3").play()
 	}
 }
 
