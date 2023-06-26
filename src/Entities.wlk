@@ -8,6 +8,7 @@ import Movement.*
 import weapons.*
 import structureGenerator.*
 import pools.poolRemoveBehaviour
+import Movement.MovementDirectionManager
 
 class Entity inherits Image {
 	
@@ -290,6 +291,25 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	
 }
 
+class PingPongEnemyEntity inherits EnemyDamageEntity {
+	var property velocity = 1
+	const movementDirection = new MovementDirectionManager()
+	
+	override method update(time){
+		super(time)
+		self.movePingPong(time)
+	}
+	
+	method movePingPong(time) {
+		movementDirection.move(self, self.movementByTime(time))
+	}
+	
+	method movementByTime(time) {
+		return (time * velocity) / 1000
+	}
+	
+}
+
 class WalkToPlayerEnemy inherits EnemyDamageEntity {
 	const player
 	var property velocity = 1
@@ -352,6 +372,8 @@ class DelayedWalkToPlayerEnemy inherits WalkToPlayerEnemy {
 	method onStartWalking()
 	
 }
+
+class PingPongEnemy inherits PingPongEnemyEntity(velocity = 4) {}
 
 class Zombie inherits WalkToPlayerEnemy(velocity = 1, direction = new StateDirectionSpriteModifier()) {}
 
