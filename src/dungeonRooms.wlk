@@ -1,3 +1,4 @@
+import wollok.game.*
 import structureGenerator.*
 import Entities.*
 import gameConfig.*
@@ -68,7 +69,7 @@ object levelManager {
 						"level2Transition-44"
 					],
 				duration = 3000,
-				sfx = levelTransitionEffect
+				sfx = game.sound("leveltransition.mp3")
 			)),
 		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, background = new Image(baseImageName = "fondoNivel3"), transition = new Transition(
 					frames = [
@@ -118,7 +119,7 @@ object levelManager {
 						"level3Transition-44"
 					],
 				duration = 3000,
-				sfx = levelTransitionEffect
+				sfx = game.sound("leveltransition.mp3")
 			))
 	])
 	

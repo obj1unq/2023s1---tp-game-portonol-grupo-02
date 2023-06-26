@@ -1,7 +1,6 @@
 import Entities.GravityEntity
 import Global.*
 import gameConfig.*
-import SoundEffect.itemPickedUpEffect
 import transitionManager.Transition
 import transitionManager.transitionManager
 import wollok.game.*
@@ -67,7 +66,7 @@ class DamageModifierConsumable inherits Consumable {
 						"mate-pickup-anim-16"
 					],
 				duration = 2000,
-				sfx = itemPickedUpEffect,
+				sfx = game.sound("item-pickup-sound.mp3"),
 				delay = 1000
 			)
 		transitionManager.play(transition)
@@ -111,7 +110,7 @@ class LifeModifier inherits Consumable {
 						"canon-pickup-anim-16"
 					],
 				duration = 2000,
-				sfx = itemPickedUpEffect,
+				sfx = game.sound("item-pickup-sound.mp3"),
 				delay = 1000
 			)
 		transitionManager.play(transition)
