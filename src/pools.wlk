@@ -7,17 +7,54 @@ import consumables.*
 import Global.global
 import dungeonRooms.levelManager
 
-class LevelEnemyPool {
+class EnemyPool {
 
-	const levelFactory
+	const enemyFactory
 
-	method getEnemy()
-	method getRandomEnemies(quantity)
-	method getRandomBoss()
-	method appendPool(_pool)
-	method addEnemy(enemy)
-	method boss(forRoom)
-	method removeEnemy(enemy)
+	var property pool = new Queue(elements=[])
+	
+	method getEnemy() {
+		return if(not pool.isEmpty()) {
+			const enemy = pool.dequeue()
+			enemy.resetState()
+			return enemy
+		} else {
+			const enemy = enemyFactory.getRandomEnemy()
+			return enemy
+		}
+	}
+	
+	method mix() {
+		pool.mix()
+	}
+	
+	method removeEnemy(enemy) {
+		pool.remove(enemy)
+	}
+	
+	method boss(forRoom) {
+		return enemyFactory.boss(forRoom)
+	}
+	
+	// TODO: Agregar posiciones
+	method getRandomEnemies(quantity){
+		const enemiesToRender = []
+		if(quantity > 0) {
+			(0 .. quantity - 1).forEach{ i =>
+				const e = self.getEnemy()
+				enemiesToRender.add(e)
+			}			
+		}
+		return enemiesToRender
+	}
+	
+	method addEnemy(enemy){
+		pool.enqueue(enemy)
+	}
+		
+	method appendPool(_pool) {
+		pool.enqueueList(_pool.pool().asList())
+	}
 	
 }
 
@@ -30,67 +67,21 @@ object consumablesPool {
 	}
 }
 
-object emptyEnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
-	
-	var property pool = []
-	
-	override method boss(forRoom) {}
-	override method getEnemy(){}
+object emptyEnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory) {
+		
+	override method boss(forRoom) = null
+	override method getEnemy() = null
 	override method getRandomEnemies(quantity) = []
-	override method getRandomBoss(){}
 	override method appendPool(_pool){}
 	override method addEnemy(enemy){}
 	override method removeEnemy(enemy){}
 }
 
-object level1EnemyPool inherits LevelEnemyPool(levelFactory = level1EnemyFactory) {
-	
-	var property pool = new Queue(elements=[])
-	
-	override method getEnemy() {
-		return if(not pool.isEmpty()) {
-			const enemy = pool.dequeue()
-			enemy.resetState()
-			return enemy
-		} else {
-			const enemy = levelFactory.getRandomEnemy()
-			return enemy
-		}
-	}
-	
-	override method removeEnemy(enemy) {
-		pool.remove(enemy)
-	}
-	
-	override method boss(forRoom) {
-		return levelFactory.boss(forRoom)
-	}
-	
-	// TODO: Agregar posiciones
-	override method getRandomEnemies(quantity){
-		const enemiesToRender = []
-		if(quantity > 0) {
-			(0 .. quantity - 1).forEach{ i =>
-				const e = self.getEnemy()
-				enemiesToRender.add(e)
-			}			
-		}
-		return enemiesToRender
-	}
-	
-	override method addEnemy(enemy){
-		pool.enqueue(enemy)
-	}
-	
-	override method getRandomBoss() {
-		// TODO: This should create a boss. This is an entity, not a boss.
-		return new Slime(gravity = gameConfig.gravity(), hp = 50, maxHp = 50, damage = 25, cooldown = 2000, player = gameConfig.player())
-	}
-	
-	override method appendPool(_pool) {
-		pool.enqueueList(_pool.pool().asList())
-	}
-}
+object lordOfFliesPool inherits EnemyPool(enemyFactory = lordOfFliesFactory) {}
+
+object level1EnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory) {}
+
+object level2EnemyPool inherits EnemyPool(enemyFactory = level2EnemyFactory) {}
 
 class RemoveBehaviour {
 	method onRemove(entity)
@@ -104,6 +95,18 @@ class GlobalRemoveBehaviour inherits RemoveBehaviour {
 	 
 	 override method onAdd(entity) {
 	 	global.addEnemy(entity)
+	 }
+}
+
+object lordOfFliesPoolBehaviour inherits GlobalRemoveBehaviour {
+	override method onRemove(entity) {
+	 	super(entity)
+	 	lordOfFliesPool.addEnemy(entity)
+	 }
+	 
+	 override method onAdd(entity) {
+	 	super(entity)
+	 	lordOfFliesPool.removeEnemy(entity)
 	 }
 }
 

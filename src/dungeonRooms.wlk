@@ -21,7 +21,7 @@ object levelManager {
 	
 	const levels = new Queue(elements = [
 		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 4, background = new Image(baseImageName = "fondoNivel1")),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 6, background = new Image(baseImageName = "fondoNivel2"), transition = new Transition(
+		new Level(levelEnemyPool = level2EnemyPool, player = gameConfig.player(), roomQuantity = 6, background = new Image(baseImageName = "fondoNivel2"), transition = new Transition(
 					frames = [
 						"level2Transition-1",
 						"level2Transition-2",
@@ -133,6 +133,8 @@ object levelManager {
 			gameConfig.player().initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
 			const level = levels.dequeue()
 			level.levelEnemyPool().appendPool(lastPool)
+			level.levelEnemyPool().mix()
+			console.println(level.levelEnemyPool().pool().asList())
 			level.initializeLevel()
 			lastLevel = level
 			lastPool = lastLevel.levelEnemyPool()
