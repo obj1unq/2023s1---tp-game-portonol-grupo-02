@@ -43,18 +43,18 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 	
 	method animation() {
 		return new Transition(duration = 1200, frames = [
-			"kingSlimeScreen-1",
-			"kingSlimeScreen-2",
-			"kingSlimeScreen-3",
-			"kingSlimeScreen-4",
-			"kingSlimeScreen-5",
-			"kingSlimeScreen-6",
-			"kingSlimeScreen-7",
-			"kingSlimeScreen-8",
-			"kingSlimeScreen-9",
-			"kingSlimeScreen-10",
-			"kingSlimeScreen-11",
-			"kingSlimeScreen-12"
+			"lordOfFliesScreen-1",
+			"lordOfFliesScreen-2",
+			"lordOfFliesScreen-3",
+			"lordOfFliesScreen-4",
+			"lordOfFliesScreen-5",
+			"lordOfFliesScreen-6",
+			"lordOfFliesScreen-7",
+			"lordOfFliesScreen-8",
+			"lordOfFliesScreen-9",
+			"lordOfFliesScreen-10",
+			"lordOfFliesScreen-11",
+			"lordOfFliesScreen-12"
 		], sfx = game.sound("enter-boss.mp3"))
 	}
 	
