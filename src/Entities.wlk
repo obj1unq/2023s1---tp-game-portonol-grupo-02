@@ -9,6 +9,7 @@ import weapons.*
 import structureGenerator.*
 import pools.poolRemoveBehaviour
 import Movement.MovementDirectionManager
+import LifeUI.PlayerLifeUI
 
 class Entity inherits Image {
 	
@@ -159,13 +160,18 @@ class DamageEntity inherits GravityEntity {
 
 	method damage() = damage
 
+	method maxHp() = maxHp
+
 	method hp() = hp
 
 	method cooldown() = cooldown
 
 	method takeDmg(dmg) {
 		hp -= dmg
+		self.onDamageTaken(hp)
 	}
+	
+	method onDamageTaken(newLife) {}
 	
 	method addDamage(quantity) {
 		damage += quantity
@@ -253,6 +259,7 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		new Slingshot()
 	])
 	const property damageManager = new DamageManager(entity = self)
+	const lifeBarUI = new PlayerLifeUI(startingPosition = 0)
 	const damageSfx
 	const deathSfx
 
@@ -263,6 +270,20 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		} else {
 			self.playDamageSound()
 		}
+	}
+	
+	override method onAttach() {
+		super()
+		lifeBarUI.render()
+	}
+	
+	override method onRemove() {
+		super() 
+		lifeBarUI.unrender()
+	}
+	
+	override method onDamageTaken(newHP) {
+		lifeBarUI.onDamageTaken(self)
 	}
 	
 	method changeWeapon() {

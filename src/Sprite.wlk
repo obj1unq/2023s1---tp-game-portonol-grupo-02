@@ -25,6 +25,10 @@ class Image {
 		game.addVisual(self)
 	}
 	
+	method inPosition(x, y) {
+		position.inPosition(x, y)
+	}
+	
 	// Evitar uso. Empeora el performance
 	method colliders() = game.colliders(self)
 	

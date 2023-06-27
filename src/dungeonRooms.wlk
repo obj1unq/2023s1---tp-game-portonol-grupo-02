@@ -326,6 +326,10 @@ class DungeonRoom inherits Node {
 class PlayerDungeonRoom inherits DungeonRoom {
 	var player
 	
+	method player(_player) {
+		player = _player
+	}
+	
 	override method render() {
 		super()
 		player.onAttach()
@@ -334,10 +338,6 @@ class PlayerDungeonRoom inherits DungeonRoom {
 	override method unrender() {
 		super()
 		player.onRemove()
-	}
-	
-	method player(_player) {
-		player = _player
 	}
 	
 	override method piso() = "celeste.png"
@@ -486,10 +486,6 @@ class Level {
 //		}
 		background.unrender()
 	}
-	
-//	method initGravity() {
-//		gameConfig.gravity().init()
-//	}
 	
 	method renderSpawnPoint() {
 		spawnRoom.render()

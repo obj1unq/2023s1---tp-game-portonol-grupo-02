@@ -40,7 +40,6 @@ object transitionManager {
 	
 	method currentFrame() {
 		const currentFrame = (currentTime / transition.timeBetweenFrames()).truncate(0)
-		console.println(transition.frame(currentFrame))
 		return transition.frame(currentFrame)
 	}
 	

@@ -7,6 +7,9 @@ import pools.globalRemoveBehaviour
 import wollok.game.*
 import enemiesFactories.flyEnemyFactory
 import CooldownManager.FlySpawnerCooldown
+import LifeUI.LifeUI
+import LifeUI.BossBarUI
+import gameConfig.*
 
 // Por limitaciones del lenguaje, no hay interfaces. Usar esta clase como interfaz para 
 // aprovecharse del polimorfismo que ofrece wollok
@@ -33,9 +36,10 @@ class IBoss {
 	
 }
 
-class LordOfFlies inherits PingPongEnemyEntity(baseImageName = "pingpongenemy", removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
+class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordofflies", velocity = 1.5, removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
 	const bossRoom
 	const spawnCooldown = new FlySpawnerCooldown(entityFlySpawner = self)
+	const lifeBar = new BossBarUI(startingPosition = gameConfig.width() - 3)
 	
 	method animation() {
 		return new Transition(duration = 1200, frames = [
@@ -57,10 +61,15 @@ class LordOfFlies inherits PingPongEnemyEntity(baseImageName = "pingpongenemy", 
 	override method onAttach() {
 		super()
 		self.makeEntryAnimation()
+		lifeBar.render()
 	}
 	
 	method makeEntryAnimation() {
 		transitionManager.play(self.animation())
+	}
+	
+	override method onDamageTaken(newHP) {
+		lifeBar.onDamageTaken(self)
 	}
 	
 	method spawnItem() {

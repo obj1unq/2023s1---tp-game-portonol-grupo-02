@@ -3,7 +3,7 @@ import structureGenerator.*
 
 object inputManager {
 
-	const dispatchers = []
+	const dispatchers = #{}
 
 	method suscribe(dispatcher) {
 		dispatchers.add(dispatcher)
