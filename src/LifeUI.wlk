@@ -25,6 +25,10 @@ class LifeUI {
 		barPart.empty()
 	}
 	
+	method fullBarPart(barPart) {
+		barPart.full()
+	}
+	
 	method lifeProportion(damagedEntity) = damagedEntity.hp() / damagedEntity.maxHp()
 	
 	method render() {				
@@ -42,6 +46,14 @@ class LifeUI {
 	}
 	
 	method onZeroHP() {}
+	
+	method onHeal(damagedEntity) {
+		const index = ((life.size() - 1) * self.lifeProportion(damagedEntity)).roundUp()
+		console.println(self.lifeProportion(damagedEntity))
+		(0 .. index).forEach {
+			i => self.fullBarPart(life.get(i))
+		}
+	}
 	
 	method onDamageTaken(damagedEntity) {
 		if(damagedEntity.hp() <= 0) {

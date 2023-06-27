@@ -292,6 +292,11 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		weaponManager.changeWeapon()
 	}
 	
+	override method heal(quantity) {
+		super(quantity)
+		lifeBarUI.onHeal(self)
+	}
+	
 	override method update(time){
 		super(time)
 		damageManager.onTimePassed(time)
