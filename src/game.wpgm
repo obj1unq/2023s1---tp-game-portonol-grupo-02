@@ -105,7 +105,8 @@ program myGame {
 			"level1Transition-33"
 		],
 	duration = 3000,
-	sfx = game.sound("gameStart.mp3")
+	sfx = game.sound("gameStart.mp3"),
+	onFinish = {mainTheme.play()}
 )
 
 	const image = new Image(baseImageName = "fondosala")
