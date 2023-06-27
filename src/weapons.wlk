@@ -8,16 +8,20 @@ import CooldownManager.AttackableCooldownManager
 import CooldownManager.RechargingAttackCooldownManager
 import CooldownManager.MovementAttackableCooldownManager
 import CooldownManager.MovementRechargingAttackCooldownManager
+import weaponUI.WeaponUI
 
 class Weapon {
 	method attack(dealer) {
 		self.makeSound()	
 	}
 	
+	method imageName()
+	
 	method makeSound()
 }
 
 object nullWeapon inherits Weapon {
+	override method imageName() = "invisible"
 	override method makeSound() {}
 	override method attack(dealer) {}
 }
@@ -93,6 +97,7 @@ class Knife inherits MeleeWeapon(rechargeCooldown = 200) {
 	override method makeSound() {
 		stabKnifeEffect.play()
 	}
+	override method imageName() = "knife-image"
 }
 
 class DistanceWeapon inherits OnlyCooldownWeapon {
@@ -110,7 +115,9 @@ class DistanceWeapon inherits OnlyCooldownWeapon {
 	}
 }
 
-class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000) {}
+class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000) {
+	override method imageName() = "slingshot-image"
+}
 
 class Projectile inherits GravityEntity {
 	var property to = bottom
@@ -169,6 +176,7 @@ object rockProjectileFactory inherits ProjectileFactory {
 
 class WeaponManager {
 	var actualWeapon = 0
+	const weaponUI = new WeaponUI()
 	const weapons = []
 	
 	method changeWeapon() {
@@ -188,6 +196,15 @@ class WeaponManager {
 		if(actualWeapon >= weapons.size()) {
 			actualWeapon = 0
 		}
+		weaponUI.onWeaponChanged(weapons.get(actualWeapon))
+	}
+	
+	method onAttach() {
+		weaponUI.onAttach()
+	}
+	
+	method onRemove() {
+		weaponUI.onRemove()
 	}
 	
 	method attack(dealer) {
