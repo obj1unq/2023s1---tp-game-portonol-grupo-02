@@ -275,11 +275,13 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	override method onAttach() {
 		super()
 		lifeBarUI.render()
+		weaponManager.onAttach()
 	}
 	
 	override method onRemove() {
 		super() 
 		lifeBarUI.unrender()
+		weaponManager.onRemove()
 	}
 	
 	override method onDamageTaken(newHP) {
