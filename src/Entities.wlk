@@ -191,7 +191,7 @@ class DamageEntity inherits GravityEntity {
 
 
 class EnemyDamageEntity inherits DamageEntity {
-	const removeBehaviour = poolRemoveBehaviour
+	var property removeBehaviour = poolRemoveBehaviour
 	const damageManager = new DamageManager(entity = self)
 	var deathCallback = {}
 

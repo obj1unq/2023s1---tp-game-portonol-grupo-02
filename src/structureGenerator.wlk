@@ -345,6 +345,12 @@ class Queue {
 		return element
 	}
 	
+	method mix() {
+		elements.sortedBy{
+			a, b => randomizer.fiftyBool()
+		}
+	}
+	
 	method head() = elements.first()
 	
 	method size() = elements.size()

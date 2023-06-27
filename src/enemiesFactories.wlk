@@ -5,17 +5,22 @@ import Movement.*
 import bosses.SlimeTurret
 import gameConfig.*
 import bosses.LordOfFlies
+import pools.lordOfFliesPoolBehaviour
 
 class LevelEnemyFactory {
 	const scaleDamage
 	const scaleHP
 	const enemiesFactories = []
-	method getRandomEnemy()
+	
+	method getRandomEnemy() {
+		return enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+	}
+	
 	method boss(forRoom)
 }
 
 object level1EnemyFactory inherits LevelEnemyFactory(
-	enemiesFactories = [pingpongEnemyFactory, slimeEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
+	enemiesFactories = [slimeEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
 	scaleDamage = 1, 
 	scaleHP = 1
 ) {
@@ -25,11 +30,37 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 		boss.changeMovementController(new CollidableMovementController(movableEntity = boss))
 		return boss
 	}
+
+}
+
+object level2EnemyFactory inherits LevelEnemyFactory(
+	enemiesFactories = [pingpongEnemyFactory, slimeEnemyFactory, zombieEnemyFactory],
+	scaleDamage = 1.5, 
+	scaleHP = 1.5
+) {
+	
+	override method boss(forRoom) {
+		const boss = new SlimeTurret(player = global.player(), bossRoom = forRoom, damage = 40, maxHp = 300, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
+		boss.changeMovementController(new CooldownMovementController(movableEntity = boss))
+		return boss
+	}
+	
+}
+
+object lordOfFliesFactory inherits LevelEnemyFactory(
+	enemiesFactories = [flyEnemyFactory],
+	scaleHP = 1,
+	scaleDamage = 1
+) {
+	override method boss(forRoom) {
+		self.error("No hay bosses para este pool")
+	}
 	
 	override method getRandomEnemy() {
-		return enemiesFactories.anyOne().generate(scaleDamage, scaleHP)
+		const fly = flyEnemyFactory.generate(scaleHP, scaleDamage)
+		fly.removeBehaviour(lordOfFliesPoolBehaviour)
+		return fly
 	}
-
 }
 
 class EnemyFactory {

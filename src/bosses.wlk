@@ -10,6 +10,7 @@ import CooldownManager.FlySpawnerCooldown
 import LifeUI.LifeUI
 import LifeUI.BossBarUI
 import gameConfig.*
+import pools.lordOfFliesPool
 
 // Por limitaciones del lenguaje, no hay interfaces. Usar esta clase como interfaz para 
 // aprovecharse del polimorfismo que ofrece wollok
@@ -84,7 +85,7 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 	}
 	
 	method spawnFly() {
-		const fly = flyEnemyFactory.generate(1, 1)
+		const fly = lordOfFliesPool.getEnemy()
 		fly.initialPositions(self.position().x(), self.position().y())
 		bossRoom.addEnemy(fly)
 	}
@@ -98,6 +99,8 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 
 class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
 	const bossRoom
+	
+	const lifeBar = new BossBarUI(startingPosition = gameConfig.width() - 3)
 	
 	method animation() {
 		return new Transition(duration = 1200, frames = [
@@ -116,9 +119,14 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 		], sfx = game.sound("enter-boss.mp3"))
 	}
 	
+	override method onDamageTaken(newHP) {
+		lifeBar.onDamageTaken(self)
+	}
+	
 	override method onAttach() {
 		super()
 		self.makeEntryAnimation()
+		lifeBar.render()
 	}
 	
 	method makeEntryAnimation() {
