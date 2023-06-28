@@ -67,7 +67,7 @@ class DungeonStructureGenerator {
 			   		}, null)
 		
 		return if(neighbour == null) {
-			const newNeighbour = new EnemiesDungeonRoom(position = neighbourPosition, player = gameConfig.player())
+			const newNeighbour = enemiesDungeonRoomFactory.getFor(neighbourPosition, gameConfig.player())
 			newNeighbour.addDecoration(decorationFactory.getRandomDecoration())
 			rooms.add(newNeighbour)
 			roomsQuantity++
@@ -125,9 +125,15 @@ class Node {
 		neighbours.put(direction, neighbour)
 	}
 	
+	method clear() {
+		neighbours.clear()
+	}
+	
 	method getRandomNeighbourDirection() {
 		return directionManager.getRandomDirection()
 	}
+	
+	method canBeRecycled() = false
 	
 	method neighbourIn(direction) {
 		return neighbours.get(direction)
@@ -176,7 +182,7 @@ object top {
 	}
 	
 	method getFromPosition(position) {
-		return game.at(position.x(), position.y() + 1)
+		return new MutablePosition(x = position.x(), y = position.y() + 1)
 	}
 	
 	method getXFromPosition(position) {
@@ -226,7 +232,8 @@ object bottom {
 	}
 	
 	method getFromPosition(position) {
-		return game.at(position.x(), position.y() - 1)
+		
+		return new MutablePosition(x = position.x(), y = position.y() - 1)
 	}
 	
 	method advance(distance, position) {
@@ -279,7 +286,7 @@ object left {
 	}
 	
 	method getFromPosition(position) {
-		return game.at(position.x() - 1, position.y())
+		return new MutablePosition(x = position.x() - 1, y = position.y())
 	}
 	
 	method advance(distance, position) {
@@ -330,7 +337,7 @@ object right {
 	}
 	
 	method getFromPosition(position) {
-		return game.at(position.x() + 1, position.y())
+		return new MutablePosition(x = position.x() + 1, y = position.y())
 	}
 	
 	method advance(distance, position) {
