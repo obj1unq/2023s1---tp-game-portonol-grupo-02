@@ -219,6 +219,13 @@ class DungeonRoom inherits Node {
 	
 	method piso()
 	
+	override method clear() {
+		super()
+		doors.clear()
+		structures.clear()
+		consumables.clear()
+	}
+	
 	method render() {
 		self.renderDecorations()
 		self.renderDoors()
@@ -350,6 +357,13 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 	override method piso() = "muro.png"
 	
+	override method clear() {
+		super()
+		cleaned = false
+	}
+	
+	override method canBeRecycled() = true
+	
 	override method render() {
 		super()
 		self.closeDoors()
@@ -409,6 +423,27 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 }
 
+object enemiesDungeonRoomFactory {
+	const rooms = []
+	
+	method getFor(position, player) {
+		if(rooms.size() == 0) {
+			return new EnemiesDungeonRoom(position = position, player = gameConfig.player())	
+		}
+		const room = rooms.get(0)
+		rooms.remove(room)
+		room.player(player)
+		room.position().inPosition(position.x(), position.y())
+		return room
+	}
+	
+	method addRoomToPool(room) {
+		room.clear()
+		rooms.add(room)
+	}
+	
+}
+
 class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}, decoration = decorationFactory.getBossDecorations()) {
 	const levelEnemyFactory
 	
@@ -418,6 +453,8 @@ class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}, decoration = de
 		super()
 		self.spawnTrapdoor()
 	}
+	
+	override method canBeRecycled() = false
 	
 	override method addEnemies() {
 		if (not cleaned) {
@@ -478,10 +515,10 @@ class Level {
 	}
 		
 	method clearLevel() {
-// 		Acá estaría bueno sacarle decoracioens al nivel
-//		levelRoomAssets.forEach {
-//			asset => asset.onRemove()
-//		}
+		structure.forEach {
+			room => 
+				if(room.canBeRecycled()) enemiesDungeonRoomFactory.addRoomToPool(room)
+		}
 		background.unrender()
 	}
 	
