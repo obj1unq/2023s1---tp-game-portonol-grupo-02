@@ -9,10 +9,24 @@ import CooldownManager.RechargingAttackCooldownManager
 import CooldownManager.MovementAttackableCooldownManager
 import CooldownManager.MovementRechargingAttackCooldownManager
 import weaponUI.WeaponUI
+import wollok.game.game
+import Position.dummiePosition
+import SoundEffect.clangEffect
 
 class Weapon {
+	
+	const damage
+	
 	method attack(dealer) {
 		self.makeSound()	
+	}
+	
+	method equip(dealer) {
+		dealer.increaseDamage(damage)
+	}
+	
+	method unequip(dealer) {
+		dealer.decreaseDamage(damage)
 	}
 	
 	method imageName()
@@ -20,7 +34,7 @@ class Weapon {
 	method makeSound()
 }
 
-object nullWeapon inherits Weapon {
+object nullWeapon inherits Weapon(damage = 0) {
 	override method imageName() = "invisible"
 	override method makeSound() {}
 	override method attack(dealer) {}
@@ -87,13 +101,41 @@ class MeleeWeapon inherits MovementCooldownWeapon {
 		const colliders = facingDirection.collisionsFrom(dealer.position().x(), dealer.position().y())
 		colliders.forEach {
 			collider => 
-				if(global.isEnemy(collider)) { dealer.damageManager().dealDmg(collider) }
+				if(global.isEnemy(collider)) { dealer.dealDamage(collider) }
+		}
+	}
+}
+
+class MeeleAreaWeapon inherits MovementCooldownWeapon {
+	override method culminateAttack(dealer) {
+		const center = dealer.position()
+		(center.x() - 1 .. center.x() + 1).forEach {
+			x =>
+				(center.y() + 1 .. center.y() - 1).forEach {
+					y => self.attackIn(x, y, dealer)
+				}
+		}
+	}
+	
+	method attackIn(x, y, dealer) {
+		const colliders = game.getObjectsIn(dummiePosition.withPosition(x, y))
+		console.println(colliders)
+		colliders.forEach {
+			collider => 
+				if(global.isEnemy(collider)) { dealer.dealDamage(collider) }
 		}
 	}
 	
 }
 
-class Knife inherits MeleeWeapon(rechargeCooldown = 200) {
+class DragonSlayer inherits MeeleAreaWeapon(rechargeCooldown = 1000, damage = 100) {
+	override method makeSound() {
+		clangEffect.play()
+	}
+	override method imageName() = "dragonslayer-weapon"
+} 
+
+class Knife inherits MeleeWeapon(rechargeCooldown = 200, damage = 30) {
 	override method makeSound() {
 		stabKnifeEffect.play()
 	}
@@ -115,7 +157,7 @@ class DistanceWeapon inherits OnlyCooldownWeapon {
 	}
 }
 
-class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000) {
+class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000, damage = 30) {
 	override method imageName() = "slingshot-image"
 }
 
@@ -179,10 +221,11 @@ class WeaponManager {
 	const weaponUI = new WeaponUI()
 	const weapons = []
 	
-	method changeWeapon() {
+	method changeWeapon(dealer) {
 		if(weapons.size() != 0) {
+			weapons.get(actualWeapon).unequip(dealer)
 			actualWeapon++
-			self.changeNextWeapon()
+			self.changeNextWeapon(dealer)
 		}
 	}
 	
@@ -192,10 +235,11 @@ class WeaponManager {
 		}
 	}
 	
-	method changeNextWeapon() {
+	method changeNextWeapon(dealer) {
 		if(actualWeapon >= weapons.size()) {
 			actualWeapon = 0
 		}
+		weapons.get(actualWeapon).equip(dealer)
 		weaponUI.onWeaponChanged(weapons.get(actualWeapon))
 	}
 	

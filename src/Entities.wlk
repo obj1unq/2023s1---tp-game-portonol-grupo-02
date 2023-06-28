@@ -164,6 +164,14 @@ class DamageEntity inherits GravityEntity {
 
 	method hp() = hp
 
+	method increaseDamage(amount) {
+		damage += amount
+	}
+	
+	method decreaseDamage(amount) {
+		damage = (damage - amount).max(0)
+	}
+
 	method cooldown() = cooldown
 
 	method takeDmg(dmg) {
@@ -186,6 +194,8 @@ class DamageEntity inherits GravityEntity {
 	method attack() {}
 	
 	method die()
+	
+	method dealDamage(receiver)
 
 }
 
@@ -197,6 +207,10 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	method resetState() {
 		hp = maxHp
+	}
+	
+	override method dealDamage(receiver) {
+		damageManager.dealDamage(receiver)
 	}
 
 	override method onAttach() {
@@ -222,6 +236,8 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	override method takeDmg(damage) {
 		super(damage)
+		console.println("recibi dmg")
+		console.println(self)
 		if (self.isDead()) {
 			self.die()
 		}
@@ -251,14 +267,15 @@ class EnemyDamageEntity inherits DamageEntity {
 object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gravity = null, maxHp = 0) {
 	override method takeDmg(dmg) {}
 	override method die() {}
+	override method dealDamage(receiver) {}
 }
 
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weaponManager = new WeaponManager(weapons = [
 		new Knife(),
-		new Slingshot()
+		new Slingshot(),
+		new DragonSlayer()
 	])
-	const property damageManager = new DamageManager(entity = self)
 	const lifeBarUI = new PlayerLifeUI(startingPosition = 0)
 	const damageSfx
 	const deathSfx
@@ -270,6 +287,10 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		} else {
 			self.playDamageSound()
 		}
+	}
+	
+	override method dealDamage(receiver) {
+		receiver.takeDmg(self.damage())
 	}
 	
 	override method onAttach() {
@@ -289,7 +310,7 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	}
 	
 	method changeWeapon() {
-		weaponManager.changeWeapon()
+		weaponManager.changeWeapon(self)
 	}
 	
 	override method heal(quantity) {
@@ -299,7 +320,6 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	
 	override method update(time){
 		super(time)
-		damageManager.onTimePassed(time)
 		weaponManager.onTimePassed(time)
 	}
 	
