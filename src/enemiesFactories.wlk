@@ -7,6 +7,7 @@ import gameConfig.*
 import bosses.LordOfFlies
 import pools.lordOfFliesPoolBehaviour
 import bosses.Rider
+import bosses.DoubleBoss
 
 class LevelEnemyFactory {
 	const scaleDamage
@@ -55,8 +56,11 @@ object level3EnemyFactory inherits LevelEnemyFactory(
 ) {
 	
 	override method boss(forRoom) {
-		const boss = new Rider(player = global.player(), bossRoom = forRoom, damage = 100, maxHp = 300, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
-		boss.changeMovementController(new CollidableMovementController(movableEntity = boss))
+		const leftBoss = new Rider(player = global.player(), damage = 100, maxHp = 250, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
+		const rightBoss = new Rider(velocityX = 7, velocityY = 3, intialXLifebarPosition = gameConfig.width() - 8, player = global.player(), damage = 70, maxHp = 400, cooldown = 500, gravity = global.gravity(), initialX = gameConfig.xMiddle(), initialY = gameConfig.yMiddle())
+		const boss = new DoubleBoss(leftBoss = leftBoss, rightBoss = rightBoss, bossRoom = forRoom)
+		leftBoss.changeMovementController(new CollidableMovementController(movableEntity = leftBoss))
+		rightBoss.changeMovementController(new CollidableMovementController(movableEntity = rightBoss))
 		return boss
 	}
 	

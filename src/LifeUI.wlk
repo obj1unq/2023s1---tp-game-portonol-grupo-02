@@ -49,7 +49,6 @@ class LifeUI {
 	
 	method onHeal(damagedEntity) {
 		const index = ((life.size() - 1) * self.lifeProportion(damagedEntity)).roundUp()
-		console.println(self.lifeProportion(damagedEntity))
 		(0 .. index).forEach {
 			i => self.fullBarPart(life.get(i))
 		}

@@ -237,8 +237,6 @@ class EnemyDamageEntity inherits DamageEntity {
 
 	override method takeDmg(damage) {
 		super(damage)
-		console.println("recibi dmg")
-		console.println(self)
 		if (self.isDead()) {
 			self.die()
 		}
@@ -274,8 +272,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weaponManager = new WeaponManager(weapons = [
 		new Knife(),
-		new Slingshot(),
-		new DragonSlayer()
+		new Slingshot()
 	])
 	const lifeBarUI = new PlayerLifeUI(startingPosition = 0)
 	const damageSfx
