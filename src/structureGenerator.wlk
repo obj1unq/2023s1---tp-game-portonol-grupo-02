@@ -163,6 +163,7 @@ object top {
 	method oposite() = bottom
 	
 	method onInput(movementController) {
+		movementController.movableEntity().direction().direction(self)
 		movementController.movableEntity().goUp()
 	}
 	
@@ -208,6 +209,7 @@ object bottom {
 	method oposite() = top
 	
 	method onInput(movementController) {
+		movementController.movableEntity().direction().direction(self)
 		movementController.movableEntity().goDown()
 	}
 	
@@ -253,6 +255,7 @@ object left {
 	method oposite() = right
 	
 	method onInput(movementController) {
+		movementController.movableEntity().direction().direction(self)
 		movementController.movableEntity().goLeft()
 	}
 	
@@ -298,6 +301,7 @@ object right {
 	method oposite() = left
 	
 	method onInput(movementController) {
+		movementController.movableEntity().direction().direction(self)
 		movementController.movableEntity().goRight()
 	}
 	
