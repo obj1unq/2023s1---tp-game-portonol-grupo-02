@@ -130,18 +130,18 @@ class Rider inherits ChargeToPlayerEnemy(velocityX = 10, velocityY = 5, hp = 300
 	
 	method animation() {
 		return new Transition(duration = 1200, frames = [
-			"lordOfFliesScreen-1",
-			"lordOfFliesScreen-2",
-			"lordOfFliesScreen-3",
-			"lordOfFliesScreen-4",
-			"lordOfFliesScreen-5",
-			"lordOfFliesScreen-6",
-			"lordOfFliesScreen-7",
-			"lordOfFliesScreen-8",
-			"lordOfFliesScreen-9",
-			"lordOfFliesScreen-10",
-			"lordOfFliesScreen-11",
-			"lordOfFliesScreen-12"
+			"riderScreen-1",
+			"riderScreen-2",
+			"riderScreen-3",
+			"riderScreen-4",
+			"riderScreen-5",
+			"riderScreen-6",
+			"riderScreen-7",
+			"riderScreen-8",
+			"riderScreen-9",
+			"riderScreen-10",
+			"riderScreen-11",
+			"riderScreen-12"
 		], sfx = game.sound("enter-boss.mp3"))
 	}
 	
