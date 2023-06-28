@@ -119,7 +119,6 @@ class MeeleAreaWeapon inherits MovementCooldownWeapon {
 	
 	method attackIn(x, y, dealer) {
 		const colliders = game.getObjectsIn(dummiePosition.withPosition(x, y))
-		console.println(colliders)
 		colliders.forEach {
 			collider => 
 				if(global.isEnemy(collider)) { dealer.dealDamage(collider) }

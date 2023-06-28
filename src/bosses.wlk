@@ -1,4 +1,5 @@
 import Entities.Slime
+import Entities.EnemyDamageEntity
 import Entities.PingPongEnemyEntity
 import Entities.ChargeToPlayerEnemy
 import pools.consumablesPool
@@ -57,6 +58,86 @@ class IBoss {
 	 * 
 	 * }
 	 */
+	
+}
+
+class DoubleBoss inherits EnemyDamageEntity(damage = null, maxHp = null, cooldown = null, gravity = null) {
+	var leftBoss
+	var rightBoss
+	const bossRoom
+	
+	override method onAttach() {
+		leftBoss.onAttach()
+		rightBoss.onAttach()
+		self.makeEntryAnimation()
+		bossTheme.play()
+		mainTheme.stop()
+		self.setDeathCallbackForBosses()
+	}
+	
+	method setDeathCallbackForBosses() {
+		leftBoss.setDeathCallback {
+			self.onBossDeath(leftBoss)
+		}
+		rightBoss.setDeathCallback{
+			self.onBossDeath(rightBoss)
+		}
+	}
+	
+	method onBossDeath(boss) {
+		
+		if(leftBoss == boss) {
+			leftBoss = null
+		} else {
+			rightBoss = null
+		}
+		
+		self.checkIfBossesAreDead()
+	}
+	
+	method checkIfBossesAreDead() {
+		if(leftBoss == null and rightBoss == null) {
+			self.die()
+		}
+	}
+	
+	method spawnItem() {
+		const item = consumablesPool.getRandomItem(bossRoom)
+		bossRoom.addConsumable(item)
+		item.onAttach()
+	}
+	
+	override method die() {
+		super()
+		self.spawnItem()
+		bossTheme.stop()
+		mainTheme.play()
+	}
+	
+	method animation() {
+		return new Transition(duration = 1200, frames = [
+			"riderScreen-1",
+			"riderScreen-2",
+			"riderScreen-3",
+			"riderScreen-4",
+			"riderScreen-5",
+			"riderScreen-6",
+			"riderScreen-7",
+			"riderScreen-8",
+			"riderScreen-9",
+			"riderScreen-10",
+			"riderScreen-11",
+			"riderScreen-12"
+		], sfx = game.sound("enter-boss.mp3"))
+	}
+	
+	override method onRemove() {
+		deathCallback.apply()
+	}
+	
+	method makeEntryAnimation() {
+		transitionManager.play(self.animation())
+	}
 	
 }
 
@@ -125,53 +206,16 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 }
 
 class Rider inherits ChargeToPlayerEnemy(velocityX = 10, velocityY = 5, hp = 300, baseImageName = "rider", removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
-	const bossRoom
-	const lifeBar = new BossBarUI(startingPosition = gameConfig.width() - 3)
-	
-	method animation() {
-		return new Transition(duration = 1200, frames = [
-			"riderScreen-1",
-			"riderScreen-2",
-			"riderScreen-3",
-			"riderScreen-4",
-			"riderScreen-5",
-			"riderScreen-6",
-			"riderScreen-7",
-			"riderScreen-8",
-			"riderScreen-9",
-			"riderScreen-10",
-			"riderScreen-11",
-			"riderScreen-12"
-		], sfx = game.sound("enter-boss.mp3"))
-	}
+	const intialXLifebarPosition = gameConfig.width() - 3
+	const lifeBar = new BossBarUI(startingPosition = intialXLifebarPosition)
 	
 	override method onAttach() {
 		super()
-		self.makeEntryAnimation()
-		bossTheme.play()
-		mainTheme.stop()
 		lifeBar.render()
-	}
-	
-	method makeEntryAnimation() {
-		transitionManager.play(self.animation())
 	}
 	
 	override method onDamageTaken(newHP) {
 		lifeBar.onDamageTaken(self)
-	}
-	
-	method spawnItem() {
-		const item = consumablesPool.getRandomItem(bossRoom)
-		bossRoom.addConsumable(item)
-		item.onAttach()
-	}
-	
-	override method die() {
-		super()
-		self.spawnItem()
-		bossTheme.stop()
-		mainTheme.play()
 	}
 	
 }

@@ -134,7 +134,6 @@ object levelManager {
 			const level = levels.dequeue()
 			level.levelEnemyPool().appendPool(lastPool)
 			level.levelEnemyPool().mix()
-			console.println(level.levelEnemyPool().pool().asList())
 			level.initializeLevel()
 			lastLevel = level
 			lastPool = lastLevel.levelEnemyPool()

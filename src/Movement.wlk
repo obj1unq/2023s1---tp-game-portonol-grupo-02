@@ -334,7 +334,7 @@ class VerticalChargeBehaviour {
 	var direction = top
 	
 	method advance(time, entity) {
-		if(global.player().position().y() == entity.position().y()) {
+		if(global.player().position().y() == entity.position().y().truncate(0)) {
 			chargeToPlayerMovement.changeToHorizontalMovement()
 		} else if(direction.canAdvanceTo(entity.position(), entity.verticalMovementByTime(time))) {
 			direction.advance(entity.verticalMovementByTime(time), entity.position())
