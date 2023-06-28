@@ -71,7 +71,7 @@ object levelManager {
 				duration = 3000,
 				sfx = game.sound("leveltransition.mp3")
 			)),
-		new Level(levelEnemyPool = level1EnemyPool, player = gameConfig.player(), roomQuantity = 8, background = new Image(baseImageName = "fondoNivel3"), transition = new Transition(
+		new Level(levelEnemyPool = level3EnemyPool, player = gameConfig.player(), roomQuantity = 8, background = new Image(baseImageName = "fondoNivel3"), transition = new Transition(
 					frames = [
 						"level3Transition-1",
 						"level3Transition-2",

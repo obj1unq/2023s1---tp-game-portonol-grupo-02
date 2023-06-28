@@ -1,5 +1,6 @@
 import Entities.Slime
 import Entities.PingPongEnemyEntity
+import Entities.ChargeToPlayerEnemy
 import pools.consumablesPool
 import transitionManager.*
 import Movement.CooldownMovementController
@@ -112,6 +113,58 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 		const fly = lordOfFliesPool.getEnemy()
 		fly.initialPositions(self.position().x(), self.position().y())
 		bossRoom.addEnemy(fly)
+	}
+	
+	override method die() {
+		super()
+		self.spawnItem()
+		bossTheme.stop()
+		mainTheme.play()
+	}
+	
+}
+
+class Rider inherits ChargeToPlayerEnemy(velocityX = 10, velocityY = 5, hp = 300, baseImageName = "rider", removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
+	const bossRoom
+	const lifeBar = new BossBarUI(startingPosition = gameConfig.width() - 3)
+	
+	method animation() {
+		return new Transition(duration = 1200, frames = [
+			"lordOfFliesScreen-1",
+			"lordOfFliesScreen-2",
+			"lordOfFliesScreen-3",
+			"lordOfFliesScreen-4",
+			"lordOfFliesScreen-5",
+			"lordOfFliesScreen-6",
+			"lordOfFliesScreen-7",
+			"lordOfFliesScreen-8",
+			"lordOfFliesScreen-9",
+			"lordOfFliesScreen-10",
+			"lordOfFliesScreen-11",
+			"lordOfFliesScreen-12"
+		], sfx = game.sound("enter-boss.mp3"))
+	}
+	
+	override method onAttach() {
+		super()
+		self.makeEntryAnimation()
+		bossTheme.play()
+		mainTheme.stop()
+		lifeBar.render()
+	}
+	
+	method makeEntryAnimation() {
+		transitionManager.play(self.animation())
+	}
+	
+	override method onDamageTaken(newHP) {
+		lifeBar.onDamageTaken(self)
+	}
+	
+	method spawnItem() {
+		const item = consumablesPool.getRandomItem(bossRoom)
+		bossRoom.addConsumable(item)
+		item.onAttach()
 	}
 	
 	override method die() {

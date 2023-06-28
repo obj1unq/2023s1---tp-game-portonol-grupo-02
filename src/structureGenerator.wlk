@@ -209,6 +209,10 @@ object top {
 		position.up(distance)
 	}
 	
+	method canAdvanceTo(position, distance) {
+		return gameConfig.canMoveVertically(position.y() + distance)
+	}
+	
 	method getYFromPosition(position) {
 		return position.y() + 1
 	}
@@ -244,6 +248,10 @@ object bottom {
 	
 	method advance(distance, position) {
 		position.down(distance)
+	}
+	
+	method canAdvanceTo(position, distance) {
+		return gameConfig.canMoveVertically(position.y() - distance)
 	}
 	
 	method getXFromPosition(position) {
@@ -287,6 +295,10 @@ object left {
 		position.left(distance)
 	}
 	
+	method canAdvanceTo(position, distance) {
+		return gameConfig.canMoveHorizontally(position.x() - distance)
+	}
+	
 	method getXFromPosition(position) {
 		return position.x() - 1
 	}
@@ -326,6 +338,10 @@ object right {
 	
 	method advance(distance, position) {
 		position.right(distance)
+	}
+	
+	method canAdvanceTo(position, distance) {
+		return gameConfig.canMoveHorizontally(position.x() + distance)
 	}
 	
 	method getXFromPosition(position) {

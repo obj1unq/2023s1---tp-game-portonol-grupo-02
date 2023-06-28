@@ -83,6 +83,8 @@ object level1EnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory) {}
 
 object level2EnemyPool inherits EnemyPool(enemyFactory = level2EnemyFactory) {}
 
+object level3EnemyPool inherits EnemyPool(enemyFactory = level3EnemyFactory) {}
+
 class RemoveBehaviour {
 	method onRemove(entity)
 	method onAdd(entity)

@@ -10,6 +10,7 @@ import structureGenerator.*
 import pools.poolRemoveBehaviour
 import Movement.MovementDirectionManager
 import LifeUI.PlayerLifeUI
+import Movement.ChargeToPlayerMovement
 
 class Entity inherits Image {
 	
@@ -335,6 +336,26 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	
 	method playDamageSound() {
 		damageSfx.play()
+	}
+	
+}
+
+class ChargeToPlayerEnemy inherits EnemyDamageEntity {
+	const player
+	const velocityY = 2
+	const velocityX = 4
+	const chargeToPlayerBehaviour = new ChargeToPlayerMovement(entity = self)
+	
+	override method update(time){
+		super(time)
+		chargeToPlayerBehaviour.advance(time)
+	}
+	
+	method verticalMovementByTime(time) = self.movementByTime(time, velocityY)
+	method horizontalMovementByTime(time) = self.movementByTime(time, velocityX)
+	
+	method movementByTime(time, axisVelocity) {
+		return (time * axisVelocity) / 1000
 	}
 	
 }

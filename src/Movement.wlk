@@ -6,6 +6,7 @@ import CooldownManager.*
 import structureGenerator.*
 import gameConfig.gameConfig
 import Input.south
+import Global.global
 
 class MovementController {
 
@@ -304,4 +305,63 @@ class MovementDirectionManager {
 
 	}
 	
+}
+
+class ChargeToPlayerMovement {
+	
+	const entity
+	const property verticalMovement = new VerticalChargeBehaviour(chargeToPlayerMovement = self)
+	const property horizontalMovement = new HorizontalChargeBehaviour(chargeToPlayerMovement = self)
+	var property movementBehaviour = verticalMovement
+
+	method advance(time) {
+		movementBehaviour.advance(time, entity)
+	}
+	
+	method changeToVerticalMovement() {
+		movementBehaviour = verticalMovement
+	}
+	
+	method changeToHorizontalMovement() {
+		horizontalMovement.chasePlayer(entity)
+		movementBehaviour = horizontalMovement
+	}
+	
+}
+
+class VerticalChargeBehaviour {
+	const chargeToPlayerMovement
+	var direction = top
+	
+	method advance(time, entity) {
+		if(global.player().position().y() == entity.position().y()) {
+			chargeToPlayerMovement.changeToHorizontalMovement()
+		} else if(direction.canAdvanceTo(entity.position(), entity.verticalMovementByTime(time))) {
+			direction.advance(entity.verticalMovementByTime(time), entity.position())
+		} else {
+			direction = direction.oposite()
+		}
+	}
+}
+
+class HorizontalChargeBehaviour {
+	const chargeToPlayerMovement
+	var direction = right
+	
+	method advance(time, entity) {
+		if(direction.canAdvanceTo(entity.position(), entity.horizontalMovementByTime(time))) {
+			direction.advance(entity.horizontalMovementByTime(time), entity.position())
+		} else {
+			chargeToPlayerMovement.changeToVerticalMovement()
+		}
+	}
+	
+	method chasePlayer(entity) {
+		const playerXPosition = global.player().position().x()
+		if(entity.position().x() > playerXPosition) {
+			direction = left
+		} else {
+			direction = right
+		}
+	}
 }
