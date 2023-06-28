@@ -3,6 +3,7 @@ import gameConfig.*
 import dungeonRooms.*
 import Position.*
 import Sprite.Image
+import Global.global
 
 class DungeonStructureGenerator {
 	
@@ -160,6 +161,9 @@ object directionManager {
 }
 
 object top {
+	const property door = new Door(facingDirection = self, baseImageName = self.doorAsset(), gravity = global.gravity(), initialX = self.positionInMiddle().x(), initialY = self.positionInMiddle().y())
+	const middlePosition = self.positionInMiddle()
+	
 	method oposite() = bottom
 	
 	method onInput(movementController) {
@@ -196,16 +200,20 @@ object top {
 	method imageModifier() = "-up"
 	
 	method positionInMiddle() {
-		return game.at(gameConfig.xMiddle(), gameConfig.height() - gameConfig.doorYOffset())
+		return new MutablePosition(x = gameConfig.xMiddle(), y = gameConfig.height() - gameConfig.doorYOffset())
 	}
 	
 	method positionNStepsInto(n) {
-		return self.positionInMiddle().down(n)
+		const nextPosition = dummiePosition.withPosition(middlePosition.x(), middlePosition.y())
+		nextPosition.down(n)
+		return nextPosition
 	}
 	
 }
 
 object bottom {
+	const property door = new Door(facingDirection = self, baseImageName = self.doorAsset(), gravity = global.gravity(), initialX = self.positionInMiddle().x(), initialY = self.positionInMiddle().y())
+	const middlePosition = self.positionInMiddle()
 	method oposite() = top
 	
 	method onInput(movementController) {
@@ -242,16 +250,23 @@ object bottom {
 	method imageModifier() = "-down"
 	
 	method positionInMiddle() {
-		return game.at(gameConfig.xMiddle(), gameConfig.doorYOffset())
+		return new MutablePosition(x = gameConfig.xMiddle(), y = gameConfig.doorYOffset())
 	}
 	
+	method middlePosition() = middlePosition
+	
 	method positionNStepsInto(n) {
-		return self.positionInMiddle().up(n)
+		const nextPosition = dummiePosition.withPosition(middlePosition.x(), middlePosition.y())
+		nextPosition.up(n)
+		return nextPosition
 	}
 	
 }
 
 object left {
+	const property door = new Door(facingDirection = self, baseImageName = self.doorAsset(), gravity = global.gravity(), initialX = self.positionInMiddle().x(), initialY = self.positionInMiddle().y())
+	const middlePosition = self.positionInMiddle()
+	
 	method oposite() = right
 	
 	method onInput(movementController) {
@@ -286,18 +301,23 @@ object left {
 	method doorAsset() = "leftDoor"
 	
 	method positionInMiddle() {
-		return game.at(gameConfig.doorXOffset(), gameConfig.yMiddle())
+		return new MutablePosition(x = gameConfig.doorXOffset(), y = gameConfig.yMiddle())
 	}
 	
 	method imageModifier() = "-left"
 	
 	method positionNStepsInto(n) {
-		return self.positionInMiddle().right(n)
+		const nextPosition = dummiePosition.withPosition(middlePosition.x(), middlePosition.y())
+		nextPosition.right(n)
+		return nextPosition
 	}
 	
 }
 
 object right {
+	const property door = new Door(facingDirection = self, baseImageName = self.doorAsset(), gravity = global.gravity(), initialX = self.positionInMiddle().x(), initialY = self.positionInMiddle().y())
+	const middlePosition = self.positionInMiddle()	
+	
 	method oposite() = left
 	
 	method onInput(movementController) {
@@ -334,11 +354,13 @@ object right {
 	method doorAsset() = "rightDoor"
 	
 	method positionInMiddle() {
-		return game.at(gameConfig.width() - gameConfig.doorXOffset(), gameConfig.yMiddle())
+		return new MutablePosition(x = gameConfig.width() - gameConfig.doorXOffset(), y = gameConfig.yMiddle())
 	}
 	
 	method positionNStepsInto(n) {
-		return self.positionInMiddle().left(n)
+		const nextPosition = dummiePosition.withPosition(middlePosition.x(), middlePosition.y())
+		nextPosition.left(n)
+		return nextPosition
 	}
 	
 }

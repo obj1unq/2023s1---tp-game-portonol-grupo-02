@@ -179,10 +179,9 @@ object openedDoor inherits DoorState {
 
 
 class Door inherits GravityEntity {
-	const from
-	const to
-	const facingDirection
-	const property getPosition = facingDirection.positionInMiddle()
+	var property from = null
+	var property to = null
+	const property facingDirection
 	var state = openedDoor
 	
 	override method onCollision(collider) {
@@ -281,13 +280,17 @@ class DungeonRoom inherits Node {
 	
 	method renderDoors() {
 		doors.forEach {
-			structure => structure.onAttach()
+			door => 
+				door.from(self)
+				door.gravity(global.gravity())
+				door.to(self.neighbourIn(door.facingDirection()))
+				door.onAttach()
 		}
 	}
 	
 	method unrenderDoors() {
 		doors.forEach {
-			structure => structure.onRemove()
+			door => door.onRemove()
 		}
 	}
 	
@@ -314,9 +317,7 @@ class DungeonRoom inherits Node {
 	
 	method generateDoorIn(direction) {
 		const neighbour = self.neighbourIn(direction)
-		const door = new Door(from = self, to = neighbour, facingDirection = direction, gravity = gameConfig.gravity(), baseImageName = direction.doorAsset())
-		door.initialPositions(door.getPosition().x(), door.getPosition().y())
-		doors.add(door)
+		doors.add(direction.door())
 	}
 	
 }
@@ -456,7 +457,6 @@ class Level {
 		self.generateLevel()
 		self.renderSpawnPoint()
 		self.playTransition()
-//		self.initGravity()
 	}
 	
 	method setBackgroundImage(){
