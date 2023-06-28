@@ -216,8 +216,8 @@ class Door inherits GravityEntity {
 class DungeonRoom inherits Node {	
 	const property doors = #{}
 	const property structures = #{}
-	const property decorations = #{}
 	const property consumables = #{}
+	var decoration = 1
 	
 	method piso()
 	
@@ -235,8 +235,8 @@ class DungeonRoom inherits Node {
 		self.unrenderConsumables()
 	}
 	
-	method addDecoration(decoration) {
-		decorations.add(decoration)
+	method addDecoration(_decoration) {
+		decoration = _decoration 
 	}
 	
 	method renderStructures() {
@@ -272,15 +272,12 @@ class DungeonRoom inherits Node {
 	}
 	
 	method renderDecorations() {
-		decorations.forEach {
-			decoration => decoration.render()
-		}
+		decorationManager.toDecoration(decoration)
+		decorationManager.render()
 	}
 	
 	method unrenderDecorations() {
-		decorations.forEach {
-			decoration => decoration.unrender()
-		}
+		decorationManager.unrender()
 	}
 	
 	method renderDoors() {
@@ -412,7 +409,7 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	
 }
 
-class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}, decorations = decorationFactory.getBossDecorations()) {
+class BossDungeonRoom inherits EnemiesDungeonRoom(enemies = #{}, decoration = decorationFactory.getBossDecorations()) {
 	const levelEnemyFactory
 	
 	override method piso() = "rojo.png"

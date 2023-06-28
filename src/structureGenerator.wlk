@@ -10,7 +10,7 @@ class DungeonStructureGenerator {
 	const maxQuantity
 	const pendingRooms = new Queue()
 	var roomsQuantity = 0
-	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player(), decorations = decorationFactory.getSpawnDecorations())
+	const property startingRoom = new PlayerDungeonRoom(position = game.at(0, 0), player = gameConfig.player(), decoration = decorationFactory.getSpawnDecorations())
 		
 	method generate() {
 		pendingRooms.enqueue(startingRoom)
@@ -67,9 +67,6 @@ class DungeonStructureGenerator {
 		
 		return if(neighbour == null) {
 			const newNeighbour = new EnemiesDungeonRoom(position = neighbourPosition, player = gameConfig.player())
-			// Acá deberíamos de agregar decoraciones de un factory
-//			const blood = new Image(baseImageName = "blood")
-//			blood.position().inPosition(1, 1)
 			newNeighbour.addDecoration(decorationFactory.getRandomDecoration())
 			rooms.add(newNeighbour)
 			roomsQuantity++
@@ -81,43 +78,19 @@ class DungeonStructureGenerator {
 }
 
 object decorationFactory{
-	const defaultPosition = new MutablePosition(x = gameConfig.doorXOffset(), y = gameConfig.doorYOffset())
-	const decorations = [
-		new Image(baseImageName = "decoracion-1", position = defaultPosition),
-		new Image(baseImageName = "decoracion-2", position = defaultPosition),
-		new Image(baseImageName = "decoracion-3", position = defaultPosition),
-		new Image(baseImageName = "decoracion-4", position = defaultPosition),
-		new Image(baseImageName = "decoracion-5", position = defaultPosition),
-		new Image(baseImageName = "decoracion-6", position = defaultPosition),
-		new Image(baseImageName = "decoracion-7", position = defaultPosition),
-		new Image(baseImageName = "decoracion-8", position = defaultPosition),
-		new Image(baseImageName = "decoracion-9", position = defaultPosition),
-		new Image(baseImageName = "decoracion-10", position = defaultPosition),
-		new Image(baseImageName = "decoracion-11", position = defaultPosition),
-		new Image(baseImageName = "decoracion-12", position = defaultPosition),
-		new Image(baseImageName = "decoracion-13", position = defaultPosition),
-		new Image(baseImageName = "decoracion-14", position = defaultPosition),
-		new Image(baseImageName = "decoracion-15", position = defaultPosition),
-		new Image(baseImageName = "decoracion-16", position = defaultPosition),
-		new Image(baseImageName = "decoracion-17", position = defaultPosition),
-		new Image(baseImageName = "decoracion-18", position = defaultPosition),
-		new Image(baseImageName = "decoracion-19", position = defaultPosition),
-		new Image(baseImageName = "decoracion-20", position = defaultPosition),
-		new Image(baseImageName = "decoracion-21", position = defaultPosition),
-		new Image(baseImageName = "decoracion-22", position = defaultPosition),
-		new Image(baseImageName = "decoracion-23", position = defaultPosition),
-		new Image(baseImageName = "decoracion-24", position = defaultPosition),
-		new Image(baseImageName = "decoracion-25", position = defaultPosition),
-		new Image(baseImageName = "decoracion-26", position = defaultPosition),
-		new Image(baseImageName = "decoracion-27", position = defaultPosition),
-		new Image(baseImageName = "decoracion-28", position = defaultPosition),
-		new Image(baseImageName = "decoracion-29", position = defaultPosition)
-	]
-	const spawnDecorations = #{new Image(baseImageName = "instructions")}
-	const bossDecorations = #{new Image(baseImageName = "bossDecorations")}
-	method getSpawnDecorations() = spawnDecorations
-	method getBossDecorations() = bossDecorations
-	method getRandomDecoration() = decorations.get((0 .. decorations.size() - 1).anyOne())
+	const decorationNumbers = (1..29)
+	method getSpawnDecorations() = "instructions"
+	method getBossDecorations() = "bossDecorations"
+	method getRandomDecoration() = decorationNumbers.anyOne()
+}
+
+object decorationManager inherits Image(
+	baseImageName = "invisible",
+	position = new MutablePosition(x = gameConfig.doorXOffset(), y = gameConfig.doorYOffset())
+){
+	method toDecoration(type) {
+		baseImageName = "decoracion-" + type
+	}
 }
 
 object randomizer {
