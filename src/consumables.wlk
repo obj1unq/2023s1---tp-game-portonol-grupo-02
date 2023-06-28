@@ -4,6 +4,7 @@ import gameConfig.*
 import transitionManager.Transition
 import transitionManager.transitionManager
 import wollok.game.*
+import weapons.DragonSlayer
 
 class Consumable inherits GravityEntity(initialY = gameConfig.yMiddle() + 2, initialX = gameConfig.xMiddle()) {
 	const forRoom
@@ -24,10 +25,61 @@ class Consumable inherits GravityEntity(initialY = gameConfig.yMiddle() + 2, ini
 	
 }
 
+
 object nullishConsumable inherits Consumable(gravity = null, forRoom = null) {
 	override method consumedBy(player){}
 	override method onAttach() {}
 	override method onRemove() {}
+}
+
+// TODO: Add animation
+class DragonSlayerConsumable inherits Consumable(baseImageName = "dragonslayer-consumable") {
+	override method consumedBy(player) {
+		super(player)
+		const weapon = new DragonSlayer()
+		player.addWeapon(weapon)
+	}
+	
+	override method playPickupAnimation() {
+		const transition = 
+			new Transition(
+					frames = [
+						"mate-pickup-anim-1",
+						"mate-pickup-anim-2",
+						"mate-pickup-anim-3",
+						"mate-pickup-anim-4",
+						"mate-pickup-anim-5",
+						"mate-pickup-anim-6",
+						"mate-pickup-anim-7",
+						"mate-pickup-anim-8",
+						"mate-pickup-anim-9",
+						"mate-pickup-anim-10",
+						"mate-pickup-anim-11",
+						"mate-pickup-anim-12",
+						"mate-pickup-anim-13",
+						"mate-pickup-anim-14",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16",
+						"mate-pickup-anim-15",
+						"mate-pickup-anim-16"
+					],
+				duration = 2000,
+				sfx = game.sound("item-pickup-sound.mp3"),
+				delay = 800
+			)
+		transitionManager.play(transition)
+		
+	}
+}
+
+object dragonSlayerFactory {
+	method getConsumable(forRoom) {
+		return new DragonSlayerConsumable(forRoom = forRoom, gravity = global.gravity())
+	}
 }
 
 class DamageModifierConsumable inherits Consumable {

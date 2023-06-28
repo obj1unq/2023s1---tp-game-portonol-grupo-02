@@ -59,11 +59,16 @@ class EnemyPool {
 }
 
 object consumablesPool {
-	const items = [mateFactory, canioncitoDDLFactory]
+	const items = [mateFactory, canioncitoDDLFactory, dragonSlayerFactory]
 	
 	method getRandomItem(forRoom) {
-		const item = items.anyOne()
-		return item.getConsumable(forRoom)	
+		if(items.size() == 0) {
+			return nullishConsumable
+		} else {
+			const item = items.anyOne()
+			items.remove(item)
+			return item.getConsumable(forRoom)				
+		}
 	}
 }
 
