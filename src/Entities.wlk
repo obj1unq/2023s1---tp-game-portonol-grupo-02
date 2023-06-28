@@ -274,8 +274,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
 	const weaponManager = new WeaponManager(weapons = [
 		new Knife(),
-		new Slingshot(),
-		new DragonSlayer()
+		new Slingshot()	
 	])
 	const lifeBarUI = new PlayerLifeUI(startingPosition = 0)
 	const damageSfx
@@ -326,6 +325,10 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 	
 	override method attack() {
 		weaponManager.attack(self)
+	}
+	
+	method addWeapon(weapon) {
+		weaponManager.addWeapon(weapon)
 	}
 	
 	override method die() {
