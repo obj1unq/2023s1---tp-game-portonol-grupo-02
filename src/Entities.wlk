@@ -325,6 +325,10 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		weaponManager.attack(self)
 	}
 	
+	method addWeapon(weapon) {
+		weaponManager.addWeapon(weapon)
+	}
+	
 	override method die() {
 		deathSfx.play()
 		self.onRemove()

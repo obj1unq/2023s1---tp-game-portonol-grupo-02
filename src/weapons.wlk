@@ -145,9 +145,10 @@ class DistanceWeapon inherits OnlyCooldownWeapon {
 	const projectileFactory
 
 	override method culminateAttack(dealer) {
-		const startingPosition = dealer.direction().direction().getFromPosition(dealer.position())
+		const xPosition = dealer.direction().direction().getXFromPosition(dealer.position())
+		const yPosition = dealer.direction().direction().getYFromPosition(dealer.position())
 		const projectile = projectileFactory.createProjectileFrom(dealer, dealer.direction().direction())
-		projectile.initialPositions(startingPosition.x(), startingPosition.y())
+		projectile.initialPositions(xPosition, yPosition)
 		projectile.onAttach()
 	}
 	
