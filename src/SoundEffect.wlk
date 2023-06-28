@@ -47,6 +47,12 @@ object stabKnifeEffect inherits SoundEffect {
 	}
 }
 
+object clangEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
 object slingshotEffect inherits SoundEffect {
 	override method play() {
 		game.sound("slingshot-sound.mp3").play()
