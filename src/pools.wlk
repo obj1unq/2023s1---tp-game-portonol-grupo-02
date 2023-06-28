@@ -10,6 +10,8 @@ import dungeonRooms.levelManager
 class EnemyPool {
 
 	const enemyFactory
+	const property enemyCap = null
+	const property enemyMinCap = null	// enemyMinCap <= enemyCap
 
 	var property pool = new Queue(elements=[])
 	
@@ -39,6 +41,7 @@ class EnemyPool {
 	// TODO: Agregar posiciones
 	method getRandomEnemies(quantity){
 		const enemiesToRender = []
+		const quantityToRender = (enemyMinCap .. quantity - 1).anyOne()
 		if(quantity > 0) {
 			(0 .. quantity - 1).forEach{ i =>
 				const e = self.getEnemy()
@@ -84,11 +87,11 @@ object emptyEnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory) {
 
 object lordOfFliesPool inherits EnemyPool(enemyFactory = lordOfFliesFactory) {}
 
-object level1EnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory) {}
+object level1EnemyPool inherits EnemyPool(enemyFactory = level1EnemyFactory, enemyCap = 3, enemyMinCap = 1) {}
 
-object level2EnemyPool inherits EnemyPool(enemyFactory = level2EnemyFactory) {}
+object level2EnemyPool inherits EnemyPool(enemyFactory = level2EnemyFactory, enemyCap = 4, enemyMinCap = 2) {}
 
-object level3EnemyPool inherits EnemyPool(enemyFactory = level3EnemyFactory) {}
+object level3EnemyPool inherits EnemyPool(enemyFactory = level3EnemyFactory, enemyCap = 5, enemyMinCap = 3) {}
 
 class RemoveBehaviour {
 	method onRemove(entity)

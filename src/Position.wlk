@@ -1,4 +1,6 @@
 import wollok.game.*
+import gameConfig.*
+import structureGenerator.randomizer
 
 object dummiePosition inherits MutablePosition(x = 0, y = 0){}
 
@@ -105,19 +107,26 @@ class MutablePosition {
 
 }
 
-object arriba {
-
-}
-
-object abajo {
-
-}
-
-object izquierda {
-
-}
-
-object derecha {
-
+object positionSpawner {
+	
+	var positions = [
+		new MutablePosition(x = gameConfig.xMiddle(), y = gameConfig.yMiddle()),
+		new MutablePosition(x = gameConfig.xMiddle() - 3, y = gameConfig.yMiddle()),
+		new MutablePosition(x = gameConfig.xMiddle() + 3, y = gameConfig.yMiddle()),
+		new MutablePosition(x = gameConfig.xMiddle() - 5, y = gameConfig.yMiddle() + 3),
+		new MutablePosition(x = gameConfig.xMiddle() + 5, y = gameConfig.yMiddle() + 3)
+	]
+	
+	method mixPositions() {
+		positions = positions.sortedBy {
+			a, b => randomizer.fiftyBool()
+		}
+	}
+	
+	method setPositionByIndex(i, enemy) {
+		const newPosition = positions.get(i)
+		enemy.initialPositions(newPosition.x(), newPosition.y()) 
+	}
+	
 }
 

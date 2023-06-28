@@ -243,8 +243,10 @@ class WeaponManager {
 		weaponUI.onWeaponChanged(weapons.get(actualWeapon))
 	}
 	
+	// Must be initialized with a one or more weapons
 	method onAttach() {
 		weaponUI.onAttach()
+		weaponUI.onWeaponChanged(weapons.get(actualWeapon))
 	}
 	
 	method onRemove() {

@@ -22,7 +22,7 @@ class LevelEnemyFactory {
 }
 
 object level1EnemyFactory inherits LevelEnemyFactory(
-	enemiesFactories = [slimeEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
+	enemiesFactories = [pingpongEnemyFactory, zombieEnemyFactory, flyEnemyFactory],
 	scaleDamage = 1, 
 	scaleHP = 1
 ) {
@@ -36,7 +36,7 @@ object level1EnemyFactory inherits LevelEnemyFactory(
 }
 
 object level2EnemyFactory inherits LevelEnemyFactory(
-	enemiesFactories = [pingpongEnemyFactory, slimeEnemyFactory, zombieEnemyFactory],
+	enemiesFactories = [slimeEnemyFactory],
 	scaleDamage = 1.5, 
 	scaleHP = 1.5
 ) {
@@ -50,7 +50,7 @@ object level2EnemyFactory inherits LevelEnemyFactory(
 }
 
 object level3EnemyFactory inherits LevelEnemyFactory(
-	enemiesFactories = [chargeEnemyFactory, pingpongEnemyFactory, slimeEnemyFactory],
+	enemiesFactories = [chargeEnemyFactory],
 	scaleDamage = 1.5, 
 	scaleHP = 1.5
 ) {

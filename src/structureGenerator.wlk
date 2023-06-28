@@ -401,7 +401,7 @@ class Queue {
 	}
 	
 	method mix() {
-		elements.sortedBy{
+		elements = elements.sortedBy{
 			a, b => randomizer.fiftyBool()
 		}
 	}
