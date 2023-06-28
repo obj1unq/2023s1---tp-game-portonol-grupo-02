@@ -11,6 +11,8 @@ import LifeUI.LifeUI
 import LifeUI.BossBarUI
 import gameConfig.*
 import pools.lordOfFliesPool
+import SoundEffect.bossTheme
+import SoundEffect.mainTheme
 
 // Por limitaciones del lenguaje, no hay interfaces. Usar esta clase como interfaz para 
 // aprovecharse del polimorfismo que ofrece wollok
@@ -28,9 +30,29 @@ class IBoss {
 	}
 		
 	/*
+	 * override method onAttach() {
+	 * 
+	 *   self.makeEntryAnimation()
+	 *	 lifeBar.render()
+	 *   bossTheme.play()
+	 * 
+	 * }
+	 * 
+	 */
+		
+	/*
+	 * override method onDamageTaken(newHP) {
+	 *	  lifeBar.onDamageTaken(self)
+	 * }
+	 * 
+	 */
+		
+		
+	/*
 	 * override method die() {
 	 * 
 	 * 	self.spawnItem()
+	 * 	bossTheme.stop()
 	 * 
 	 * }
 	 */
@@ -62,6 +84,8 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 	override method onAttach() {
 		super()
 		self.makeEntryAnimation()
+		bossTheme.play()
+		mainTheme.stop()
 		lifeBar.render()
 	}
 	
@@ -93,6 +117,8 @@ class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordof
 	override method die() {
 		super()
 		self.spawnItem()
+		bossTheme.stop()
+		mainTheme.play()
 	}
 	
 }
@@ -126,6 +152,8 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	override method onAttach() {
 		super()
 		self.makeEntryAnimation()
+		bossTheme.play()
+		mainTheme.stop()
 		lifeBar.render()
 	}
 	
@@ -142,6 +170,8 @@ class SlimeTurret inherits Slime(baseImageName = "king-slime", removeBehaviour =
 	override method die() {
 		super()
 		self.spawnItem()
+		bossTheme.stop()
+		mainTheme.play()
 	}
 	
 }

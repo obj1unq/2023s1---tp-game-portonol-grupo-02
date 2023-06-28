@@ -24,11 +24,34 @@ object slimeJumpEffect inherits SoundEffect {
 
 object mainTheme inherits SoundEffect {
 	
+	var sound = null
+	
 	override method play() {
-		const sound = game.sound("mainmusic.mp3")
+		sound = game.sound("mainmusic.mp3")
 		sound.shouldLoop(true)
 		sound.volume(0.25)
 		sound.play()
+	}
+	
+	method stop() {
+		sound.stop()
+	}
+	
+}
+
+object bossTheme inherits SoundEffect {
+	
+	var sound = null
+	
+	override method play() {
+		sound = game.sound("boss-theme.mp3")
+		sound.shouldLoop(true)
+		sound.volume(0.25)
+		sound.play()
+	}
+	
+	method stop() {
+		sound.stop()
 	}
 	
 }
