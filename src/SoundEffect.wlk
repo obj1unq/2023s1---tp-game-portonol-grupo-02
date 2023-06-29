@@ -76,6 +76,36 @@ object clangEffect inherits SoundEffect {
 	}
 }
 
+object zombieHitEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
+object slimeHitEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
+object flyHitEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
+object chargeHitEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
+object pingPongHitEffect inherits SoundEffect {
+	override method play() {
+		game.sound("clangberserk.mp3").play()
+	}
+}
+
 object slingshotEffect inherits SoundEffect {
 	override method play() {
 		game.sound("slingshot-sound.mp3").play()

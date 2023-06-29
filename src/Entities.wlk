@@ -8,9 +8,8 @@ import Movement.*
 import weapons.*
 import structureGenerator.*
 import pools.poolRemoveBehaviour
-import Movement.MovementDirectionManager
 import LifeUI.PlayerLifeUI
-import Movement.ChargeToPlayerMovement
+import SoundEffect.*
 
 class Entity inherits Image {
 	
@@ -178,6 +177,10 @@ class DamageEntity inherits GravityEntity {
 	method takeDmg(dmg) {
 		hp -= dmg
 		self.onDamageTaken(hp)
+		self.playDamageSound()
+		if (self.isDead()) {
+			self.die()
+		}
 	}
 	
 	method onDamageTaken(newLife) {}
@@ -198,6 +201,12 @@ class DamageEntity inherits GravityEntity {
 	
 	method dealDamage(receiver)
 
+	method hitSound()
+
+	method playDamageSound() {
+		self.hitSound().play()
+	}
+
 }
 
 
@@ -209,7 +218,7 @@ class EnemyDamageEntity inherits DamageEntity {
 	method resetState() {
 		hp = maxHp
 	}
-	
+		
 	override method dealDamage(receiver) {
 		damageManager.dealDamage(receiver)
 	}
@@ -233,13 +242,6 @@ class EnemyDamageEntity inherits DamageEntity {
 		
 		damageManager.dealDmg(self.playerOrNullishEnemy(collider))
 		
-	}
-
-	override method takeDmg(damage) {
-		super(damage)
-		if (self.isDead()) {
-			self.die()
-		}
 	}
 	
 	override method die() {
@@ -267,6 +269,7 @@ object nullishDamagableEntity inherits DamageEntity(cooldown = 0, damage = 0, gr
 	override method takeDmg(dmg) {}
 	override method die() {}
 	override method dealDamage(receiver) {}
+	override method hitSound() = null
 }
 
 class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpriteModifier()) {
@@ -281,14 +284,6 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 
 	override method state() {
 		return super() + weaponManager.weaponName() + weaponManager.attackState()
-	}
-	override method takeDmg(damage) {
-		super(damage)
-		if (self.isDead()) {
-			self.die()
-		} else {
-			self.playDamageSound()
-		}
 	}
 	
 	override method dealDamage(receiver) {
@@ -340,9 +335,7 @@ class PlayerDamageEntity inherits DamageEntity(direction = new StateDirectionSpr
 		global.deathScreen()
 	}
 	
-	method playDamageSound() {
-		damageSfx.play()
-	}
+	override method hitSound() = damageSfx
 	
 }
 
@@ -364,6 +357,8 @@ class ChargeToPlayerEnemy inherits EnemyDamageEntity {
 		return (time * axisVelocity) / 1000
 	}
 	
+	override method hitSound() = chargeHitEffect
+	
 }
 
 class PingPongEnemyEntity inherits EnemyDamageEntity {
@@ -382,6 +377,8 @@ class PingPongEnemyEntity inherits EnemyDamageEntity {
 	method movementByTime(time) {
 		return (time * velocity) / 1000
 	}
+	
+	override method hitSound() = pingPongHitEffect
 	
 }
 
@@ -451,9 +448,13 @@ class DelayedWalkToPlayerEnemy inherits WalkToPlayerEnemy {
 // Por limitaciones de usar celdas, la velocidad arruina el movimiento diagonal
 class PingPongEnemy inherits PingPongEnemyEntity(velocity = 2) {}
 
-class Zombie inherits WalkToPlayerEnemy(velocity = 1, direction = new StateDirectionSpriteModifier()) {}
+class Zombie inherits WalkToPlayerEnemy(velocity = 1, direction = new StateDirectionSpriteModifier()) {
+	override method hitSound() = zombieHitEffect
+}
 
-class Fly inherits WalkToPlayerEnemy(velocity = 2) {}
+class Fly inherits WalkToPlayerEnemy(velocity = 2) {
+	override method hitSound() = flyHitEffect
+}
 
 class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 400, movementCooldownReload = 400) {
 	const lastPlayerPosition = new MutablePosition(x = player.position().x(), y = player.position().y())
@@ -461,6 +462,8 @@ class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 
 	override method resetState() {
 		lastPlayerPosition.inPosition(player.position().x(), player.position().y())
 	}
+	
+	override method hitSound() = slimeHitEffect
 	
 	override method update(time){
 		super(time)
