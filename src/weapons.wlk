@@ -12,6 +12,7 @@ import weaponUI.WeaponUI
 import wollok.game.game
 import Position.dummiePosition
 import SoundEffect.clangEffect
+import Sprite.Image
 
 class Weapon {
 	
@@ -28,14 +29,15 @@ class Weapon {
 	method unequip(dealer) {
 		dealer.decreaseDamage(damage)
 	}
-	
-	method imageName()
-	
+		
 	method makeSound()
+	
+	method weaponName() = ""
+	
+	method attackState() = ""
 }
 
 object nullWeapon inherits Weapon(damage = 0) {
-	override method imageName() = "invisible"
 	override method makeSound() {}
 	override method attack(dealer) {}
 }
@@ -64,13 +66,16 @@ class CooldownWeapon inherits Weapon {
 }
 
 class MovementCooldownWeapon inherits CooldownWeapon {
-	const property rechargingAttackCM = new MovementRechargingAttackCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
-	const property attackableCM = new MovementAttackableCooldownManager(weapon = self, totalCooldownTime = rechargeCooldown)
+	const attackAnimation
+	const property rechargingAttackCM = new MovementRechargingAttackCooldownManager(attackAnimation = attackAnimation, weapon = self, totalCooldownTime = rechargeCooldown)
+	const property attackableCM = new MovementAttackableCooldownManager(attackAnimation = attackAnimation, weapon = self, totalCooldownTime = rechargeCooldown)
 	var attackCooldown = attackableCM
 	
 	override method cooldownManager(cooldownManager) {
 		attackCooldown = cooldownManager
 	}
+	
+	override method attackState() = attackCooldown.attackState()
 	
 	override method rechargingAttackCM() = rechargingAttackCM
 	
@@ -106,7 +111,7 @@ class MeleeWeapon inherits MovementCooldownWeapon {
 	}
 }
 
-class MeeleAreaWeapon inherits MovementCooldownWeapon {
+class MeeleAreaWeapon inherits MovementCooldownWeapon(attackAnimation = new Image(baseImageName = "dsDamage")) {
 	override method culminateAttack(dealer) {
 		const center = dealer.position()
 		(center.x() - 1 .. center.x() + 1).forEach {
@@ -131,14 +136,18 @@ class DragonSlayer inherits MeeleAreaWeapon(rechargeCooldown = 1000, damage = 10
 	override method makeSound() {
 		clangEffect.play()
 	}
-	override method imageName() = "dragonslayer-weapon"
+		
+	override method weaponName() = "dragonslayer"
+	
 } 
 
-class Knife inherits MeleeWeapon(rechargeCooldown = 200, damage = 30) {
+class Knife inherits MeleeWeapon(rechargeCooldown = 200, damage = 20, attackAnimation = new Image()) {
 	override method makeSound() {
 		stabKnifeEffect.play()
 	}
-	override method imageName() = "knife-image"
+		
+	override method weaponName() = "knife"
+	
 }
 
 class DistanceWeapon inherits OnlyCooldownWeapon {
@@ -157,8 +166,10 @@ class DistanceWeapon inherits OnlyCooldownWeapon {
 	}
 }
 
-class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 3000, damage = 30) {
-	override method imageName() = "slingshot-image"
+class Slingshot inherits DistanceWeapon(projectileFactory = rockProjectileFactory, rechargeCooldown = 2000, damage = 15) {
+		
+	override method weaponName() = "slingshot"
+	
 }
 
 class Projectile inherits GravityEntity {
@@ -228,6 +239,10 @@ class WeaponManager {
 			self.changeNextWeapon(dealer)
 		}
 	}
+	
+	method weaponName() = "-" + weapons.get(actualWeapon).weaponName()
+	
+	method attackState() = weapons.get(actualWeapon).attackState()
 	
 	method onTimePassed(time) {
 		weapons.forEach {

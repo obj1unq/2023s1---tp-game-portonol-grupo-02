@@ -6,7 +6,7 @@ class WeaponUI {
 	var weapon = new Image(baseImageName = "invisible")
 	
 	method onWeaponChanged(_weapon) {
-		weapon.baseImageName(_weapon.imageName())
+		weapon.baseImageName(_weapon.weaponName())
 	}
 	
 	method onAttach() {
