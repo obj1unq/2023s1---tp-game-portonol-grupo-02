@@ -259,8 +259,9 @@ class WeaponManager {
 	}
 	
 	// Must be initialized with a one or more weapons
-	method onAttach() {
+	method onAttach(dealer) {
 		weaponUI.onAttach()
+		weapons.get(actualWeapon).equip(dealer)
 		weaponUI.onWeaponChanged(weapons.get(actualWeapon))
 	}
 	
