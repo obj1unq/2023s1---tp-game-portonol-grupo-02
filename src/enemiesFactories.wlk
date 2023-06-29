@@ -96,7 +96,7 @@ object slimeEnemyFactory inherits EnemyFactory {
 
 object chargeEnemyFactory inherits EnemyFactory {
 	override method generate(scaleDamage, scaleHP) {
-		const charge = new ChargeToPlayerEnemy(player = global.player(), damage = 30 * scaleDamage, maxHp = 60 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "charge-enemy")
+		const charge = new ChargeToPlayerEnemy(player = global.player(), damage = 30 * scaleDamage, maxHp = 60 * scaleHP, cooldown = 1000, gravity = global.gravity(), baseImageName = "dust")
 		charge.changeMovementController(new CollidableMovementController(movableEntity = charge))
 		return charge
 	}
