@@ -139,6 +139,8 @@ class DoubleBoss inherits EnemyDamageEntity(damage = null, maxHp = null, cooldow
 		transitionManager.play(self.animation())
 	}
 	
+	override method hitSound() = null
+	
 }
 
 class LordOfFlies inherits PingPongEnemyEntity(hp = 300, baseImageName = "lordofflies", velocity = 1.5, removeBehaviour = globalRemoveBehaviour) /* implements IBoss */ {
