@@ -38,16 +38,16 @@ class EnemyPool {
 		return enemyFactory.boss(forRoom)
 	}
 	
-	// TODO: Agregar posiciones
 	method getRandomEnemies(quantity){
 		const enemiesToRender = []
-		const quantityToRender = (enemyMinCap .. quantity - 1).anyOne()
+		const quantityToRender = (enemyMinCap .. quantity).anyOne()
 		if(quantity > 0) {
-			(0 .. quantity - 1).forEach{ i =>
+			(1 .. quantityToRender).forEach{ i =>
 				const e = self.getEnemy()
 				enemiesToRender.add(e)
 			}			
 		}
+		console.println(enemiesToRender)
 		return enemiesToRender
 	}
 	

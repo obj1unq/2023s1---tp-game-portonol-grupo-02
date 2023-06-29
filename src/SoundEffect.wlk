@@ -93,7 +93,7 @@ object flyHitEffect inherits SoundEffect {
 object chargeHitEffect inherits SoundEffect {
 	override method play() {
 		const sound = game.sound("charger-effect.mp3")
-		sound.volume(0.3)
+		sound.volume(0.5)
 		sound.play()
 	}
 }

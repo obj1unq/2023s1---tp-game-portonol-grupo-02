@@ -458,6 +458,7 @@ class Slime inherits DelayedWalkToPlayerEnemy(velocity = 15, movementCooldown = 
 	const lastPlayerPosition = new MutablePosition(x = player.position().x(), y = player.position().y())
 	
 	override method resetState() {
+		super()
 		lastPlayerPosition.inPosition(player.position().x(), player.position().y())
 	}
 	
