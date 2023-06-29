@@ -1,5 +1,6 @@
 import Global.global
 import Sprite.Image
+import SoundEffect.healEffect
 
 class CooldownManager {
 
@@ -27,6 +28,16 @@ class CooldownManager {
 		return relativeCooldownTime <= 0
 	}
 
+}
+
+class PlayerHealCooldown inherits CooldownManager {
+	const healQuantity
+	
+	override method onCooldownFinish() {
+		global.player().heal(healQuantity)
+		healEffect.play()
+		self.resetCooldown()
+	}
 }
 
 class FlySpawnerCooldown inherits CooldownManager(totalCooldownTime = 3000) {

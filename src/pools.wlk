@@ -62,7 +62,14 @@ class EnemyPool {
 }
 
 object consumablesPool {
-	const items = [mateFactory, canioncitoDDLFactory, dragonSlayerFactory]
+	const items = [
+		mateFactory, 
+		canioncitoDDLFactory, 
+		dragonSlayerFactory, 
+		capitanDelEspacioFactory,
+		termidorFactory,
+		locroFactory
+	]
 	
 	method getRandomItem(forRoom) {
 		if(items.size() == 0) {

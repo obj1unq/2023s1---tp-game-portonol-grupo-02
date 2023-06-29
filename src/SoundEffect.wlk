@@ -112,6 +112,12 @@ object slingshotEffect inherits SoundEffect {
 	}
 }
 
+object healEffect inherits SoundEffect {
+	override method play() {
+		game.sound("heal-sound-effect.mp3").play()
+	}
+}
+
 object deathPlayerEffect inherits SoundEffect {
 
 	override method play() {
