@@ -26,7 +26,7 @@ program myGame {
 	
 	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
 	inputManager.init()
-	var player = new PlayerDamageEntity(baseImageName = "player", gravity = gravity, maxHp = 100, damage = 50, cooldown = 200, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
+	var player = new PlayerDamageEntity(baseImageName = "player", gravity = gravity, maxHp = 100, damage = 0, cooldown = 200, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
 	var controlManager = new CharacterMovementController(movableEntity = player)
 	player.changeMovementController(controlManager)
 	player.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())

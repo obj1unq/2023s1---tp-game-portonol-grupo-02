@@ -8,6 +8,7 @@ import Global.*
 import Blocks.Block
 import transitionManager.*
 import SoundEffect.*
+import Position.positionSpawner
 
 class ImageCopy {
 	const property image
@@ -352,7 +353,6 @@ class PlayerDungeonRoom inherits DungeonRoom {
 
 class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	var enemies = #{}
-	var enemiesCap = 4
 	var cleaned = false
 	
 	override method piso() = "muro.png"
@@ -382,20 +382,23 @@ class EnemiesDungeonRoom inherits PlayerDungeonRoom {
 	}
 	
 	method renderEnemies() {
+		var index = 0
 		enemies.forEach {
 			enemy => 
 				enemy.setDeathCallback{
 					enemies.remove(enemy)
 					self.checkIfOpenDoors()
 				}
-				enemy.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
+				positionSpawner.mixPositions()
+				positionSpawner.setPositionByIndex(index, enemy)
+				index++
 				enemy.onAttach()
 		}
 	}
 	
 	method addEnemies() {
 		 if(not cleaned) {
-			 enemies.addAll(levelManager.lastPool().getRandomEnemies(enemiesCap))		 	
+			 enemies.addAll(levelManager.lastPool().getRandomEnemies(levelManager.lastPool().enemyCap()))		 	
 		 }
 	}
 	

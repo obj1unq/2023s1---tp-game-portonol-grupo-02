@@ -1,4 +1,5 @@
 import Global.global
+import Sprite.Image
 
 class CooldownManager {
 
@@ -170,23 +171,37 @@ class AttackableCooldownManager inherits AttackCooldownManager {
 }
 
 class MovementAttackableCooldownManager inherits AttackableCooldownManager {
-
+	const attackAnimation
+	
 	override method attack(dealer) {
 		super(dealer)
 		dealer.cancelMovement()
 		self.opositeCooldown().dealerEntity(dealer)
+		self.makeAnimation(dealer)
 	}
+
+	method makeAnimation(dealer) {
+		const x = dealer.position().x() - 1
+		const y = dealer.position().y() - 1
+		attackAnimation.render(x, y)
+	}
+
+	method attackState() = ""
 
 }
 
 class MovementRechargingAttackCooldownManager inherits RechargingAttackCooldownManager {
+	const attackAnimation
 	
 	var property dealerEntity = null
 	
 	override method onCooldownFinish() {
 		super()
+		attackAnimation.unrender()
 		dealerEntity.recoverMovement()
 	}
+	
+	method attackState() = "-attacking"
 	
 }
 
