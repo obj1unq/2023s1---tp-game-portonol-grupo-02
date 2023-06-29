@@ -14,14 +14,6 @@ object silenceJumpEffect inherits SoundEffect {
 
 }
 
-object slimeJumpEffect inherits SoundEffect {
-
-	override method play() {
-		game.sound("slimejump.mp3").play()
-	}
-
-}
-
 object mainTheme inherits SoundEffect {
 	
 	var sound = null
@@ -78,50 +70,64 @@ object clangEffect inherits SoundEffect {
 
 object zombieHitEffect inherits SoundEffect {
 	override method play() {
-		game.sound("clangberserk.mp3").play()
+		game.sound("zombie-effect.mp3").play()
 	}
 }
 
 object slimeHitEffect inherits SoundEffect {
 	override method play() {
-		game.sound("clangberserk.mp3").play()
+		const sound = game.sound("slimejump.mp3")
+		sound.volume(0.3)
+		sound.play()
 	}
 }
 
 object flyHitEffect inherits SoundEffect {
 	override method play() {
-		game.sound("clangberserk.mp3").play()
+		const sound = game.sound("fly-effect.mp3")
+		sound.volume(0.3)
+		sound.play()
 	}
 }
 
 object chargeHitEffect inherits SoundEffect {
 	override method play() {
-		game.sound("clangberserk.mp3").play()
+		const sound = game.sound("charger-effect.mp3")
+		sound.volume(0.3)
+		sound.play()
 	}
 }
 
 object pingPongHitEffect inherits SoundEffect {
 	override method play() {
-		game.sound("clangberserk.mp3").play()
+		const sound = game.sound("pingpong-effect.mp3")
+		sound.volume(0.3)
+		sound.play()
 	}
 }
 
 object slingshotEffect inherits SoundEffect {
 	override method play() {
-		game.sound("slingshot-sound.mp3").play()
+		const sound = game.sound("slingshot-sound.mp3")
+		sound.volume(0.5)
+		sound.play()
 	}
 }
 
 object healEffect inherits SoundEffect {
 	override method play() {
-		game.sound("heal-sound-effect.mp3").play()
+		const sound = game.sound("heal-sound-effect.mp3")
+		sound.volume(0.2)
+		sound.play()
 	}
 }
 
 object deathPlayerEffect inherits SoundEffect {
 
 	override method play() {
-		return game.sound("deadplayer.mp3").play()
+		const sound = game.sound("deadplayer.mp3")
+		sound.volume(0.7)
+		sound.play()
 	}
 
 }
