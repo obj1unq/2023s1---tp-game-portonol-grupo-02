@@ -47,7 +47,6 @@ class EnemyPool {
 				enemiesToRender.add(e)
 			}			
 		}
-		console.println(enemiesToRender)
 		return enemiesToRender
 	}
 	
