@@ -227,8 +227,10 @@ object levelManager {
 					"credits-57"
 				],
 				duration = 55000,
-				sfx = game.sound("credits-theme.mp3")
-				)
+				sfx = game.sound("credits-theme.mp3"),
+				onFinish = { game.stop() }
+			)
+			transitionManager.play(credits)
 		}
 	}
 
