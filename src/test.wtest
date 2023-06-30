@@ -3,19 +3,21 @@ import Movement.*
 import Entities.*
 import gameConfig.*
 import structureGenerator.*
+import enemiesFactories.*
+import Global.*
 
 describe "Player Tests" {
 	
 	const gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
 	const player = new PlayerDamageEntity(baseImageName = "player", gravity = gravity, maxHp = 100, damage = 0, cooldown = 200, damageSfx = null, deathSfx = null)
 	const controller = new CollidableMovementController(movableEntity = player)
-	const enemy = new Zombie(damage = 20, gravity = gravity, maxHp = 100, cooldown = 0, player = player)
-	
 	
 	method initialize(){
 		game.clear()
 		game.width(20)
 		game.height(11)
+		global.player(player)
+		global.gravity(gravity)
 		player.changeMovementController(controller)
 		gravity.init()
 		player.initialPositions(2, 2)
@@ -41,9 +43,9 @@ describe "Player Tests" {
 	}
 	
 	test "Enemy damages player" {
+		var enemy = flyEnemyFactory.generate(1, 1)
 		enemy.initialPositions(2, 2)
 		enemy.onAttach()
-		console.println(game.colliders(enemy))
 		assert.equals(80, player.hp())
 	}
 	
