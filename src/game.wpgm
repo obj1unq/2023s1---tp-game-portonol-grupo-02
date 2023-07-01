@@ -1,0 +1,131 @@
+import wollok.game.*
+import structureGenerator.*
+import dungeonRooms.*
+import pools.*
+import gameConfig.*
+import Blocks.*
+import Damage.*
+import Entities.*
+import Input.*
+import Movement.*
+import Position.*
+import Sprite.*
+import SoundEffect.*
+import Global.*
+import transitionManager.Transition
+import transitionManager.transitionManager
+import consumables.Mate
+import consumables.CanioncitoDDL 
+
+program myGame {
+		
+	game.title("Jump trying")
+	game.height(11)
+	game.width(20)
+	game.boardGround("negro.jpg")
+	
+	var gravity = new GravityController(name = "mainGravity", tickTime = 100, gameInstance = game)
+	inputManager.init()
+	var player = new PlayerDamageEntity(baseImageName = "player", gravity = gravity, maxHp = 100, damage = 0, cooldown = 200, damageSfx = damagePlayerEffect, deathSfx = deathPlayerEffect)
+	var controlManager = new CharacterMovementController(movableEntity = player)
+	player.changeMovementController(controlManager)
+	player.initialPositions(gameConfig.xMiddle(), gameConfig.yMiddle())
+	
+	gameConfig.gravity(gravity)
+	gameConfig.player(player)
+	global.gravity(gravity)
+	global.player(player)
+	
+	const mainMenuTransition = new Transition(
+		frames = [
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2",
+			"mainMenuScreen-1",
+			"mainMenuScreen-2"
+		],
+		duration = 21000,
+		sfx = game.sound("mainMenu.mp3"),
+		onFinish = {transitionManager.play(gameStartTransition)}
+	)
+	
+	const gameStartTransition = new Transition(
+		frames = [
+			"level1Transition-1",
+			"level1Transition-2",
+			"level1Transition-3",
+			"level1Transition-4",
+			"level1Transition-5",
+			"level1Transition-6",
+			"level1Transition-7",
+			"level1Transition-8",
+			"level1Transition-9",
+			"level1Transition-10",
+			"level1Transition-11",
+			"level1Transition-12",
+			"level1Transition-13",
+			"level1Transition-14",
+			"level1Transition-15",
+			"level1Transition-16",
+			"level1Transition-17",
+			"level1Transition-18",
+			"level1Transition-19",
+			"level1Transition-20",
+			"level1Transition-21",
+			"level1Transition-22",
+			"level1Transition-23",
+			"level1Transition-24",
+			"level1Transition-25",
+			"level1Transition-26",
+			"level1Transition-27",
+			"level1Transition-28",
+			"level1Transition-29",
+			"level1Transition-30",
+			"level1Transition-31",
+			"level1Transition-32",
+			"level1Transition-33"
+		],
+	duration = 3000,
+	sfx = game.sound("gameStart.mp3"),
+	onFinish = {mainTheme.play()}
+)
+
+	const image = new Image(baseImageName = "fondosala")
+	image.render(1, 1)
+	
+	levelManager.loadNextLevel()
+	
+	gravity.init()
+	
+	transitionManager.play(mainMenuTransition)
+	
+	keyboard.enter().onPressDo{
+		if (transitionManager.currentTransition() != null){
+			transitionManager.finishAnimation()
+		}
+	}
+	
+//	global.player().onAttach()
+		
+	game.start()
+		
+}
